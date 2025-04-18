@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils"
 const teams = [
   {
     name: "SGU COFFEE",
-    logo: "/logo-cnpm-preview.png",
+    logo: "/images/Logo.png",
   },
 ]
 
@@ -46,7 +46,7 @@ export function TeamSwitcher() {
               className="data-[state=open]:bg-sidebar-accent items-center gap-2 data-[state=open]:text-sidebar-accent-foreground py-10 bg-bg-secondary"
             >
               <div className="z-1 text-sidebar-primary-foreground flex aspect-square size-17 items-center justify-center rounded-lg">
-                <img alt="SGU Logo" className="size-18" src={activeTeam.logo} />
+                <img alt="SGU Logo" className="size-12" src={activeTeam.logo} />
               </div>
               <div className="grid flex-1 text-left  leading-tight">
                 <span className="truncate font-bold text-md text-gray-600">{activeTeam.name}</span>

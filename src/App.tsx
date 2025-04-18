@@ -12,6 +12,7 @@ import ComfirmPassword from './modules/auth/components/ForgetPassword/ComfirmPas
 import { SetNewPasswordForm } from './modules/auth/components/ForgetPassword/SetNewPasswordForm';
 import OrderManager from './modules/admin/components/Order/OrderManager';
 import ProductManager from './modules/home/components/ProductTable/ProductManager';
+import HomeManager from './modules/admin/components/Home/HomeManager';
 
 function App() {
   const router = createBrowserRouter([
@@ -63,6 +64,10 @@ function App() {
       path: 'admin',
       element: <AdminPages />,
       children: [
+        {
+          path: 'home',
+          element: <HomeManager />
+        },
         {
           path: 'products',
           element: <ProductManager />
