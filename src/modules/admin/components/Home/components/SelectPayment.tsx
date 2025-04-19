@@ -20,9 +20,11 @@ interface SelectPaymentProps {
     onSelectPayment: (method: string) => void;
     onClose: () => void;
     open: boolean;
+    cart: any[];
+    total: number;
 }
 
-export default function SelectPayment({ onSelectPayment, onClose, open }: SelectPaymentProps) {
+export default function SelectPayment({ onSelectPayment, onClose, open, cart, total }: SelectPaymentProps) {
     const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
 
     const handleSelect = (value: string) => {
@@ -43,11 +45,11 @@ export default function SelectPayment({ onSelectPayment, onClose, open }: Select
                     {/* Thông tin đơn hàng */}
                     <div className="flex justify-between items-start mb-6">
                         <span className="text-sm font-semibold text-orange-600">
-                            Đơn hàng: 1 sản phẩm
+                            Đơn hàng: {cart.length} sản phẩm
                         </span>
                         <div className="text-right">
                             <p className="text-lg font-bold text-orange-600">
-                                Tổng tiền: 345.000 vnđ
+                                Tổng tiền: {total.toLocaleString('vi-VN')} đ
                             </p>
                             <p className="text-xs text-gray-500">Đã bao gồm phí VAT</p>
                         </div>
@@ -83,7 +85,7 @@ export default function SelectPayment({ onSelectPayment, onClose, open }: Select
                         onClick={handleConfirmPayment}
                         className="mt-6 cursor-pointer w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-full py-3 text-base font-semibold shadow-md transition-all duration-200 disabled:bg-gray-300 disabled:text-gray-500"
                     >
-                        Thanh toán 345.000 vnđ
+                        Thanh toán {total.toLocaleString('vi-VN')} đ
                     </Button>
                 </div>
             </DialogContent>

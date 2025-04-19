@@ -10,13 +10,13 @@ import LoginForm from './modules/auth/components/Login/LoginForm';
 import { ForgetPasswordForm } from './modules/auth/components/ForgetPassword/ForgetPasswordForm';
 import ComfirmPassword from './modules/auth/components/ForgetPassword/ComfirmPassword';
 import { SetNewPasswordForm } from './modules/auth/components/ForgetPassword/SetNewPasswordForm';
-import OrderManager from './modules/admin/components/Order/OrderManager';
 import ProductManager from './modules/home/components/ProductTable/ProductManager';
-import HomeManager from './modules/admin/components/Home/HomeManager';
+import HomeManager from './modules/admin/components/Home/pages/HomeManager';
 import OrderHistoryManager from './modules/admin/components/OrderHistory/OrderHistoryManager';
 import NotificationsHistoryOrder from './modules/admin/components/OrderHistory/components/NotificationsHistoryOrder';
 import AccountManager from './modules/admin/components/AccountManager/AccountManager';
 import ChatManager from './modules/admin/components/Chat/ChatManager';
+import OrderManager from './modules/admin/components/Order/OrderManager';
 
 function App() {
   const router = createBrowserRouter([

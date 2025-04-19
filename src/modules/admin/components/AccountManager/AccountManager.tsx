@@ -29,7 +29,7 @@ export default function AccountManager() {
     };
 
     return (
-        <div className="p-6">
+        <div className="p-6 bg-white!">
             <AccountActions />
             <div className="">
                 <AccountTable
