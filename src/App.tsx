@@ -16,6 +16,7 @@ import HomeManager from './modules/admin/components/Home/HomeManager';
 import OrderHistoryManager from './modules/admin/components/OrderHistory/OrderHistoryManager';
 import NotificationsHistoryOrder from './modules/admin/components/OrderHistory/components/NotificationsHistoryOrder';
 import AccountManager from './modules/admin/components/AccountManager/AccountManager';
+import ChatManager from './modules/admin/components/Chat/ChatManager';
 
 function App() {
   const router = createBrowserRouter([
@@ -90,6 +91,10 @@ function App() {
         {
           path: 'accounts',
           element: <AccountManager />
+        },
+        {
+          path: 'chats',
+          element: <ChatManager />
         }
       ]
     },
