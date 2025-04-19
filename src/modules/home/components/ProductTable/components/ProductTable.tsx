@@ -1,25 +1,16 @@
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { MoreVertical, Funnel } from 'lucide-react';
+import { MoreVertical, Pencil, Trash2 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Product, dataProducts } from './DataProducts';
 
-export default function BookingTable() {
+export default function ProductTable() {
     const [products, setProducts] = useState<Product[]>(dataProducts);
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [editProduct, setEditProduct] = useState<Product | null>(null);
-    const [isAddOpen, setIsAddOpen] = useState(false);
-    const [newProduct, setNewProduct] = useState({
-        name: '',
-        category: 'Coffee and Beverage',
-        price: 0,
-        stock: 0,
-        status: true,
-        image: ''
-    });
 
     const rowsPerPage = 10;
 
@@ -34,6 +25,7 @@ export default function BookingTable() {
         (currentPage - 1) * rowsPerPage,
         currentPage * rowsPerPage
     );
+
     // Handlers
     const handleStatusToggle = (id: number) => {
         setProducts(
@@ -42,6 +34,7 @@ export default function BookingTable() {
             )
         );
     };
+
     const handleDelete = (id: number) => {
         setProducts(products.filter((product) => product.id !== id));
     };
@@ -58,63 +51,62 @@ export default function BookingTable() {
         );
         setEditProduct(null);
     };
+
     return (
         <Table>
             <TableHeader>
                 <TableRow>
-                    <TableHead className="w-[10%] text-gray-600 uppercase">No</TableHead>
-                    <TableHead className="w-[30%] text-gray-600 uppercase">Product</TableHead>
-                    <TableHead className="w-[15%] text-gray-600 uppercase">Price</TableHead>
-                    <TableHead className="w-[15%] text-gray-600 uppercase">Stock</TableHead>
-                    <TableHead className="w-[15%] text-gray-600 uppercase">Status</TableHead>
-                    <TableHead className="w-[15%] text-gray-600 uppercase">Action</TableHead>
+                    <TableHead className="text-gray-500 font-semibold">Product</TableHead>
+                    <TableHead className="text-gray-500 font-semibold">Status</TableHead>
+                    <TableHead className="text-gray-500 font-semibold">Product ID</TableHead>
+                    <TableHead className="text-gray-500 font-semibold">Quantity</TableHead>
+                    <TableHead className="text-gray-500 font-semibold">Price</TableHead>
+                    <TableHead className="text-gray-500 font-semibold">Action</TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
                 {paginatedProducts.length > 0 ? (
                     paginatedProducts.map((product) => (
                         <TableRow key={product.id} className="hover:bg-gray-50">
-                            <TableCell className="w-[10%]">{product.id}</TableCell>
-                            <TableCell className="w-[30%]">
+                            <TableCell>
                                 <div className="flex items-center space-x-3">
                                     <img
                                         src={product.image}
                                         alt={product.name}
-                                        className="w-10 h-10 rounded-lg"
+                                        className="w-10 h-10 rounded-md"
                                     />
-                                    <div>
-                                        <p className="font-medium uppercase">{product.name}</p>
-                                        <p className="text-sm text-gray-500">{product.category}</p>
-                                    </div>
+                                    <span className="font-medium">{product.name}</span>
                                 </div>
                             </TableCell>
-                            <TableCell className="w-[15%]">${product.price.toFixed(2)}</TableCell>
-                            <TableCell className="w-[15%]">{product.stock}</TableCell>
-                            <TableCell className="w-[15%]">
-                                <Switch
-                                    checked={product.status}
-                                    onCheckedChange={() => handleStatusToggle(product.id)}
-                                    className="data-[state=checked]:bg-[#A27B5C]"
-                                />
+                            <TableCell>
+                                <span className="text-green-600 font-medium">
+                                    {product.status ? 'In Stock' : 'Out of Stock'}
+                                </span>
                             </TableCell>
-                            <TableCell className="w-[15%]">
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <Button variant="ghost" size="sm">
-                                            <MoreVertical className="h-4 w-4" />
-                                        </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent>
-                                        <DropdownMenuItem>Detail</DropdownMenuItem>
-                                        <DropdownMenuItem onClick={() => handleEdit(product)}>
-                                            Edit
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem>Adjust Price</DropdownMenuItem>
-                                        <DropdownMenuItem onClick={() => handleDelete(product.id)} className="text-red-600">
-                                            Delete
-                                        </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
+                            <TableCell>{product.id}</TableCell>
+                            <TableCell>{product.stock}</TableCell>
+                            <TableCell>${product.price.toFixed(2)}</TableCell>
+                            <TableCell>
+                                <div className="flex space-x-2">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="text-blue-600 border-blue-600"
+                                        onClick={() => handleEdit(product)}
+                                    >
+                                        <Pencil className="h-4 w-4 mr-1" />
+                                        Edit
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="text-orange-600 border-orange-600"
+                                        onClick={() => handleDelete(product.id)}
+                                    >
+                                        <Trash2 className="h-4 w-4 mr-1" />
+                                        Delete
+                                    </Button>
+                                </div>
                             </TableCell>
                         </TableRow>
                     ))
@@ -127,5 +119,5 @@ export default function BookingTable() {
                 )}
             </TableBody>
         </Table>
-    )
+    );
 }

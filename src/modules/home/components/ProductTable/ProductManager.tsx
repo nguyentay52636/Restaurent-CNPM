@@ -3,10 +3,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Funnel } from 'lucide-react';
 import { Product } from './components/DataProducts';
-import BookingTable from './components/ProductTable';
-import Pagination from './components/Pagination';
+
 import DialogAddProduct from './components/Dialog/DialogAddProduct';
 import DialogEditProduct from './components/Dialog/DialogEditProduct';
+import ProductTable from './components/ProductTable';
+import PaginationProduct from './components/PaginationProduct';
 
 
 export default function ProductManager() {
@@ -107,10 +108,10 @@ export default function ProductManager() {
             </div>
 
             {/* Table Section */}
-            <BookingTable />
+            <ProductTable />
 
             {/* Pagination Section */}
-            <Pagination
+            <PaginationProduct
                 currentPage={currentPage}
                 totalPages={totalPages}
                 rowsPerPage={rowsPerPage}

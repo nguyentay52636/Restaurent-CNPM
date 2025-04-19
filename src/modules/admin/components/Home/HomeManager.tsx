@@ -62,6 +62,30 @@ const menuItems: MenuItem[] = [
         rating: 2.0,
         imageUrl: '/images/images_foot/foot_4.png',
     },
+    {
+        id: 6,
+        name: 'Bison Burgers',
+        price: 50.0,
+        description: 'Beetroot, Potato, Bell Pepper, Sandwich Masala',
+        rating: 2.0,
+        imageUrl: '/images/images_foot/foot_4.png',
+    },
+    {
+        id: 6,
+        name: 'Bison Burgers',
+        price: 50.0,
+        description: 'Beetroot, Potato, Bell Pepper, Sandwich Masala',
+        rating: 2.0,
+        imageUrl: '/images/images_foot/foot_4.png',
+    },
+    {
+        id: 6,
+        name: 'Bison Burgers',
+        price: 50.0,
+        description: 'Beetroot, Potato, Bell Pepper, Sandwich Masala',
+        rating: 2.0,
+        imageUrl: '/images/images_foot/foot_4.png',
+    },
 ];
 
 interface CartItem extends MenuItem {
@@ -127,21 +151,29 @@ const HomeManager: React.FC = () => {
         <div className="min-h-screen bg-gray-100 font-sans">
             {/* Header */}
             <header className="bg-white shadow-sm p-4 flex justify-between items-center">
-                <h1 className="text-2xl font-bold text-blue-600">Pointsell</h1>
+                {/* Logo */}
+                <div className="flex items-center space-x-1">
+                    <h1 className="text-2xl font-bold text-black">Point</h1>
+                    <h1 className="text-2xl font-bold text-orange-500">sell</h1>
+                </div>
+
+                {/* Search and Notification */}
                 <div className="flex items-center space-x-4">
-                    <div className="relative">
+                    <div className="relative w-64">
                         <Input
                             type="text"
                             placeholder="Search Anything Here"
-                            className="pl-10"
+                            className="pl-10 w-full"
                         />
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                     </div>
+
                     <Button variant="outline" size="icon" className="bg-orange-500 text-white hover:bg-orange-600">
                         <Bell className="w-6 h-6" />
                     </Button>
                 </div>
             </header>
+
 
             {/* Main Content */}
             <main className="max-w-7xl mx-auto p-6">

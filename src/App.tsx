@@ -13,6 +13,9 @@ import { SetNewPasswordForm } from './modules/auth/components/ForgetPassword/Set
 import OrderManager from './modules/admin/components/Order/OrderManager';
 import ProductManager from './modules/home/components/ProductTable/ProductManager';
 import HomeManager from './modules/admin/components/Home/HomeManager';
+import OrderHistoryManager from './modules/admin/components/OrderHistory/OrderHistoryManager';
+import NotificationsHistoryOrder from './modules/admin/components/OrderHistory/components/NotificationsHistoryOrder';
+import AccountManager from './modules/admin/components/AccountManager/AccountManager';
 
 function App() {
   const router = createBrowserRouter([
@@ -76,6 +79,18 @@ function App() {
           path: 'order',
           element: <OrderManager />
         },
+        {
+          path: 'order-history',
+          element: <OrderHistoryManager />
+        },
+        {
+          path: 'notifications',
+          element: <NotificationsHistoryOrder />
+        },
+        {
+          path: 'accounts',
+          element: <AccountManager />
+        }
       ]
     },
   ]);
