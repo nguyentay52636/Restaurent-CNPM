@@ -31,252 +31,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Order, OrderItem, orders as sampleOrders } from "./DataOrder";
+import OrderTable from "./components/OrderTable";
+import PaginationOrder from "./components/PaginationOrder";
 
-// Interfaces based on the database schema
-interface Product {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-}
-
-interface OrderItem {
-  order_id: number;
-  product_id: number;
-  quantity: number;
-  price: number;
-  product: Product;
-}
-
-interface User {
-  id: number;
-  full_name: string;
-  address: string;
-}
-
-interface Order {
-  id: number;
-  user_id: number;
-  status: "New Order" | "Processed" | "Canceled";
-  created_at: string;
-  user: User;
-  order_items: OrderItem[];
-}
 
 export default function OrderManager() {
   // Sample data
-  const [orders, setOrders] = useState<Order[]>([
-    {
-      id: 1001,
-      user_id: 1,
-      status: "New Order",
-      created_at: "2023-04-29",
-      user: {
-        id: 1,
-        full_name: "Devon Lane",
-        address: "3517 W. Gray St. Utica, Pennsylvania 57867",
-      },
-      order_items: [
-        {
-          order_id: 1001,
-          product_id: 1,
-          quantity: 1,
-          price: 293,
-          product: {
-            id: 1,
-            name: "RISTRETTO BIANCO",
-            description: "A strong coffee",
-            price: 293,
-          },
-        },
-      ],
-    },
-    {
-      id: 1002,
-      user_id: 2,
-      status: "New Order",
-      created_at: "2023-04-29",
-      user: {
-        id: 2,
-        full_name: "Arlene McCoy",
-        address: "2972 Westheimer Rd. Santa Ana, Illinois 85486",
-      },
-      order_items: [
-        {
-          order_id: 1002,
-          product_id: 1,
-          quantity: 2,
-          price: 293,
-          product: {
-            id: 1,
-            name: "RISTRETTO BIANCO",
-            description: "A strong coffee",
-            price: 293,
-          },
-        },
-        {
-          order_id: 1002,
-          product_id: 2,
-          quantity: 3,
-          price: 188,
-          product: {
-            id: 2,
-            name: "ICED CREAMY LATTE",
-            description: "A refreshing latte",
-            price: 188,
-          },
-        },
-      ],
-    },
-    {
-      id: 1003,
-      user_id: 3,
-      status: "New Order",
-      created_at: "2023-04-29",
-      user: {
-        id: 3,
-        full_name: "Leslie Alexander",
-        address: "2715 Ash Dr. San Jose, South Dakota 83475",
-      },
-      order_items: [
-        {
-          order_id: 1003,
-          product_id: 1,
-          quantity: 2,
-          price: 293,
-          product: {
-            id: 1,
-            name: "RISTRETTO BIANCO",
-            description: "A strong coffee",
-            price: 293,
-          },
-        },
-        {
-          order_id: 1003,
-          product_id: 3,
-          quantity: 2,
-          price: 100,
-          product: {
-            id: 3,
-            name: "CAPPUCINO",
-            description: "A classic cappuccino",
-            price: 100,
-          },
-        },
-      ],
-    },
-    {
-      id: 1004,
-      user_id: 4,
-      status: "Processed",
-      created_at: "2023-04-29",
-      user: {
-        id: 4,
-        full_name: "Savannah Nguyen",
-        address: "3517 W. Gray St. Utica, Pennsylvania 57867",
-      },
-      order_items: [
-        {
-          order_id: 1004,
-          product_id: 1,
-          quantity: 1,
-          price: 293,
-          product: {
-            id: 1,
-            name: "RISTRETTO BIANCO",
-            description: "A strong coffee",
-            price: 293,
-          },
-        },
-        {
-          order_id: 1004,
-          product_id: 2,
-          quantity: 2,
-          price: 188,
-          product: {
-            id: 2,
-            name: "ICED CREAMY LATTE",
-            description: "A refreshing latte",
-            price: 188,
-          },
-        },
-      ],
-    },
-    {
-      id: 1005,
-      user_id: 5,
-      status: "Processed",
-      created_at: "2023-04-29",
-      user: {
-        id: 5,
-        full_name: "Courtney Henry",
-        address: "4140 Parker Rd. Allentown, New Mexico 31134",
-      },
-      order_items: [
-        {
-          order_id: 1005,
-          product_id: 1,
-          quantity: 1,
-          price: 293,
-          product: {
-            id: 1,
-            name: "RISTRETTO BIANCO",
-            description: "A strong coffee",
-            price: 293,
-          },
-        },
-        {
-          order_id: 1005,
-          product_id: 3,
-          quantity: 2,
-          price: 100,
-          product: {
-            id: 3,
-            name: "CAPPUCINO",
-            description: "A classic cappuccino",
-            price: 100,
-          },
-        },
-      ],
-    },
-    {
-      id: 1006,
-      user_id: 6,
-      status: "Canceled",
-      created_at: "2023-04-29",
-      user: {
-        id: 6,
-        full_name: "Darrell Steward",
-        address: "1901 Thornridge Cir.",
-      },
-      order_items: [
-        {
-          order_id: 1006,
-          product_id: 1,
-          quantity: 1,
-          price: 293,
-          product: {
-            id: 1,
-            name: "RISTRETTO BIANCO",
-            description: "A strong coffee",
-            price: 293,
-          },
-        },
-        {
-          order_id: 1006,
-          product_id: 2,
-          quantity: 1,
-          price: 489,
-          product: {
-            id: 2,
-            name: "ICED CREAMY LATTE",
-            description: "A refreshing latte",
-            price: 489,
-          },
-        },
-      ],
-    },
-  ]);
+  const [orders, setOrders] = useState<Order[]>(sampleOrders);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
@@ -370,79 +132,12 @@ export default function OrderManager() {
         </div>
       </div>
 
-      {/* Table Section */}
-      <div className="border rounded-lg overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[50px]">
-                <Checkbox />
-              </TableHead>
-              <TableHead>Mã hoá đơn</TableHead>
-              <TableHead>Khách hàng</TableHead>
-              <TableHead>Sản phẩm</TableHead>
-              <TableHead>Giá</TableHead>
-              <TableHead>Trạng thái</TableHead>
-              <TableHead className="w-[50px]">Thao tác</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {paginatedOrders.map((order) => (
-              <TableRow key={order.id}>
-                <TableCell>
-                  <Checkbox />
-                </TableCell>
-                <TableCell>
-                  <div>#00{order.id}</div>
-                  <div className="text-sm text-muted-foreground">
-                    {new Date(order.created_at).toLocaleDateString("en-US", {
-                      month: "long",
-                      day: "numeric",
-                      year: "numeric",
-                    })}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div>{order.user.full_name}</div>
-                  <div className="text-sm text-muted-foreground">{order.user.address}</div>
-                </TableCell>
-                <TableCell>{order.order_items.length}</TableCell>
-                <TableCell>${calculateTotalAmount(order.order_items)}</TableCell>
-                <TableCell>
-                  <Badge
-                    variant={
-                      order.status === "New Order"
-                        ? "default"
-                        : order.status === "Processed"
-                          ? "secondary"
-                          : "destructive"
-                    }
-                  >
-                    {order.status}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm">
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem onClick={() => handleViewDetails(order)}>
-                        Xem chi tiết
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleDelete(order.id)}>
-                        Xoá yêu cầu
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      <OrderTable
+        paginatedOrders={paginatedOrders}
+        calculateTotalAmount={calculateTotalAmount}
+        handleViewDetails={handleViewDetails}
+        handleDelete={handleDelete}
+      />
 
       {/* Order Details Dialog */}
       <Dialog open={!!selectedOrder} onOpenChange={() => setSelectedOrder(null)}>
@@ -571,32 +266,11 @@ export default function OrderManager() {
       </Dialog>
 
       {/* Pagination Section */}
-      <div className="flex justify-between items-center mt-6">
-        <div>
-          <span className="text-gray-600">Rows per page: {rowsPerPage}</span>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-          >
-            Previous
-          </Button>
-          <span className="text-gray-600">
-            {currentPage} of {totalPages}
-          </span>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-          >
-            answeredNext
-          </Button>
-        </div>
-      </div>
+      <PaginationOrder
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 }

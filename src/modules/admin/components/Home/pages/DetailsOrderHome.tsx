@@ -135,7 +135,7 @@ export default function DetailsOrderHome({
                     </div>
 
                     {/* Customer Details Form (Read-Only) */}
-                    <div className="my-4 flex items-center justify-between">
+                    <div className="my-8 flex items-center justify-between">
                         <div className="">
                             <Select
                                 onValueChange={handleCustomerSelect}

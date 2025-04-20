@@ -9,6 +9,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { DialogTrigger } from '@radix-ui/react-dialog';
 
 interface DialogNewCustomerProps {
     open: boolean;
@@ -53,96 +54,82 @@ export default function DialogNewCustomer({ open, onClose, onSubmit }: DialogNew
 
     return (
         <>
-            <Button className='text-white hover:bg-orange-500 cursor-pointer'>
-                Khách hàng mới
-            </Button>
-            <Dialog open={open} onOpenChange={onClose}>
-
-                <DialogContent className="sm:max-w-[425px]">
+            <Dialog >
+                <DialogTrigger>
+                    <Button className='text-white hover:bg-orange-500 cursor-pointer'>
+                        Khách hàng mới
+                    </Button>
+                </DialogTrigger>
+                <DialogContent >
                     <DialogHeader>
-                        <DialogTitle>Add New Customer</DialogTitle>
+                        <DialogTitle>Thêm Khách Hàng Mới</DialogTitle>
                     </DialogHeader>
                     <form onSubmit={handleSubmit}>
-                        <div className="grid grid-cols-3 gap-4 py-4">
+                        <div className="grid grid-cols-2 gap-8 py-8">
                             <div>
-                                <Label htmlFor="recipient">Recipient</Label>
+                                <Label htmlFor="recipient">Họ và tên</Label>
                                 <Input
                                     id="recipient"
                                     value={formData.recipient}
                                     onChange={handleChange}
-                                    placeholder="Enter Name"
-                                // readOnly // Uncomment to make read-only
+                                    placeholder="Nhập họ và tên"
                                 />
                             </div>
                             <div>
-                                <Label htmlFor="gender">Gender</Label>
+                                <Label htmlFor="gender">Giới tính</Label>
                                 <Input
                                     id="gender"
                                     value={formData.gender}
                                     onChange={handleChange}
-                                    placeholder="Enter Gender"
-                                // readOnly
+                                    placeholder="Nhập giới tính"
                                 />
                             </div>
                             <div>
-                                <Label htmlFor="city">City</Label>
+                                <Label htmlFor="city">Thành phố</Label>
                                 <Input
                                     id="city"
                                     value={formData.city}
                                     onChange={handleChange}
-                                    placeholder="Enter City"
-                                // readOnly
+                                    placeholder="Nhập thành phố"
                                 />
                             </div>
                             <div>
-                                <Label htmlFor="phoneNumber">Phone Number</Label>
+                                <Label htmlFor="phoneNumber">Số điện thoại</Label>
                                 <Input
                                     id="phoneNumber"
                                     value={formData.phoneNumber}
                                     onChange={handleChange}
-                                    placeholder="Enter Phone Number"
-                                // readOnly
+                                    placeholder="Nhập số điện thoại"
                                 />
                             </div>
                             <div>
-                                <Label htmlFor="email">Email Address</Label>
+                                <Label htmlFor="email">Địa chỉ email</Label>
                                 <Input
                                     id="email"
                                     value={formData.email}
                                     onChange={handleChange}
-                                    placeholder="Enter Email Address"
-                                // readOnly
+                                    placeholder="Nhập địa chỉ email"
                                 />
                             </div>
-                            <div>
-                                <Label htmlFor="customerId">Customer ID</Label>
-                                <Input
-                                    id="customerId"
-                                    value={formData.customerId}
-                                    onChange={handleChange}
-                                    placeholder="Enter Customer ID"
-                                // readOnly
-                                />
-                            </div>
-                            <div className="col-span-3">
-                                <Label htmlFor="address">Address</Label>
+                            <div className="">
+                                <Label htmlFor="address">Địa chỉ</Label>
                                 <Input
                                     id="address"
                                     value={formData.address}
                                     onChange={handleChange}
-                                    placeholder="Enter Address"
-                                // readOnly
+                                    placeholder="Nhập địa chỉ"
                                 />
                             </div>
                         </div>
                         <DialogFooter>
-                            <Button type="button" variant="outline" onClick={onClose}>
-                                Cancel
+                            <Button type="button" variant="outline" onClick={onClose} className='cursor-pointer'>
+                                Hủy bỏ
                             </Button>
-                            <Button type="submit">Add Customer</Button>
+                            <Button className='text-white hover:bg-orange-500 cursor-pointer' type="submit">Thêm khách hàng</Button>
                         </DialogFooter>
                     </form>
                 </DialogContent>
-            </Dialog></>
+            </Dialog>
+        </>
     );
 }
