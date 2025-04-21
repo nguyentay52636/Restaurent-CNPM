@@ -1,6 +1,7 @@
 "use client"
 
-import { ChevronRight, ChevronsRight, type LucideIcon } from "lucide-react"
+import { useEffect, useState } from "react"
+import { ChevronsRight, type LucideIcon } from "lucide-react"
 
 import {
   Collapsible,
@@ -32,10 +33,31 @@ export function NavMain({
     }[]
   }[]
 }) {
+  const [isCollapsed, setIsCollapsed] = useState(false)
+
+  // Lắng nghe DOM class thay đổi (ví dụ .collapsed trên body)
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      const hasCollapsedClass = document.body.classList.contains("collapsed")
+      setIsCollapsed(hasCollapsedClass)
+    })
+
+    observer.observe(document.body, { attributes: true, attributeFilter: ["class"] })
+
+    // cleanup
+    return () => observer.disconnect()
+  }, [])
+
   return (
-    <SidebarGroup>
+    <SidebarGroup className="h-full flex flex-col justify-around">
       <SidebarGroupLabel>Tổng quan</SidebarGroupLabel>
-      <SidebarMenu>
+      <SidebarMenu
+        className={
+          isCollapsed
+            ? "flex flex-col gap-4 justify-around items-center !h-full"
+            : "h-full flex flex-col justify-around"
+        }
+      >
         {items.map((item) => (
           <Collapsible
             key={item.title}
@@ -45,8 +67,8 @@ export function NavMain({
           >
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
-                <SidebarMenuButton tooltip={item.title} >
-                  {item.icon && <item.icon />}
+                <SidebarMenuButton tooltip={item.title} className="text-center">
+                  {item.icon && <item.icon className="!size-6" />}
                   <span>{item.title}</span>
 
                   <ChevronsRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
