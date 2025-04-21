@@ -56,12 +56,12 @@ export default function ProductTable() {
         <Table>
             <TableHeader>
                 <TableRow>
-                    <TableHead className="text-gray-500 font-semibold">Product</TableHead>
-                    <TableHead className="text-gray-500 font-semibold">Status</TableHead>
-                    <TableHead className="text-gray-500 font-semibold">Product ID</TableHead>
-                    <TableHead className="text-gray-500 font-semibold">Quantity</TableHead>
-                    <TableHead className="text-gray-500 font-semibold">Price</TableHead>
-                    <TableHead className="text-gray-500 font-semibold">Action</TableHead>
+                    <TableHead className="text-gray-500 font-semibold">Sản phẩm</TableHead>
+                    <TableHead className="text-gray-500 font-semibold">Trạng thái</TableHead>
+                    <TableHead className="text-gray-500 font-semibold">Mã sản phẩm</TableHead>
+                    <TableHead className="text-gray-500 font-semibold">Số lượng</TableHead>
+                    <TableHead className="text-gray-500 font-semibold">Giá</TableHead>
+                    <TableHead className="text-gray-500 font-semibold">Thao tác</TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
@@ -80,12 +80,12 @@ export default function ProductTable() {
                             </TableCell>
                             <TableCell>
                                 <span className="text-green-600 font-medium">
-                                    {product.status ? 'In Stock' : 'Out of Stock'}
+                                    {product.status ? 'Còn hàng' : 'Hết hàng'}
                                 </span>
                             </TableCell>
                             <TableCell>{product.id}</TableCell>
                             <TableCell>{product.stock}</TableCell>
-                            <TableCell>${product.price.toFixed(2)}</TableCell>
+                            <TableCell>{product.price.toLocaleString('vi-VN')}đ</TableCell>
                             <TableCell>
                                 <div className="flex space-x-2">
                                     <Button
@@ -95,7 +95,7 @@ export default function ProductTable() {
                                         onClick={() => handleEdit(product)}
                                     >
                                         <Pencil className="h-4 w-4 mr-1" />
-                                        Edit
+                                        Sửa
                                     </Button>
                                     <Button
                                         variant="outline"
@@ -104,7 +104,7 @@ export default function ProductTable() {
                                         onClick={() => handleDelete(product.id)}
                                     >
                                         <Trash2 className="h-4 w-4 mr-1" />
-                                        Delete
+                                        Xóa
                                     </Button>
                                 </div>
                             </TableCell>
@@ -113,7 +113,7 @@ export default function ProductTable() {
                 ) : (
                     <TableRow>
                         <TableCell colSpan={6} className="text-center text-gray-500">
-                            No products found
+                            Không tìm thấy sản phẩm nào
                         </TableCell>
                     </TableRow>
                 )}

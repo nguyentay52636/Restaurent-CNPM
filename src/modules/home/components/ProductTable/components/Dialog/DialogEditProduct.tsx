@@ -28,55 +28,55 @@ const DialogEditProduct: React.FC<DialogEditProductProps> = ({
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Edit Product</DialogTitle>
+                    <DialogTitle>Chỉnh Sửa Sản Phẩm</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4">
                     <div>
-                        <Label htmlFor="edit-name">Product Name</Label>
+                        <Label htmlFor="edit-name">Tên Sản Phẩm</Label>
                         <Input
                             id="edit-name"
                             value={editProduct.name}
                             onChange={(e) => onEditProductChange({ ...editProduct, name: e.target.value })}
-                            placeholder="Enter product name"
-                            className="border-gray-300 focus:border-[#A27B5C] transition-colors"
+                            placeholder="Nhập tên sản phẩm"
+                            className="border-gray-300 focus:border-[#F67F20] transition-colors"
                         />
                     </div>
                     <div>
-                        <Label htmlFor="edit-category">Category</Label>
+                        <Label htmlFor="edit-category">Danh Mục</Label>
                         <Select
                             value={editProduct.category}
                             onValueChange={(value) =>
                                 onEditProductChange({ ...editProduct, category: value })
                             }
                         >
-                            <SelectTrigger className="border-gray-300 focus:border-[#A27B5C]">
-                                <SelectValue placeholder="Select category" />
+                            <SelectTrigger className="border-gray-300 focus:border-[#F67F20]">
+                                <SelectValue placeholder="Chọn danh mục" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="Coffee and Beverage">Coffee and Beverage</SelectItem>
-                                <SelectItem value="Food and Snack">Food and Snack</SelectItem>
+                                <SelectItem value="Coffee and Beverage">Cà Phê và Đồ Uống</SelectItem>
+                                <SelectItem value="Food and Snack">Đồ Ăn và Đồ Ăn Nhẹ</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
                     <div>
-                        <Label htmlFor="edit-price">Price</Label>
+                        <Label htmlFor="edit-price">Giá</Label>
                         <Input
                             id="edit-price"
                             type="number"
                             value={editProduct.price}
                             onChange={(e) => onEditProductChange({ ...editProduct, price: parseFloat(e.target.value) })}
-                            placeholder="Enter price"
+                            placeholder="Nhập giá"
                             className="border-gray-300 focus:border-[#A27B5C] transition-colors"
                         />
                     </div>
                     <div>
-                        <Label htmlFor="edit-stock">Stock</Label>
+                        <Label htmlFor="edit-stock">Số Lượng</Label>
                         <Input
                             id="edit-stock"
                             type="number"
                             value={editProduct.stock}
                             onChange={(e) => onEditProductChange({ ...editProduct, stock: parseInt(e.target.value) })}
-                            placeholder="Enter stock"
+                            placeholder="Nhập số lượng"
                             className="border-gray-300 focus:border-[#A27B5C] transition-colors"
                         />
                     </div>
@@ -88,13 +88,13 @@ const DialogEditProduct: React.FC<DialogEditProductProps> = ({
                             }
                             className="data-[state=checked]:bg-[#A27B5C]"
                         />
-                        <Label>Status</Label>
+                        <Label>Trạng Thái</Label>
                     </div>
                     <Button
                         onClick={onSaveEdit}
                         className="w-full bg-[#A27B5C] hover:bg-[#8c674b] text-white"
                     >
-                        Save Changes
+                        Lưu Thay Đổi
                     </Button>
                 </div>
             </DialogContent>
