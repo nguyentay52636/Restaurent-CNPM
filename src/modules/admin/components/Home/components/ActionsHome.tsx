@@ -12,9 +12,10 @@ export default function ActionsHome() {
         { name: 'Nước ép', icon: '🍦', itemCount: 0 },
         { name: 'Cơm', icon: '🍚', itemCount: 0 },
         { name: 'Coffee', icon: '☕', itemCount: 0 },
-        { name: 'Đồ ăn ', icon: '🍿', itemCount: 0 },
-        { name: 'Salad', icon: '��', itemCount: 0 },
+        { name: 'Đồ ăn', icon: '🍿', itemCount: 0 },
+        { name: 'Salad', icon: '🥗', itemCount: 0 },
     ];
+
     return (
         <>
             <div className="">
@@ -40,31 +41,41 @@ export default function ActionsHome() {
                             <Bell className="w-6 h-6" />
                         </Button>
                     </div>
-
-
                 </header>
             </div>
             <h1 className="text-2xl font-bold text-black m-6">Chọn danh mục</h1>
             <div className="flex justify-center">
                 <section className="my-8 flex justify-center items-center">
-                    <div className="flex flex-wrap gap-4">
+                    <div className="flex flex-wrap gap-5">
                         {categories.map((category, index) => (
                             <div
                                 key={index}
-                                className={`flex flex-col items-center justify-center w-32 h-32 rounded-lg shadow-sm border border-gray-200 bg-white transition-all cursor-pointer duration-200 hover:bg-gray-50 ${selectedCategory === category.name ? 'bg-gray-100' : ''
+                                className={`flex flex-col items-center justify-center w-32 h-32 rounded-lg shadow-sm border transition-all duration-200 cursor-pointer
+                                    ${selectedCategory === category.name
+                                        ? 'border-orange-500 bg-orange-50 shadow-md scale-105'
+                                        : 'border-gray-200 bg-white hover:bg-gray-50 hover:border-orange-300'
                                     }`}
                                 onClick={() => setSelectedCategory(category.name)}
                                 aria-pressed={selectedCategory === category.name}
                             >
-                                <span className="text-3xl mb-2">{category.icon}</span>
-                                <span className="text-sm font-semibold text-gray-800">{category.name}</span>
-                                <span className="text-xs text-gray-500">{category.itemCount} Item{category.itemCount !== 1 ? 's' : ''}</span>
+                                <span className="text-5xl mb-2">{category.icon}</span>
+                                <span className={`text-sm font-semibold ${selectedCategory === category.name
+                                    ? 'text-orange-700'
+                                    : 'text-gray-800'
+                                    }`}>
+                                    {category.name}
+                                </span>
+                                <span className={`text-xs ${selectedCategory === category.name
+                                    ? 'text-orange-600'
+                                    : 'text-gray-500'
+                                    }`}>
+                                    {category.itemCount} Item{category.itemCount !== 1 ? 's' : ''}
+                                </span>
                             </div>
                         ))}
                     </div>
                 </section>
             </div>
-
         </>
     )
 }
