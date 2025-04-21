@@ -1,11 +1,9 @@
 import * as React from "react"
-import { ChevronsUpDown, Plus, Coffee, ChevronLeft, PanelLeftClose, ChevronsRight } from "lucide-react"
+import { ChevronsRight } from "lucide-react"
 
 import {
   DropdownMenu,
-  DropdownMenuContent,
 
-  DropdownMenuSeparator,
 
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
@@ -21,7 +19,7 @@ import { cn } from "@/lib/utils"
 // Sample teams data
 const teams = [
   {
-    name: "SGU COFFEE",
+    name: "SGU restaurant",
     logo: "/images/Logo.png",
   },
 ]
@@ -45,12 +43,18 @@ export function TeamSwitcher() {
               size="lg"
               className="data-[state=open]:bg-sidebar-accent items-center gap-2 data-[state=open]:text-sidebar-accent-foreground py-10 bg-bg-secondary"
             >
-              <div className="z-1 text-sidebar-primary-foreground flex aspect-square size-17 items-center justify-center rounded-lg">
-                <img alt="SGU Logo" className="size-12" src={activeTeam.logo} />
+              <div className="z-1 text-sidebar-primary-foreground flex aspect-square size-14 items-center justify-center rounded-lg">
+                <img
+                  alt="SGU Logo"
+                  src={activeTeam.logo}
+                  className={cn(open ? "w-12 h-12" : "w-6! h-6!", "transition-all duration-200 object-contain")}
+                />
               </div>
-              <div className="grid flex-1 text-left  leading-tight">
-                <span className="truncate font-bold text-md text-gray-600">{activeTeam.name}</span>
-              </div>
+              {open && (
+                <div className="grid flex-1 text-left leading-tight">
+                  <span className="truncate font-bold text-md text-gray-600">{activeTeam.name}</span>
+                </div>
+              )}
               <SidebarTrigger className="cursor-pointer  transition-all duration-200 p-4!">
                 <ChevronsRight className={cn(" size-8 font-medium bg-white rounded-full p-1 text-[#A27B5C]", {
                   "rotate-180": open

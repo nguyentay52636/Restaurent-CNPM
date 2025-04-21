@@ -35,7 +35,7 @@ export function NavMain({
 }) {
   const [isCollapsed, setIsCollapsed] = useState(false)
 
-  // Lắng nghe DOM class thay đổi (ví dụ .collapsed trên body)
+
   useEffect(() => {
     const observer = new MutationObserver(() => {
       const hasCollapsedClass = document.body.classList.contains("collapsed")
@@ -54,7 +54,7 @@ export function NavMain({
       <SidebarMenu
         className={
           isCollapsed
-            ? "flex flex-col gap-4 justify-around items-center !h-full"
+            ? "flex flex-col gap-4 justify-around items-center !h-full red-600"
             : "h-full flex flex-col justify-around"
         }
       >
@@ -63,12 +63,12 @@ export function NavMain({
             key={item.title}
             asChild
             defaultOpen={item.isActive}
-            className="group/collapsible"
+            className="group/collapsible mx-2! w-full!"
           >
             <SidebarMenuItem>
-              <CollapsibleTrigger asChild>
-                <SidebarMenuButton tooltip={item.title} className="text-center">
-                  {item.icon && <item.icon className="!size-6" />}
+              <CollapsibleTrigger asChild className="w-full">
+                <SidebarMenuButton tooltip={item.title} className="text-center  hover:bg-primary! w-full!">
+                  {item.icon && <item.icon className="!size-6.5  text-center! font-bold! hover:text-white! cursor-pointer!" />}
                   <span>{item.title}</span>
 
                   <ChevronsRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
