@@ -136,7 +136,7 @@ export function RegisterForm({
 
         <Button
           type="submit"
-          className="w-full bg-[#5A3E2B] text-white hover:bg-[#4A3223] cursor-pointer"
+          className="w-full bg-[#C95D2F] text-white hover:bg-[#4A3223] cursor-pointer"
         >
           Đăng Ký
         </Button>
