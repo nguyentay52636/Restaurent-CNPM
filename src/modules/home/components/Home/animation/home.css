@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+@keyframes marquee {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.marquee-animation {
+  display: flex;
+  justify-content: space-evenly; 
+  animation: marquee 15s linear infinite;
+  gap: 16px; 
+  font-family: 'Poppins', sans-serif;
+}
+
+.button-icon {
+  transition: transform 0.3s ease-in-out;
+}
+
+.button-icon:hover {
+  transform: scale(1.2); 
+}
+
+/* Tăng size cho button */
+.button-text {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600; 
+  letter-spacing: 1px;
+}
