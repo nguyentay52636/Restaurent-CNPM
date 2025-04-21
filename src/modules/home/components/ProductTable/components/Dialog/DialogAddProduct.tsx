@@ -33,79 +33,79 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
             <DialogTrigger asChild>
-                <Button className="bg-[#A27B5C] hover:bg-[#8c674b] text-white transition-colors">
-                    + Add New Product
+                <Button className="cursor-pointer bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 flex items-center gap-2">
+                    <span className="text-lg">+</span> Thêm Sản Phẩm Mới
                 </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="sm:max-w-md p-6 bg-white rounded-lg shadow-lg">
                 <DialogHeader>
-                    <DialogTitle>Add New Product</DialogTitle>
+                    <DialogTitle className="text-xl font-bold text-gray-900">Thêm Sản Phẩm Mới</DialogTitle>
                 </DialogHeader>
-                <div className="space-y-4">
-                    <div>
-                        <Label htmlFor="name">Product Name</Label>
+                <div className="space-y-5 mt-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="name" className="text-sm font-medium text-gray-700">Tên Sản Phẩm</Label>
                         <Input
                             id="name"
                             value={newProduct.name}
                             onChange={(e) => onNewProductChange({ ...newProduct, name: e.target.value })}
-                            placeholder="Enter product name"
-                            className="border-gray-300 focus:border-[#A27B5C] transition-colors"
+                            placeholder="Nhập tên sản phẩm"
+                            className="border-gray-300 focus:border-orange-500 focus:ring-orange-500 transition-colors rounded-md shadow-sm"
                         />
                     </div>
-                    <div>
-                        <Label htmlFor="category">Category</Label>
+                    <div className="space-y-2">
+                        <Label htmlFor="category" className="text-sm font-medium text-gray-700">Danh Mục</Label>
                         <Select
                             value={newProduct.category}
                             onValueChange={(value) =>
                                 onNewProductChange({ ...newProduct, category: value })
                             }
                         >
-                            <SelectTrigger className="border-gray-300 focus:border-[#A27B5C]">
-                                <SelectValue placeholder="Select category" />
+                            <SelectTrigger className="border-gray-300 focus:border-orange-500 focus:ring-orange-500 rounded-md shadow-sm">
+                                <SelectValue placeholder="Chọn danh mục" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="Coffee and Beverage">Coffee and Beverage</SelectItem>
-                                <SelectItem value="Food and Snack">Food and Snack</SelectItem>
+                                <SelectItem value="Coffee and Beverage">Cà Phê và Đồ Uống</SelectItem>
+                                <SelectItem value="Food and Snack">Đồ Ăn và Đồ Ăn Nhẹ</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
-                    <div>
-                        <Label htmlFor="price">Price</Label>
+                    <div className="space-y-2">
+                        <Label htmlFor="price" className="text-sm font-medium text-gray-700">Giá</Label>
                         <Input
                             id="price"
                             type="number"
                             value={newProduct.price}
                             onChange={(e) => onNewProductChange({ ...newProduct, price: parseFloat(e.target.value) })}
-                            placeholder="Enter price"
-                            className="border-gray-300 focus:border-[#A27B5C] transition-colors"
+                            placeholder="Nhập giá"
+                            className="border-gray-300 focus:border-orange-500 focus:ring-orange-500 transition-colors rounded-md shadow-sm"
                         />
                     </div>
-                    <div>
-                        <Label htmlFor="stock">Stock</Label>
+                    <div className="space-y-2">
+                        <Label htmlFor="stock" className="text-sm font-medium text-gray-700">Số Lượng</Label>
                         <Input
                             id="stock"
                             type="number"
                             value={newProduct.stock}
                             onChange={(e) => onNewProductChange({ ...newProduct, stock: parseInt(e.target.value) })}
-                            placeholder="Enter stock"
-                            className="border-gray-300 focus:border-[#A27B5C] transition-colors"
+                            placeholder="Nhập số lượng"
+                            className="border-gray-300 focus:border-orange-500 focus:ring-orange-500 transition-colors rounded-md shadow-sm"
                         />
                     </div>
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-3">
                         <Switch
                             checked={newProduct.status}
                             onCheckedChange={(checked) =>
                                 onNewProductChange({ ...newProduct, status: checked })
                             }
-                            className="data-[state=checked]:bg-[#A27B5C]"
+                            className="data-[state=checked]:bg-orange-500 focus:ring-orange-500"
                         />
-                        <Label>Status</Label>
+                        <Label className="text-sm font-medium text-gray-700">Trạng Thái</Label>
                     </div>
                     <Button
                         onClick={onAddProduct}
-                        className="w-full bg-[#A27B5C] hover:bg-[#8c674b] text-white"
+                        className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 rounded-md shadow-sm transition-colors duration-200"
                     >
-                        Add Product
+                        Thêm Sản Phẩm
                     </Button>
                 </div>
             </DialogContent>

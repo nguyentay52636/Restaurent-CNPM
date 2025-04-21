@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Search, Bell } from 'lucide-react';
+
 
 import CartPanel from '../components/CartPanel';
 import DetailsOrderHome from './DetailsOrderHome';
 import { MenuItem as MenuItemType, menuItems } from '../components/MenuData';
 import MenuItem from '../components/MenuItem';
+import ActionsHome from '../components/ActionsHome';
 
 interface CartItem extends MenuItemType {
   quantity: number;
@@ -92,29 +91,7 @@ const HomeManager: React.FC = () => {
       ) : (
         <>
           {/* Header */}
-          <header className="bg-white shadow-sm p-4 flex justify-between items-center">
-            {/* Logo */}
-            <div className="flex items-center space-x-1">
-              <h1 className="text-2xl font-bold text-black">Point</h1>
-              <h1 className="text-2xl font-bold text-orange-500">sell</h1>
-            </div>
-
-            {/* Search and Notification */}
-            <div className="flex items-center space-x-4">
-              <div className="relative w-64">
-                <Input
-                  type="text"
-                  placeholder="Tìm kiếm món ăn..."
-                  className="pl-10 w-full"
-                />
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              </div>
-
-              <Button variant="outline" size="icon" className="bg-orange-500 text-white hover:bg-orange-600">
-                <Bell className="w-6 h-6" />
-              </Button>
-            </div>
-          </header>
+          <ActionsHome />
 
           {/* Main Content */}
           <main className="max-w-7xl mx-auto p-6">
@@ -144,14 +121,7 @@ const HomeManager: React.FC = () => {
             handlePayment={handlePayment}
           />
 
-          {/* Payment Selection Modal */}
-          {/* <SelectPayment
-            onSelectPayment={handlePaymentMethodSelect}
-            onClose={() => setIsPaymentModalOpen(false)}
-            open={isPaymentModalOpen}
-            cart={cart}
-            total={total}
-          /> */}
+
         </>
       )}
     </div>
