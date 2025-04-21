@@ -17,6 +17,7 @@ import NotificationsHistoryOrder from './modules/admin/components/OrderHistory/c
 import AccountManager from './modules/admin/components/AccountManager/AccountManager';
 import ChatManager from './modules/admin/components/Chat/ChatManager';
 import OrderManager from './modules/admin/components/Order/OrderManager';
+import SetATable from './modules/admin/components/SetATable';
 
 function App() {
   const router = createBrowserRouter([
@@ -34,7 +35,6 @@ function App() {
           path: 'about',
           element: <h1>About</h1>,
         },
-
       ],
     },
     {
@@ -43,25 +43,25 @@ function App() {
       children: [
         {
           path: 'login',
-          element: <LoginForm />
+          element: <LoginForm />,
         },
         {
           path: 'register',
-          element: <RegisterForm />
+          element: <RegisterForm />,
         },
         {
           path: 'forget-password',
-          element: <ForgetPasswordForm />
+          element: <ForgetPasswordForm />,
         },
         {
           path: 'confirm-password',
-          element: <ComfirmPassword />
+          element: <ComfirmPassword />,
         },
         {
           path: 'new-password',
-          element: <SetNewPasswordForm />
-        }
-      ]
+          element: <SetNewPasswordForm />,
+        },
+      ],
     },
     // Admin layout
     {
@@ -70,33 +70,37 @@ function App() {
       children: [
         {
           path: 'home',
-          element: <HomeManager />
+          element: <HomeManager />,
         },
         {
           path: 'products',
-          element: <ProductManager />
+          element: <ProductManager />,
         },
         {
           path: 'order',
-          element: <OrderManager />
+          element: <OrderManager />,
         },
         {
           path: 'order-history',
-          element: <OrderHistoryManager />
+          element: <OrderHistoryManager />,
         },
         {
           path: 'notifications',
-          element: <NotificationsHistoryOrder />
+          element: <NotificationsHistoryOrder />,
         },
         {
           path: 'accounts',
-          element: <AccountManager />
+          element: <AccountManager />,
         },
         {
           path: 'chats',
-          element: <ChatManager />
-        }
-      ]
+          element: <ChatManager />,
+        },
+        {
+          path: 'settable',
+          element: <SetATable />,
+        },
+      ],
     },
   ]);
   return (
