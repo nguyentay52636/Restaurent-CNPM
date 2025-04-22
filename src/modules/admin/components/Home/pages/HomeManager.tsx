@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 
-
 import CartPanel from '../components/CartPanel';
 import DetailsOrderHome from './DetailsOrderHome';
 import { MenuItem as MenuItemType, menuItems } from '../components/MenuData';
@@ -89,25 +88,27 @@ const HomeManager: React.FC = () => {
           total={total}
         />
       ) : (
-        <>
-          {/* Header */}
-          <ActionsHome />
-
+        <div className="flex">
           {/* Main Content */}
-          <main className="max-w-7xl mx-auto p-6">
-            <h2 className="text-xl font-semibold mb-6">Thực đơn đặc biệt dành cho bạn</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {menuItems.map((item) => (
-                <MenuItem
-                  key={item.id}
-                  item={item}
-                  onAddToCart={addToCart}
-                />
-              ))}
-            </div>
-          </main>
+          <div className={`flex-1 transition-all duration-300 ${isCartOpen ? 'mr-80' : ''}`}>
+            {/* Header */}
+            <ActionsHome />
 
-          {/* Sliding Cart Panel */}
+            <main className="max-w-7xl mx-auto p-6">
+              <h2 className="text-xl font-semibold mb-6">Thực đơn đặc biệt dành cho bạn</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {menuItems.map((item) => (
+                  <MenuItem
+                    key={item.id}
+                    item={item}
+                    onAddToCart={addToCart}
+                  />
+                ))}
+              </div>
+            </main>
+          </div>
+
+          {/* Cart Panel */}
           <CartPanel
             isCartOpen={isCartOpen}
             closeCart={closeCart}
@@ -120,9 +121,7 @@ const HomeManager: React.FC = () => {
             removeFromCart={removeFromCart}
             handlePayment={handlePayment}
           />
-
-
-        </>
+        </div>
       )}
     </div>
   );

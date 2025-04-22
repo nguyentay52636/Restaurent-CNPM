@@ -28,11 +28,8 @@ export default function CartPanel({
     handlePayment
 }: CartPanelProps) {
     return (
-        <div
-            className={`fixed top-0 right-0 h-full w-80 bg-white shadow-lg transform transition-all duration-300 ease-in-out ${isCartOpen ? 'translate-x-0' : 'translate-x-full'
-                }`}
-            style={{ zIndex: 40 }}
-        >
+        <div className={`fixed top-0 right-0 h-screen w-80 bg-white shadow-lg transition-transform duration-300 ${isCartOpen ? 'translate-x-0' : 'translate-x-full'
+            }`}>
             <div className="p-4 h-full flex flex-col">
                 <div className="flex justify-between items-center mb-4">
                     <h3 className="text-lg font-semibold">
@@ -60,6 +57,7 @@ export default function CartPanel({
                         </svg>
                     </Button>
                 </div>
+
                 {cart.length === 0 ? (
                     <p className="text-gray-500">Chưa có sản phẩm nào trong giỏ hàng.</p>
                 ) : (
@@ -81,7 +79,7 @@ export default function CartPanel({
                                     </p>
                                     <div className="flex items-center space-x-2 mt-1">
                                         <Button
-                                            className='cursor-pointer'
+                                            className="cursor-pointer"
                                             variant="outline"
                                             size="icon"
                                             onClick={() => decrementQuantity(item.id)}
@@ -90,7 +88,7 @@ export default function CartPanel({
                                         </Button>
                                         <span className="text-sm">{item.quantity}</span>
                                         <Button
-                                            className='bg-orange-500 hover:bg-orange-600 cursor-pointer'
+                                            className="bg-orange-500 hover:bg-orange-600 cursor-pointer"
                                             size="icon"
                                             onClick={() => incrementQuantity(item.id)}
                                         >
@@ -109,18 +107,19 @@ export default function CartPanel({
                         ))}
                     </div>
                 )}
+
                 {cart.length > 0 && (
                     <div className="mt-4 pt-4 border-t">
                         <div className="flex justify-between mb-2">
-                            <span className="text-gray-600">Tạm tính</span>
+                            <span className="text-gray-500">Tạm tính</span>
                             <span className="font-medium">{subtotal.toLocaleString('vi-VN')} đ</span>
                         </div>
                         <div className="flex justify-between mb-2">
-                            <span className="text-gray-600">Thuế VAT</span>
+                            <span className="text-gray-500">Thuế VAT</span>
                             <span className="font-medium">{tax.toLocaleString('vi-VN')} đ</span>
                         </div>
                         <div className="flex justify-between mb-4">
-                            <span className="text-gray-600 font-semibold">Tổng cộng</span>
+                            <span className="text-gray-500 font-semibold">Tổng cộng</span>
                             <span className="font-semibold text-lg">{total.toLocaleString('vi-VN')} đ</span>
                         </div>
                         <Button

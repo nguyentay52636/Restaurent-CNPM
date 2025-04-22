@@ -31,10 +31,6 @@ function App() {
           index: true,
           element: <HomePages />,
         },
-        {
-          path: 'about',
-          element: <h1>About</h1>,
-        },
       ],
     },
     {

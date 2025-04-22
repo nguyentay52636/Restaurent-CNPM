@@ -2,13 +2,15 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { MenuItem as MenuItemType } from './MenuData';
+import { Pencil } from 'lucide-react';
 
 interface MenuItemProps {
     item: MenuItemType;
     onAddToCart: (item: MenuItemType) => void;
+    onEdit?: () => void;
 }
 
-const MenuItem: React.FC<MenuItemProps> = ({ item, onAddToCart }) => {
+const MenuItem: React.FC<MenuItemProps> = ({ item, onAddToCart, onEdit }) => {
     return (
         <Card className="overflow-hidden hover:shadow-lg transition-shadow">
             <img
@@ -43,12 +45,23 @@ const MenuItem: React.FC<MenuItemProps> = ({ item, onAddToCart }) => {
                         {item.rating.toFixed(1)}
                     </span>
                 </div>
-                <Button
-                    onClick={() => onAddToCart(item)}
-                    className="w-full bg-orange-500 hover:bg-orange-600 cursor-pointer"
-                >
-                    + Thêm vào giỏ hàng
-                </Button>
+                <div className="flex gap-2">
+                    <Button
+                        onClick={() => onAddToCart(item)}
+                        className="flex-1 bg-orange-500 hover:bg-orange-600 cursor-pointer"
+                    >
+                        + Thêm vào giỏ hàng
+                    </Button>
+                    {onEdit && (
+                        <Button
+                            onClick={onEdit}
+                            variant="outline"
+                            className="border-orange-500 text-orange-500 hover:bg-orange-50"
+                        >
+                            <Pencil className="w-4 h-4" />
+                        </Button>
+                    )}
+                </div>
             </CardContent>
         </Card>
     );

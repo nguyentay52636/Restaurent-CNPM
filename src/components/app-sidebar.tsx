@@ -175,7 +175,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarTrigger className={cn("hidden absolute top-[12px] -right-9 z-10 p-2 cursor-pointer", {
         "block rotate-360": !open,
       })}>
-        <ChevronsRight className="size-8 z-2 cursor-pointer bg-[#FCF7EF]  rounded-sm p-1 " />
+        {/* <ChevronsRight className="size-8 z-2 cursor-pointer bg-[#FCF7EF]  rounded-sm p-1 " /> */}
       </SidebarTrigger>
     </Sidebar>
   )
