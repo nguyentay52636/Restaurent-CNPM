@@ -18,6 +18,7 @@ import AccountManager from './modules/admin/components/AccountManager/AccountMan
 import ChatManager from './modules/admin/components/Chat/ChatManager';
 import OrderManager from './modules/admin/components/Order/OrderManager';
 import SetATable from './modules/admin/components/SetATable';
+import FeedbackManager from './modules/admin/components/Feedback/FeedbackManager';
 
 function App() {
   const router = createBrowserRouter([
@@ -95,6 +96,10 @@ function App() {
         {
           path: 'settable',
           element: <SetATable />,
+        },
+        {
+          path: 'feedback',
+          element: <FeedbackManager />,
         },
       ],
     },

@@ -20,4 +20,4 @@ export default function SiderBarNavigate({ children }: { children: React.ReactNo
             </div>
         </SidebarProvider>
     )
-}
+} 
