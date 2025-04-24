@@ -32,7 +32,7 @@ function App() {
           element: <HomePages />,
         },
         {
-          path:'p',
+          path:'products',
           element:<ProductList/>
         },
         {

@@ -165,10 +165,15 @@ import { Button } from "@/components/ui/button";
 import { Search, Menu, ShoppingCart } from "lucide-react";
 import { useState } from "react";
 import { motion } from "framer-motion";
-
+import { useNavigate } from "react-router-dom";
 const navLinks = ["Trang Chủ", "Thực Đơn", "Đặt bàn", "Về Chúng Tôi"];
+const routeMap: { [key: string]: string } = {
+  "Trang Chủ": "/",
+  "Thực Đơn": "/products",
+  "Đặt bàn": "/dat-ban",
+  "Về Chúng Tôi": "/ve-chung-toi",
+};
 
-// Giả lập số lượng sản phẩm trong giỏ
 const cartItemCount = 3;
 
 const Header = () => {
@@ -177,7 +182,7 @@ const Header = () => {
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
-
+  const navigate = useNavigate();
   return (
     <motion.header
       initial={{ y: -100, opacity: 0 }}
@@ -206,7 +211,10 @@ const Header = () => {
               key={link}
               variant="link"
               className="text-black hover:text-orange-500 text-lg font-medium p-0 transition-transform duration-200 hover:scale-105"
-              onClick={() => setIsMobileMenuOpen(false)}
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                navigate(routeMap[link]);
+              }}
             >
               {link}
             </Button>
