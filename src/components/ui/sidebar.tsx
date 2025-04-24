@@ -245,7 +245,7 @@ function Sidebar({
         <div
           data-sidebar="sidebar"
           data-slot="sidebar-inner"
-          className="bg-sidebar group-data-[variant=floating]:border-sidebar-border flex h-full w-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm"
+          className="bg-sidebar flex h-full w-full flex-col shadow-lg rounded-r-xl border-r group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm "
         >
           {children}
         </div>
@@ -293,7 +293,7 @@ function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {
       onClick={toggleSidebar}
       title="Toggle Sidebar"
       className={cn(
-        "hover:after:bg-sidebar-border absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear group-data-[side=left]:-right-4 group-data-[side=right]:left-0 after:absolute after:inset-y-0 after:left-1/2 after:w-[2px] sm:flex",
+        "hover:after:bg-sidebar-border absolute inset-y-0  hidden w-4 z-30 -translate-x-1/2 transition-all ease-linear group-data-[side=left]:-right-4 group-data-[side=right]:left-0 after:absolute after:inset-y-0 after:left-1/2 after:w-[4px] sm:flex",
         "in-data-[side=left]:cursor-w-resize in-data-[side=right]:cursor-e-resize",
         "[[data-side=left][data-state=collapsed]_&]:cursor-e-resize [[data-side=right][data-state=collapsed]_&]:cursor-nwse-resize",
         "hover:group-data-[collapsible=offcanvas]:bg-sidebar group-data-[collapsible=offcanvas]:translate-x-0 group-data-[collapsible=offcanvas]:after:left-full",
@@ -328,7 +328,7 @@ function SidebarInput({
     <Input
       data-slot="sidebar-input"
       data-sidebar="input"
-      className={cn("bg-background h-8 w-full shadow-none", className)}
+      className={cn(" h-10 w-full shadow-none", className)}
       {...props}
     />
   )
@@ -337,11 +337,11 @@ function SidebarInput({
 function SidebarHeader({ className, ...props }: React.ComponentProps<"div">) {
   const { open, isMobile } = useSidebar()
   return (
-    <div className="mt-2 bg-bg-secondary! ">
+    <div className="mt-2 bg-white! ">
       <div
         data-slot="sidebar-header"
         data-sidebar="header"
-        className={cn("flex flex-col gap-2 p-2 text-center", className)}
+        className={cn("flex flex-col gap-2  text-center", className)}
         {...props}
       />
 
@@ -371,7 +371,7 @@ function SidebarFooter({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="sidebar-footer"
       data-sidebar="footer"
-      className={cn("flex flex-col gap-2 p-2 bg-[#FCF7EF]", className)}
+      className={cn("flex flex-col gap-2 p-2", className)}
       {...props}
     />
   )
@@ -487,12 +487,14 @@ function SidebarMenu({ className, ...props }: React.ComponentProps<"ul">) {
 
 function SidebarMenuItem({ className, ...props }: React.ComponentProps<"li">) {
   return (
+
     <li
-      data-slot="sidebar-menu-item"
+      data-slot="sidebarsid-menu-item"
       data-sidebar="menu-item"
-      className={cn("group/menu-item relative bg-red", className)}
+      className={cn("group/menu-item relative group-data-[collapsible=icon]:py-10 group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center", className)}
       {...props}
     />
+
   )
 }
 
@@ -666,7 +668,7 @@ function SidebarMenuSub({ className, ...props }: React.ComponentProps<"ul">) {
       data-slot="sidebar-menu-sub"
       data-sidebar="menu-sub"
       className={cn(
-        "border-sidebar-border mx-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l px-2.5 py-0.5",
+        "border-sidebar-border mx-4 flex min-w-0 translate-x-px flex-col gap-1 border-l px-2.5 py-0.5",
         "group-data-[collapsible=icon]:hidden",
         className
       )}

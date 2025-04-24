@@ -58,57 +58,57 @@ const data = {
       isActive: true,
       items: [
         {
-          title: 'History',
+          title: 'Lịch sử',
           url: '#',
         },
         {
-          title: 'Starred',
+          title: 'Đánh dấu',
           url: '#',
         },
         {
-          title: 'Settings',
+          title: 'Cài đặt',
           url: '#',
         },
       ],
     },
     {
-      title: 'Giỏ hàng ',
+      title: 'Giỏ hàng',
       url: '#',
       icon: Bot,
       items: [
         {
-          title: 'Genesis',
+          title: 'Khởi tạo',
           url: '#',
         },
         {
-          title: 'Explorer',
+          title: 'Khám phá',
           url: '#',
         },
         {
-          title: 'Quantum',
+          title: 'Lượng tử',
           url: '#',
         },
       ],
     },
     {
-      title: ' Đặt bàn',
+      title: 'Đặt bàn',
       url: '#',
       icon: BookOpen,
       items: [
         {
-          title: 'Introduction',
+          title: 'Giới thiệu',
           url: '/admin/settable',
         },
         {
-          title: 'Get Started',
+          title: 'Bắt đầu',
           url: '#',
         },
         {
-          title: 'Tutorials',
+          title: 'Hướng dẫn',
           url: '#',
         },
         {
-          title: 'Changelog',
+          title: 'Nhật ký thay đổi',
           url: '#',
         },
       ],
@@ -119,30 +119,30 @@ const data = {
       icon: Settings2,
       items: [
         {
-          title: 'General',
+          title: 'Chung',
           url: 'admin/feedback',
         },
         {
-          title: 'Team',
+          title: 'Nhóm',
           url: '#',
         },
         {
-          title: 'Billing',
+          title: 'Thanh toán',
           url: '#',
         },
         {
-          title: 'Limits',
+          title: 'Giới hạn',
           url: '#',
         },
       ],
     },
     {
-      title: 'Booking Manager',
+      title: 'Quản lý đặt bàn',
       url: '/admin/booking',
       icon: Calendar,
       items: [
         {
-          title: 'Categories',
+          title: 'Danh mục',
           url: '/admin/booking',
         },
       ],
@@ -150,7 +150,7 @@ const data = {
   ],
   projects: [
     {
-      name: 'Design Engineering',
+      name: 'Thiết kế kỹ thuật',
       url: '#',
       icon: Frame,
     },
@@ -160,7 +160,7 @@ const data = {
       icon: PieChart,
     },
     {
-      name: 'Travel',
+      name: 'Du lịch',
       url: '#',
       icon: Map,
     },
@@ -169,12 +169,12 @@ const data = {
 
 const sideBarItem: SidebarItemType[] = [
   {
-    title: 'Đơn hàng',
+    title: 'Quản lý đơn hàng',
     icon: CalendarDays,
     url: '#',
     items: [
       {
-        title: 'Quoản lý đơn hàng',
+        title: 'Danh sách đơn hàng',
         url: '/admin/order',
       },
       {
@@ -184,35 +184,34 @@ const sideBarItem: SidebarItemType[] = [
     ],
   },
   {
-    title: 'Đặt bàn',
+    title: 'Quản lý đặt bàn',
     icon: CalendarDays,
     url: '#',
     items: [
       {
-        title: 'Quoản lý đặt bàn',
-
+        title: 'Đặt bàn',
         url: '/admin/settable',
       },
     ],
   },
   {
-    title: 'Đánh giá',
+    title: 'Quản lý đánh giá',
     icon: CalendarDays,
     url: '#',
     items: [
       {
-        title: 'Đanh giá',
+        title: 'Danh sách đánh giá',
         url: '/admin/feedback',
       },
     ],
   },
   {
-    title: 'Quoản lý sản phẩm',
+    title: 'Quản lý sản phẩm',
     icon: CalendarDays,
     url: '#',
     items: [
       {
-        title: 'Sản phẩm',
+        title: 'Danh sách sản phẩm',
         url: '/admin/products',
       },
     ],
@@ -222,11 +221,11 @@ const sideBarItem: SidebarItemType[] = [
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { open } = useSidebar();
   return (
-    <Sidebar collapsible='icon' {...props} className='relative bg-secondary!'>
+    <Sidebar collapsible='icon' {...props} className='relative'>
       <SidebarHeader>
         <TeamSwitcher />
       </SidebarHeader>
-      <SidebarContent className='bg-bg-secondary!'>
+      <SidebarContent>
         <NavMain items={sideBarItem} />
         <NavProjects projects={data.projects} />
       </SidebarContent>

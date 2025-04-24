@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { ChevronsRight, type LucideIcon } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 import {
   Collapsible,
@@ -17,6 +18,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
+  useSidebar,
 } from "@/components/ui/sidebar"
 
 export function NavMain({
@@ -49,36 +51,49 @@ export function NavMain({
   }, [])
 
   return (
-    <SidebarGroup className="h-full flex flex-col justify-around">
+    <SidebarGroup >
       <SidebarGroupLabel>Tổng quan</SidebarGroupLabel>
       <SidebarMenu
-        className={
+        className={cn(
+          "flex flex-col",
           isCollapsed
-            ? "flex flex-col gap-4 justify-around items-center !h-full red-600"
-            : "h-full flex flex-col justify-around"
-        }
+            ? "h-full py-6 space-y-6 items-center"
+            : "h-full justify-around"
+        )}
       >
         {items.map((item) => (
           <Collapsible
             key={item.title}
             asChild
             defaultOpen={item.isActive}
-            className="group/collapsible mx-2! w-full!"
+            className="group/collapsible"
           >
             <SidebarMenuItem>
               <CollapsibleTrigger asChild className="w-full">
-                <SidebarMenuButton tooltip={item.title} className="text-center  hover:bg-primary! w-full!">
-                  {item.icon && <item.icon className="!size-6.5  text-center! font-bold! hover:text-white! cursor-pointer!" />}
-                  <span>{item.title}</span>
+                <SidebarMenuButton tooltip={item.title} className={cn(
+                  "text-center transition-all duration-300 flex items-center justify-center",
+                  isCollapsed ? "hover:bg-white rounded-xl p-3 mx-2" : "hover:bg-primary hover:text-white"
+                )}>
+                  <div className="flex items-center justify-center">
+                    <div className={cn(
+                      "flex items-center justify-center",
+                      isCollapsed && "w-10 h-10"
+                    )}>
+                      {item.icon && <item.icon className={cn("text-center cursor-pointer",
+                        isCollapsed ? "!w-12 !h-12" : "!size-6"
+                      )} />}
+                    </div>
+                  </div>
 
-                  <ChevronsRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                  <span className="text-center font-normal group-data-[collapsible=icon]:hidden">{item.title}</span>
+                  <ChevronsRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 group-data-[collapsible=icon]:hidden" />
                 </SidebarMenuButton>
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <SidebarMenuSub>
                   {item.items?.map((subItem) => (
-                    <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton asChild className=" text-center!">
+                    <SidebarMenuSubItem key={subItem.title} className=" rounded-2xl " >
+                      <SidebarMenuSubButton asChild className=" py-2! hover:text-white! cursor-pointer hover:bg-primary!">
                         <a href={subItem.url}>
                           <span>{subItem.title}</span>
                         </a>
