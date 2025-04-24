@@ -2,12 +2,12 @@ import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Funnel } from 'lucide-react';
-import { Product } from './components/DataProducts';
+import { Product } from '../components/DataProducts';
 
-import DialogAddProduct from './components/Dialog/DialogAddProduct';
-import DialogEditProduct from './components/Dialog/DialogEditProduct';
-import ProductTable from './components/ProductTable';
-import PaginationProduct from './components/PaginationProduct';
+import DialogAddProduct from '../components/Dialog/DialogAddProduct';
+import DialogEditProduct from '../components/Dialog/DialogEditProduct';
+import ProductTable from '../components/ProductTable';
+import PaginationProduct from '../components/PaginationProduct';
 
 
 export default function ProductManager() {

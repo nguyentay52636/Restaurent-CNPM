@@ -3,15 +3,16 @@ import './App.css';
 import { MainLayout } from '@/components/layouts';
 import AdminPages from './modules/admin/pages/AdminPages';
 
-import HomePages from '@/modules/home/pages/HomePages';
+import HomePages from '@/modules/home/components/Home/pages/HomePages';
 import AuthPages from './modules/auth/pages/AuthPages';
 import { RegisterForm } from './modules/auth/components/Register/RegisterForm';
 import LoginForm from './modules/auth/components/Login/LoginForm';
 import { ForgetPasswordForm } from './modules/auth/components/ForgetPassword/ForgetPasswordForm';
 import ComfirmPassword from './modules/auth/components/ForgetPassword/ComfirmPassword';
 import { SetNewPasswordForm } from './modules/auth/components/ForgetPassword/SetNewPasswordForm';
-import ProductManager from './modules/home/components/ProductTable/ProductManager';
+import ProductManager from './modules/home/components/ProductTable/pages/ProductManager';
 import HomeManager from './modules/admin/components/Home/pages/HomeManager';
+import ProductList from './modules/home/components/Product/pages/Product';
 import OrderHistoryManager from './modules/admin/components/OrderHistory/OrderHistoryManager';
 import NotificationsHistoryOrder from './modules/admin/components/OrderHistory/components/NotificationsHistoryOrder';
 import AccountManager from './modules/admin/components/AccountManager/AccountManager';
@@ -29,6 +30,10 @@ function App() {
         {
           index: true,
           element: <HomePages />,
+        },
+        {
+          path:'p',
+          element:<ProductList/>
         },
         {
           path: 'about',

@@ -88,14 +88,14 @@ const Footer = () => (
     <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
    
       <div className="flex flex-col space-y-4">
-        <h2 className="text-2xl font-bold text-orange-500">Food Dash.</h2>
+        <h2 className="text-2xl font-bold text-orange-500">SGU Restaurent</h2>
         <p className="text-gray-600 text-sm">
-          Food Dash ©2023 All Rights Reserved
+          SGU Restaurent ©2025 All Rights Reserved
           <br />
-          By - Piyush Prajapat
+          Bởi - CNPM - nhóm 12
         </p>
         <div className="mt-4">
-          <h3 className="text-lg font-semibold text-orange-500">Follow Us On</h3>
+          <h3 className="text-lg font-semibold text-orange-500">Hãy theo dỗi chúng tôi</h3>
           <div className="flex space-x-4 mt-2">
             <Button variant="ghost" className="p-2">
               <Instagram className="w-6 h-6 text-gray-500 hover:text-orange-500" />
@@ -118,9 +118,9 @@ const Footer = () => (
 
   
       <div>
-        <h3 className="text-lg font-semibold text-black">Menu</h3>
+        <h3 className="text-lg font-semibold text-black">Danh mục</h3>
         <ul className="mt-4 space-y-2">
-          {["Home", "Offers", "Service", "About Us"].map((link) => (
+          {["Trang chủ", "Thực đơn", "Đặt bàn", "Về chúng tôi"].map((link) => (
             <li key={link}>
               <Button
                 variant="link"
@@ -135,9 +135,9 @@ const Footer = () => (
 
 
       <div>
-        <h3 className="text-lg font-semibold text-black">Information</h3>
+        <h3 className="text-lg font-semibold text-black">Thông tin</h3>
         <ul className="mt-4 space-y-2">
-          {["Menu", "Quality", "Make a Choice", "Fast Delivery"].map((link) => (
+          {["SGU Restaurent", "Công nghệ phần mềm", "Thành viên nhóm 12"].map((link) => (
             <li key={link}>
               <Button
                 variant="link"
@@ -152,12 +152,12 @@ const Footer = () => (
 
 
       <div>
-        <h3 className="text-lg font-semibold text-black">Contact</h3>
+        <h3 className="text-lg font-semibold text-black">Liên lạc</h3>
         <ul className="mt-4 space-y-2 text-gray-600">
           <li>+123456789</li>
-          <li>Explore</li>
-          <li>Info@Fooddash.com</li>
-          <li>12, Maharashtra, Indian</li>
+          <li>Tìm hiểu thêm</li>
+          <li>Info@sgu.com</li>
+          <li>An Dương Vương, Q.5</li>
         </ul>
       </div>
     </div>
