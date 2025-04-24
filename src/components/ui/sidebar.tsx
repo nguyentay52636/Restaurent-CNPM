@@ -328,7 +328,7 @@ function SidebarInput({
     <Input
       data-slot="sidebar-input"
       data-sidebar="input"
-      className={cn("bg-background h-8 w-full shadow-none", className)}
+      className={cn(" h-10 w-full shadow-none", className)}
       {...props}
     />
   )
@@ -341,7 +341,7 @@ function SidebarHeader({ className, ...props }: React.ComponentProps<"div">) {
       <div
         data-slot="sidebar-header"
         data-sidebar="header"
-        className={cn("flex flex-col gap-2 p-2 text-center", className)}
+        className={cn("flex flex-col gap-2  text-center", className)}
         {...props}
       />
 
@@ -371,7 +371,7 @@ function SidebarFooter({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="sidebar-footer"
       data-sidebar="footer"
-      className={cn("flex flex-col gap-2 p-2 bg-[#FCF7EF]", className)}
+      className={cn("flex flex-col gap-2 p-2", className)}
       {...props}
     />
   )
@@ -489,7 +489,7 @@ function SidebarMenuItem({ className, ...props }: React.ComponentProps<"li">) {
   return (
 
     <li
-      data-slot="sidebar-menu-item"
+      data-slot="sidebarsid-menu-item"
       data-sidebar="menu-item"
       className={cn("group/menu-item relative group-data-[collapsible=icon]:py-10 group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center", className)}
       {...props}
@@ -668,7 +668,7 @@ function SidebarMenuSub({ className, ...props }: React.ComponentProps<"ul">) {
       data-slot="sidebar-menu-sub"
       data-sidebar="menu-sub"
       className={cn(
-        "border-sidebar-border mx-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l px-2.5 py-0.5",
+        "border-sidebar-border mx-4 flex min-w-0 translate-x-px flex-col gap-1 border-l px-2.5 py-0.5",
         "group-data-[collapsible=icon]:hidden",
         className
       )}

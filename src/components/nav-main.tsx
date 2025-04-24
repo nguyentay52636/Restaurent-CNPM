@@ -80,7 +80,7 @@ export function NavMain({
                       isCollapsed && "w-10 h-10"
                     )}>
                       {item.icon && <item.icon className={cn("text-center cursor-pointer",
-                        isCollapsed ? "!w-6 !h-6" : "!size-6"
+                        isCollapsed ? "!w-12 !h-12" : "!size-6"
                       )} />}
                     </div>
                   </div>

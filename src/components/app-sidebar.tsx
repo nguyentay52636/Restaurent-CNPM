@@ -221,11 +221,11 @@ const sideBarItem: SidebarItemType[] = [
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { open } = useSidebar();
   return (
-    <Sidebar collapsible='icon' {...props} className='relative bg-secondary!'>
+    <Sidebar collapsible='icon' {...props} className='relative'>
       <SidebarHeader>
         <TeamSwitcher />
       </SidebarHeader>
-      <SidebarContent className='bg-bg-secondary!'>
+      <SidebarContent>
         <NavMain items={sideBarItem} />
         <NavProjects projects={data.projects} />
       </SidebarContent>

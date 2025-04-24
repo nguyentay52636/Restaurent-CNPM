@@ -41,7 +41,7 @@ export function TeamSwitcher() {
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent items-center gap-2 data-[state=open]:text-sidebar-accent-foreground py-10 bg-bg-secondary"
+              className="data-[state=open]:bg-sidebar-accent items-center data-[state=open]:text-sidebar-accent-foreground py-10"
             >
               <div className="z-1 text-sidebar-primary-foreground flex aspect-square size-14 items-center justify-center rounded-lg">
                 <img
