@@ -64,7 +64,7 @@ export function NavMain({
     {
       title: 'Chat',
       icon: MessageSquare,
-      url: '/admin/chat',
+      url: '/admin/chats',
     },
   ];
   useEffect(() => {
