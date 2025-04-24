@@ -1,19 +1,17 @@
 import * as React from 'react';
 import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  ChevronLeft,
-  ChevronsRight,
   Frame,
   Map,
-  PanelLeftClose,
   PieChart,
   Settings2,
   SquareTerminal,
   Calendar,
   CalendarDays,
   LucideIcon,
+  MessageSquare,
+  Home,
+  Bot,
+  BookOpen,
 } from 'lucide-react';
 
 import { NavMain } from '@/components/nav-main';
@@ -42,131 +40,6 @@ interface SidebarItemType {
   }[];
 }
 
-// This is sample data.
-const data = {
-  user: {
-    name: 'shadcn',
-    email: 'm@example.com',
-    avatar: '/avatars/shadcn.jpg',
-  },
-
-  navMain: [
-    {
-      title: 'Trang chủ',
-      url: '#',
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: 'Lịch sử',
-          url: '#',
-        },
-        {
-          title: 'Đánh dấu',
-          url: '#',
-        },
-        {
-          title: 'Cài đặt',
-          url: '#',
-        },
-      ],
-    },
-    {
-      title: 'Giỏ hàng',
-      url: '#',
-      icon: Bot,
-      items: [
-        {
-          title: 'Khởi tạo',
-          url: '#',
-        },
-        {
-          title: 'Khám phá',
-          url: '#',
-        },
-        {
-          title: 'Lượng tử',
-          url: '#',
-        },
-      ],
-    },
-    {
-      title: 'Đặt bàn',
-      url: '#',
-      icon: BookOpen,
-      items: [
-        {
-          title: 'Giới thiệu',
-          url: '/admin/settable',
-        },
-        {
-          title: 'Bắt đầu',
-          url: '#',
-        },
-        {
-          title: 'Hướng dẫn',
-          url: '#',
-        },
-        {
-          title: 'Nhật ký thay đổi',
-          url: '#',
-        },
-      ],
-    },
-    {
-      title: 'Đánh giá',
-      url: '#',
-      icon: Settings2,
-      items: [
-        {
-          title: 'Chung',
-          url: 'admin/feedback',
-        },
-        {
-          title: 'Nhóm',
-          url: '#',
-        },
-        {
-          title: 'Thanh toán',
-          url: '#',
-        },
-        {
-          title: 'Giới hạn',
-          url: '#',
-        },
-      ],
-    },
-    {
-      title: 'Quản lý đặt bàn',
-      url: '/admin/booking',
-      icon: Calendar,
-      items: [
-        {
-          title: 'Danh mục',
-          url: '/admin/booking',
-        },
-      ],
-    },
-  ],
-  projects: [
-    {
-      name: 'Thiết kế kỹ thuật',
-      url: '#',
-      icon: Frame,
-    },
-    {
-      name: 'Thống kê',
-      url: '#',
-      icon: PieChart,
-    },
-    {
-      name: 'Du lịch',
-      url: '#',
-      icon: Map,
-    },
-  ],
-};
-
 const sideBarItem: SidebarItemType[] = [
   {
     title: 'Quản lý đơn hàng',
@@ -183,40 +56,31 @@ const sideBarItem: SidebarItemType[] = [
       },
     ],
   },
+];
+
+const projects = [
   {
-    title: 'Quản lý đặt bàn',
-    icon: CalendarDays,
+    name: 'Thiết kế kỹ thuật',
     url: '#',
-    items: [
-      {
-        title: 'Đặt bàn',
-        url: '/admin/settable',
-      },
-    ],
+    icon: Frame,
   },
   {
-    title: 'Quản lý đánh giá',
-    icon: CalendarDays,
+    name: 'Thống kê',
     url: '#',
-    items: [
-      {
-        title: 'Danh sách đánh giá',
-        url: '/admin/feedback',
-      },
-    ],
+    icon: PieChart,
   },
   {
-    title: 'Quản lý sản phẩm',
-    icon: CalendarDays,
+    name: 'Du lịch',
     url: '#',
-    items: [
-      {
-        title: 'Danh sách sản phẩm',
-        url: '/admin/products',
-      },
-    ],
+    icon: Map,
   },
 ];
+
+const user = {
+  name: 'shadcn',
+  email: 'm@example.com',
+  avatar: '/avatars/shadcn.jpg',
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { open } = useSidebar();
@@ -227,19 +91,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={sideBarItem} />
-        <NavProjects projects={data.projects} />
+        <NavProjects projects={projects} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
       <SidebarRail />
       <SidebarTrigger
         className={cn('hidden absolute top-[12px] -right-9 z-10 p-2 cursor-pointer', {
           'block rotate-360': !open,
         })}
-      >
-        {/* <ChevronsRight className="size-8 z-2 cursor-pointer bg-[#FCF7EF]  rounded-sm p-1 " /> */}
-      </SidebarTrigger>
+      />
     </Sidebar>
   );
 }
