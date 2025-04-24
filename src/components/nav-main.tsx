@@ -52,6 +52,11 @@ export function NavMain({
       url: '/admin/products',
     },
     {
+      title: 'Quản lý người dùng',
+      icon: Bot,
+      url: '/admin/accounts',
+    },
+    {
       title: 'Quản lý đặt bàn',
       icon: Calendar,
       url: '/admin/settable',
@@ -110,21 +115,21 @@ export function NavMain({
                 <SidebarMenuButton
                   tooltip={item.title}
                   className={cn(
-                    'text-center transition-all duration-300 flex items-center justify-center',
+                    'text-center transition-all duration-300 flex items-center justify-center group-data-[collapsible=icon]:m-2!',
                     isCollapsed
-                      ? 'hover:bg-white rounded-xl p-3 mx-2'
-                      : 'hover:bg-primary hover:text-white',
+                      ? 'hover:bg-primary rounded-xl p-3 mx-2'
+                      : 'hover:bg-orange-500 hover:text-white',
                   )}
                 >
                   <div className='flex items-center justify-center'>
                     <div
-                      className={cn('flex items-center justify-center', isCollapsed && 'w-10 h-10')}
+                      className={cn('flex items-center justify-center', isCollapsed && 'w-30 h-30')}
                     >
                       {item.icon && (
                         <item.icon
                           className={cn(
                             'text-center cursor-pointer',
-                            isCollapsed ? '!w-12 !h-12' : '!size-6',
+                            isCollapsed ? '!w-12 !h-12' : '!size-5.5',
                           )}
                         />
                       )}
