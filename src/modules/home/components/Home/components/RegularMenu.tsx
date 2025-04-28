@@ -17,17 +17,17 @@ const RegularMenu = () => (
   <section className="py-12 px-6 bg-white">
   <div className="max-w-5xl mx-auto">
     <div className="flex flex-col sm:flex-row justify-between items-center mb-8">
-      <h2 className="text-3xl md:text-4xl font-bold text-black">Our Regular Menu</h2>
+      <h2 className="text-3xl md:text-4xl font-bold text-black">Thực Đơn Thường Ngày</h2>
       <div className="flex items-center gap-4 mt-4 sm:mt-0">
         <Tabs defaultValue="tea-time" className="w-auto">
           <TabsList className="bg-orange-100">
             <TabsTrigger value="tea-time" className="text-black data-[state=active]:bg-orange-500 data-[state=active]:text-white">
-              Tea Time
+              Giờ Trà
             </TabsTrigger>
           </TabsList>
         </Tabs>
         <Button variant="outline" className="border-orange-500 text-orange-500 hover:bg-orange-100">
-          See All
+          Xem Tất Cả
         </Button>
       </div>
     </div>
@@ -52,9 +52,9 @@ const RegularMenu = () => (
             </div>
           </CardContent>
           <CardFooter className="flex justify-between items-center w-full px-2 mt-2">
-            <p className="text-orange-600 font-semibold text-3xl">₹{item.price}</p>
+            <p className="text-orange-600 font-semibold text-3xl">{item.price}đ</p>
             <Button className="bg-orange-500 hover:bg-orange-600 text-white rounded-full px-6 py-2">
-              Buy
+              Mua
             </Button>
           </CardFooter>
         </Card>

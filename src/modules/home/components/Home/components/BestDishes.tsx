@@ -3,15 +3,15 @@ import ex from '@/assets/img_herosection.jpg';
 
 const dishes = [
   {
-    name: "Burger Bò Lá Lốp Xe Lăn",
+    name: "Bánh Mì Bò Lá Lốt",
     image: ex,
   },
   {
-    name: "Hủ tiếu gõ đầu u một cục ta cục tác",
+    name: "Hủ Tiếu Nam Vang",
     image: ex,
   },
   {
-    name: "Bánh mì gói 2 vắt",
+    name: "Bánh Mì Thịt Nướng",
     image: ex,
   },
 ];
@@ -21,12 +21,12 @@ const BestDishes = () => (
   <div className="max-w-5xl mx-auto">
     <div className="flex flex-col md:flex-row justify-between items-start mb-8">
       <h2 className="text-3xl md:text-4xl font-bold text-orange-500 ml-[-115px]">
-        <span className="text-black">Our</span> Best Delivered
+        <span className="text-black">Món Ăn</span> Nổi Bật
         <br />
-        <span className="text-black">Dishes</span>
+        <span className="text-black">Của Chúng Tôi</span>
       </h2>
       <p className="text-gray-500 text-sm md:text-base mt-4 md:mt-0 md:max-w-xs">
-        It's not just about bringing you good food from restaurants, we deliver you experience
+        Không chỉ mang đến cho bạn những món ăn ngon từ nhà hàng, chúng tôi còn mang đến cho bạn trải nghiệm tuyệt vời
       </p>
     </div>
 
@@ -46,7 +46,7 @@ const BestDishes = () => (
             variant="link"
             className="mt-2 text-xl text-orange-500 hover:text-orange-600 p-0"  
           >
-            Order Now →
+            Đặt Ngay →
           </Button>
         </div>
       ))}
