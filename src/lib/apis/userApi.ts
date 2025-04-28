@@ -33,3 +33,21 @@ export const deleteUserAPI = async (id: number) => {
     throw new Error(error);
   }
 };
+
+export const addUserAPI = async (userData: {
+  fullName?: string;
+  email: string;
+  password: string;
+  phone?: string;
+  address?: string;
+  role_id?: number;
+  points?: number;
+}) => {
+  try {
+    const { data } = await baseApi.post<IAPIResponseWrapper<IUserDataType>>('/users', userData);
+    return data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw new Error(error);
+  }
+};
