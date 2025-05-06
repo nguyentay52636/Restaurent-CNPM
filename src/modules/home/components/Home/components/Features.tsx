@@ -21,22 +21,21 @@ const features = [
 export default function Features() {
   return (
     <>
-    <div className=" relative">
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2  w-[85%] px-4">
-        <div className="bg-white rounded-xl shadow-md py-6 px-4 flex justify-between items-center gap-4">
-          {features.map((feature, index) => (
-            <div key={index} className="flex items-start gap-3 text-sm flex-1">
-              <div>{feature.icon}</div>
-              <div>
-                <h3 className="text-base font-semibold">{feature.title}</h3>
-                <p className="text-muted-foreground">{feature.description}</p>
+      <div className="relative w-full py-10 px-4">
+        <div className="mx-auto max-w-6xl">
+          <div className="bg-white rounded-xl shadow-md py-6 px-6 sm:px-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 sm:gap-4">
+            {features.map((feature, index) => (
+              <div key={index} className="flex items-start gap-3 text-sm flex-1">
+                <div>{feature.icon}</div>
+                <div>
+                  <h3 className="text-base font-semibold">{feature.title}</h3>
+                  <p className="text-muted-foreground text-sm sm:text-base">{feature.description}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
-    </div>
-    <div className="px-4 py-4"></div>
     </>
   );
 }

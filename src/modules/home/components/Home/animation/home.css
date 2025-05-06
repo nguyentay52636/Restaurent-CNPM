@@ -8,12 +8,13 @@
   }
 }
 
+
 .marquee-animation {
-  display: flex;
-  justify-content: space-evenly; 
-  animation: marquee 15s linear infinite;
-  gap: 16px; 
+  display: inline-flex;
+  animation: marquee 20s linear infinite;
+  gap: 1rem;
   font-family: 'Poppins', sans-serif;
+  white-space: nowrap;
 }
 
 .button-icon {
@@ -21,12 +22,30 @@
 }
 
 .button-icon:hover {
-  transform: scale(1.2); 
+  transform: scale(1.2);
 }
 
-/* Tăng size cho button */
+
 .button-text {
   font-family: 'Poppins', sans-serif;
-  font-weight: 600; 
-  letter-spacing: 1px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  font-size: 0.875rem; 
+}
+
+
+@media (max-width: 768px) {
+  .marquee-animation {
+    animation-duration: 25s;
+    gap: 0.75rem;
+  }
+
+  .button-text {
+    font-size: 0.75rem; 
+  }
+
+  .button-icon {
+    width: 16px;
+    height: 16px;
+  }
 }
