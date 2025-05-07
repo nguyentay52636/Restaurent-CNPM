@@ -166,6 +166,8 @@ import { Search, Menu, ShoppingCart } from "lucide-react";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import lg from '@/assets/logo_coffee.png';
+
 const navLinks = ["Trang Chủ", "Thực Đơn", "Đặt bàn", "Về Chúng Tôi"];
 const routeMap: { [key: string]: string } = {
   "Trang Chủ": "/",
@@ -182,22 +184,31 @@ const Header = () => {
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
+
   const navigate = useNavigate();
+
   return (
     <motion.header
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className="top-0 z-50 bg-[#FFF2E1]/90 backdrop-blur-md py-4 px-6 
-                 border-b-2 border-orange-200 shadow-lg shadow-orange-100"
+      className="w-full min-w-full top-0 z-50 bg-[#FFF2E1]/90 backdrop-blur-md py-4 px-6 border-b-2 border-orange-200 shadow-lg shadow-orange-100"
     >
       <div className="max-w-7xl mx-auto flex justify-between items-center">
-        {/* Logo */}
+        {/* Logo (Text for large screens, Image for small screens) */}
         <div className="flex flex-col">
-          <h1 className="text-2xl font-bold text-black tracking-wide">
+          {/* Text logo, visible on medium and larger screens */}
+          <h1 className="text-2xl font-bold text-black tracking-wide hidden md:block">
             SGU Restaurant
           </h1>
           <div className="border-b-2 border-dashed border-orange-500 w-16 mt-1"></div>
+
+          {/* Image logo, visible on small screens */}
+          <img
+            src={lg} // Thay đổi với đường dẫn hình ảnh logo của bạn
+            alt="logo"
+            className="md:hidden w-16" // Chỉ hiển thị trên màn hình nhỏ
+          />
         </div>
 
         {/* Navigation */}
@@ -223,37 +234,40 @@ const Header = () => {
 
         {/* Right section */}
         <div className="flex items-center space-x-4">
-          {/* Search button */}
-          <Button
-            variant="ghost"
-            className="p-2 bg-orange-500 rounded-full hover:bg-orange-600 transition-colors"
-          >
-            <Search className="w-6 h-6 text-white" />
-          </Button>
-
-          {/* Login */}
-          <Button className="bg-orange-500 text-white hover:bg-orange-600 font-medium shadow-md rounded-full px-4 py-2 transition-colors">
-            Đăng Nhập
-          </Button>
-
-          {/* Cart */}
-          <div className="relative">
+          {/* Only show when screen is medium or larger */}
+          <div className="hidden md:flex items-center space-x-4">
+            {/* Search button */}
             <Button
               variant="ghost"
-              className="p-2 rounded-full hover:bg-orange-100 transition-colors"
+              className="p-2 bg-orange-500 rounded-full hover:bg-orange-600 transition-colors"
             >
-              <ShoppingCart className="w-8 h-8 text-orange-500" />
+              <Search className="w-6 h-6 text-white" />
             </Button>
-            {cartItemCount > 0 && (
-              <span className="absolute top-0 right-0 -mt-1 -mr-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center shadow">
-                {cartItemCount}
-              </span>
-            )}
+
+            {/* Login */}
+            <Button className="bg-orange-500 text-white hover:bg-orange-600 font-medium shadow-md rounded-full px-4 py-2 transition-colors">
+              Đăng Nhập
+            </Button>
+
+            {/* Cart */}
+            <div className="relative">
+              <Button
+                variant="ghost"
+                className="p-2 rounded-full hover:bg-orange-100 transition-colors"
+              >
+                <ShoppingCart className="w-8 h-8 text-orange-500" />
+              </Button>
+              {cartItemCount > 0 && (
+                <span className="absolute top-0 right-0 -mt-1 -mr-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center shadow">
+                  {cartItemCount}
+                </span>
+              )}
+            </div>
           </div>
 
-          {/* Hamburger Menu */}
+          {/* Hamburger Menu (visible on small screens) */}
           <button
-            className="md:hidden p-2 hover:bg-orange-100 rounded-full"
+            className="md:hidden p-2 hover:bg-orange-100 rounded-full z-50"
             onClick={toggleMobileMenu}
           >
             <Menu className="w-6 h-6 text-orange-500" />
@@ -265,3 +279,5 @@ const Header = () => {
 };
 
 export default Header;
+
+
