@@ -14,9 +14,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'form
     defaultValues: {
       email: '',
       password: '',
-      fullName: '',
-      phone: '',
-      address: '',
+    
     },
     resolver: zodResolver(registerSchema),
     mode: 'onTouched',
@@ -88,16 +86,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'form
         )} */}
 
         <div className='grid gap-4'>
-          <div className='grid gap-2'>
-            <Label htmlFor='fullName'>Họ và Tên</Label>
-            <Input
-              {...register('fullName')}
-              id='fullName'
-              type='text'
-              placeholder='Nhập họ và tên'
-              required
-            />
-          </div>
+   
 
           <div className='grid gap-2'>
             <Label htmlFor='email'>Email</Label>
@@ -136,27 +125,9 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'form
             </div>
           </div>
 
-          <div className='grid gap-2'>
-            <Label htmlFor='phone'>Số Điện Thoại</Label>
-            <Input
-              {...register('phone')}
-              id='phone'
-              type='tel'
-              placeholder='Nhập số điện thoại'
-              required
-            />
-          </div>
+       
 
-          <div className='grid gap-2'>
-            <Label htmlFor='address'>Địa Chỉ</Label>
-            <Input
-              {...register('address')}
-              id='address'
-              type='text'
-              placeholder='Nhập địa chỉ'
-              required
-            />
-          </div>
+    
         </div>
 
         <Button

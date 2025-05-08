@@ -7,30 +7,78 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Pencil, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, Pencil, Trash2 } from 'lucide-react';
 import { IUserDataType } from '@/lib/apis/types.';
+
+type SortField = 'email' | 'fullName' | 'phone' | 'address' | 'points' | 'roleId';
+type SortDirection = 'asc' | 'desc';
 
 interface AccountTableProps {
   customers: IUserDataType[];
   onEdit: (customer: IUserDataType) => void;
   onDelete: (customer: IUserDataType) => void;
+  sortField: SortField;
+  sortDirection: SortDirection;
+  onSort: (field: SortField) => void;
 }
 
-export default function AccountTable({ customers, onEdit, onDelete }: AccountTableProps) {
+export default function AccountTable({
+  customers,
+  onEdit,
+  onDelete,
+  sortField,
+  sortDirection,
+  onSort
+}: AccountTableProps) {
+
+  const renderSortIcon = (field: SortField) => {
+    if (sortField !== field) return null;
+
+    return sortDirection === 'asc'
+      ? <ArrowUp className="h-4 w-4 ml-1 inline" />
+      : <ArrowDown className="h-4 w-4 ml-1 inline" />;
+  };
+
   return (
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead className='text-gray-500 font-semibold cursor-pointer'>Email</TableHead>
-          <TableHead className='text-gray-500 font-semibold cursor-pointer'>Họ và tên</TableHead>
-          <TableHead className='text-gray-500 font-semibold cursor-pointer'>
-            Số điện thoại
+          <TableHead
+            className='text-gray-500 font-semibold cursor-pointer'
+            onClick={() => onSort('email')}
+          >
+            Email {renderSortIcon('email')}
           </TableHead>
-          <TableHead className='text-gray-500 font-semibold cursor-pointer'>Địa chỉ</TableHead>
-          <TableHead className='text-gray-500 font-semibold cursor-pointer'>
-            Điểm tích lũy
+          <TableHead
+            className='text-gray-500 font-semibold cursor-pointer'
+            onClick={() => onSort('fullName')}
+          >
+            Họ và tên {renderSortIcon('fullName')}
           </TableHead>
-          <TableHead className='text-gray-500 font-semibold cursor-pointer'>Vai trò</TableHead>
+          <TableHead
+            className='text-gray-500 font-semibold cursor-pointer'
+            onClick={() => onSort('phone')}
+          >
+            Số điện thoại {renderSortIcon('phone')}
+          </TableHead>
+          <TableHead
+            className='text-gray-500 font-semibold cursor-pointer'
+            onClick={() => onSort('address')}
+          >
+            Địa chỉ {renderSortIcon('address')}
+          </TableHead>
+          <TableHead
+            className='text-gray-500 font-semibold cursor-pointer'
+            onClick={() => onSort('points')}
+          >
+            Điểm tích lũy {renderSortIcon('points')}
+          </TableHead>
+          <TableHead
+            className='text-gray-500 font-semibold cursor-pointer'
+            onClick={() => onSort('roleId')}
+          >
+            Vai trò {renderSortIcon('roleId')}
+          </TableHead>
           <TableHead className='text-gray-500 font-semibold cursor-default'>Thao tác</TableHead>
         </TableRow>
       </TableHeader>

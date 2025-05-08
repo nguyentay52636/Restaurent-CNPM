@@ -1,5 +1,5 @@
 import { IAPIResponseWrapper, IUserDataType } from '@/lib/apis/types.';
-import { addUserAPI, deleteUserAPI } from '@/lib/apis/userApi';
+import { addUserAPI, deleteUserAPI, updateUserAPI } from '@/lib/apis/userApi';
 import { QueryFilters, useMutation, useQueryClient } from '@tanstack/react-query';
 
 export const useDeleteUserMutation = () => {
@@ -70,6 +70,50 @@ export const useAddUserMutation = () => {
         return {
           ...oldData,
           data: [...oldData.data, newUser as IUserDataType],
+        };
+      });
+    },
+  });
+
+  return mutation;
+};
+
+export const useUpdateUserMutation = () => {
+  const queryClient = useQueryClient();
+
+  const handleUpdateUser = async (userData: {
+    id: number;
+    fullName?: string;
+    email: string;
+    phone?: string;
+    address?: string;
+    role_id?: number;
+    points?: number;
+  }) => {
+    try {
+      const { data } = await updateUserAPI(userData);
+      return data;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const mutation = useMutation({
+    mutationKey: ['update-user'],
+    mutationFn: handleUpdateUser,
+    onSuccess: (updatedUser) => {
+      const queryFilter: QueryFilters = {
+        queryKey: ['users'],
+      };
+      queryClient.cancelQueries(queryFilter);
+
+      queryClient.setQueriesData<IAPIResponseWrapper<IUserDataType[]>>(queryFilter, (oldData) => {
+        if (!oldData) return oldData;
+        return {
+          ...oldData,
+          data: oldData.data.map((user) => 
+            user.id === (updatedUser as IUserDataType).id ? (updatedUser as IUserDataType) : user
+          ),
         };
       });
     },

@@ -25,10 +25,10 @@ import { toast } from 'sonner';
 const formSchema = z.object({
   fullName: z.string().optional(),
   email: z.string().email({
-    message: 'Please enter a valid email address.',
+    message: 'Vui lòng nhập địa chỉ email hợp lệ.',
   }),
   password: z.string().min(6, {
-    message: 'Password must be at least 6 characters.',
+    message: 'Mật khẩu phải có ít nhất 6 ký tự.',
   }),
   phone: z.string().optional(),
   address: z.string().optional(),
@@ -60,14 +60,14 @@ export function DialogAddAccount({ open, onOpenChange }: DialogAddAccountProps) 
   function onSubmit(values: z.infer<typeof formSchema>) {
     mutate(values, {
       onSuccess: () => {
-        toast('Account created successfully', {
-          description: 'The new user account has been added',
+        toast('Tạo tài khoản thành công', {
+          description: 'Tài khoản người dùng mới đã được thêm',
         });
         onOpenChange(false);
       },
       onError: () => {
-        toast('Error creating account', {
-          description: 'Something went wrong. Please try again.',
+        toast('Lỗi khi tạo tài khoản', {
+          description: 'Đã xảy ra lỗi. Vui lòng thử lại.',
         });
       },
     });
@@ -77,9 +77,9 @@ export function DialogAddAccount({ open, onOpenChange }: DialogAddAccountProps) 
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className='sm:max-w-[425px]'>
         <DialogHeader>
-          <DialogTitle>Add New Account</DialogTitle>
+          <DialogTitle>Thêm tài khoản mới</DialogTitle>
           <DialogDescription>
-            Create a new user account by filling out the form below.
+            Tạo tài khoản người dùng mới bằng cách điền vào biểu mẫu dưới đây.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -89,9 +89,9 @@ export function DialogAddAccount({ open, onOpenChange }: DialogAddAccountProps) 
               name='fullName'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Full Name</FormLabel>
+                  <FormLabel>Họ và tên</FormLabel>
                   <FormControl>
-                    <Input placeholder='Enter full name' {...field} />
+                    <Input placeholder='Nhập họ và tên' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -104,7 +104,7 @@ export function DialogAddAccount({ open, onOpenChange }: DialogAddAccountProps) 
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder='Enter email' type='email' {...field} />
+                    <Input placeholder='Nhập email' type='email' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -115,9 +115,9 @@ export function DialogAddAccount({ open, onOpenChange }: DialogAddAccountProps) 
               name='password'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>Mật khẩu</FormLabel>
                   <FormControl>
-                    <Input placeholder='Enter password' type='password' {...field} />
+                    <Input placeholder='Nhập mật khẩu' type='password' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -128,9 +128,9 @@ export function DialogAddAccount({ open, onOpenChange }: DialogAddAccountProps) 
               name='phone'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Phone</FormLabel>
+                  <FormLabel>Số điện thoại</FormLabel>
                   <FormControl>
-                    <Input placeholder='Enter phone number' {...field} />
+                    <Input placeholder='Nhập số điện thoại' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -141,16 +141,16 @@ export function DialogAddAccount({ open, onOpenChange }: DialogAddAccountProps) 
               name='address'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Address</FormLabel>
+                  <FormLabel>Địa chỉ</FormLabel>
                   <FormControl>
-                    <Input placeholder='Enter address' {...field} />
+                    <Input placeholder='Nhập địa chỉ' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <DialogFooter>
-              <Button type='submit'>Add Account</Button>
+              <Button type='submit'>Thêm tài khoản</Button>
             </DialogFooter>
           </form>
         </Form>
