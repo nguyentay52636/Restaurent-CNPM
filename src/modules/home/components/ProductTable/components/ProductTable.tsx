@@ -1,55 +1,32 @@
-import React, { useMemo, useState } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { MoreVertical, Pencil, Trash2 } from 'lucide-react';
-import { Switch } from '@/components/ui/switch';
-import { Product, dataProducts } from './DataProducts';
+import { Pencil, Trash2 } from 'lucide-react';
+import { Product } from './DataProducts';
+import { Badge } from '@/components/ui/badge';
 
-export default function ProductTable() {
-    const [products, setProducts] = useState<Product[]>(dataProducts);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [currentPage, setCurrentPage] = useState(1);
-    const [editProduct, setEditProduct] = useState<Product | null>(null);
+interface ProductTableProps {
+    products: Product[];
+    onStatusToggle: (id: number) => void;
+    onDelete: (id: number) => void;
+    onEdit: (product: Product) => void;
+}
 
-    const rowsPerPage = 10;
-
-    const filteredProducts = useMemo(() => {
-        return products.filter((product) =>
-            product.name.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-    }, [products, searchTerm]);
-
-    const totalPages = Math.ceil(filteredProducts.length / rowsPerPage);
-    const paginatedProducts = filteredProducts.slice(
-        (currentPage - 1) * rowsPerPage,
-        currentPage * rowsPerPage
-    );
-
-    // Handlers
-    const handleStatusToggle = (id: number) => {
-        setProducts(
-            products.map((product) =>
-                product.id === id ? { ...product, status: !product.status } : product
-            )
-        );
-    };
-
-    const handleDelete = (id: number) => {
-        setProducts(products.filter((product) => product.id !== id));
-    };
-
-    const handleEdit = (product: Product) => {
-        setEditProduct({ ...product });
-    };
-
-    const handleSaveEdit = () => {
-        setProducts(
-            products.map((product) =>
-                product.id === editProduct?.id ? editProduct : product
-            )
-        );
-        setEditProduct(null);
+export default function ProductTable({ products, onStatusToggle, onDelete, onEdit }: ProductTableProps) {
+    // Function to get category badge color
+    const getCategoryBadgeColor = (category: string) => {
+        switch (category.toLowerCase()) {
+            case 'coffee':
+                return 'bg-amber-100 text-amber-700';
+            case 'tea':
+                return 'bg-green-100 text-green-700';
+            case 'food':
+                return 'bg-orange-100 text-orange-700';
+            case 'dessert':
+                return 'bg-pink-100 text-pink-700';
+            default:
+                return 'bg-gray-100 text-gray-700';
+        }
     };
 
     return (
@@ -57,6 +34,7 @@ export default function ProductTable() {
             <TableHeader>
                 <TableRow>
                     <TableHead className="text-gray-500 font-semibold">Sản phẩm</TableHead>
+                    <TableHead className="text-gray-500 font-semibold">Danh mục</TableHead>
                     <TableHead className="text-gray-500 font-semibold">Trạng thái</TableHead>
                     <TableHead className="text-gray-500 font-semibold">Mã sản phẩm</TableHead>
                     <TableHead className="text-gray-500 font-semibold">Số lượng</TableHead>
@@ -65,23 +43,32 @@ export default function ProductTable() {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {paginatedProducts.length > 0 ? (
-                    paginatedProducts.map((product) => (
+                {products.length > 0 ? (
+                    products.map((product) => (
                         <TableRow key={product.id} className="hover:bg-gray-50">
                             <TableCell>
                                 <div className="flex items-center space-x-3">
                                     <img
                                         src={product.image}
                                         alt={product.name}
-                                        className="w-10 h-10 rounded-md"
+                                        className="w-10 h-10 rounded-md object-cover"
+                                        onError={(e) => {
+                                            // Fallback image if the image fails to load
+                                            (e.target as HTMLImageElement).src = '/images/placeholder.png';
+                                        }}
                                     />
                                     <span className="font-medium">{product.name}</span>
                                 </div>
                             </TableCell>
                             <TableCell>
-                                <span className="text-green-600 font-medium">
+                                <Badge className={`${getCategoryBadgeColor(product.category)} font-medium`}>
+                                    {product.category}
+                                </Badge>
+                            </TableCell>
+                            <TableCell>
+                                <Badge className={product.status ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}>
                                     {product.status ? 'Còn hàng' : 'Hết hàng'}
-                                </span>
+                                </Badge>
                             </TableCell>
                             <TableCell>{product.id}</TableCell>
                             <TableCell>{product.stock}</TableCell>
@@ -91,8 +78,8 @@ export default function ProductTable() {
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        className="text-blue-600 border-blue-600"
-                                        onClick={() => handleEdit(product)}
+                                        className="text-blue-600 border-blue-600 hover:bg-blue-50 cursor-pointer"
+                                        onClick={() => onEdit(product)}
                                     >
                                         <Pencil className="h-4 w-4 mr-1" />
                                         Sửa
@@ -100,8 +87,8 @@ export default function ProductTable() {
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        className="text-orange-600 border-orange-600"
-                                        onClick={() => handleDelete(product.id)}
+                                        className="text-orange-600 border-orange-600 hover:bg-orange-50 cursor-pointer"
+                                        onClick={() => onDelete(product.id)}
                                     >
                                         <Trash2 className="h-4 w-4 mr-1" />
                                         Xóa
@@ -112,7 +99,7 @@ export default function ProductTable() {
                     ))
                 ) : (
                     <TableRow>
-                        <TableCell colSpan={6} className="text-center text-gray-500">
+                        <TableCell colSpan={7} className="text-center text-gray-500">
                             Không tìm thấy sản phẩm nào
                         </TableCell>
                     </TableRow>
