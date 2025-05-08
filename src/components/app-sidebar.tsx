@@ -66,7 +66,7 @@ const projects = [
   },
   {
     name: 'Thống kê',
-    url: '#',
+    url: '/admin/dashboard',
     icon: PieChart,
   },
   {
