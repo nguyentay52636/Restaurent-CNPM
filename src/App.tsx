@@ -20,6 +20,7 @@ import OrderManager from './modules/admin/components/Order/OrderManager';
 import SetATable from './modules/admin/components/SetATable';
 import FeedbackManager from './modules/admin/components/Feedback/FeedbackManager';
 import ManagerDashBoard from './modules/admin/components/DashBoard/ManagerDashBoard';
+import { Toaster } from '@/components/ui/toaster';
 
 function App() {
   const router = createBrowserRouter([
@@ -76,11 +77,12 @@ function App() {
         },
         {
           path: 'order',
-          element: <OrderManager />,
+          element: <OrderHistoryManager />,
         },
+
         {
           path: 'order-history',
-          element: <OrderHistoryManager />,
+          element: < OrderManager />,
         },
         {
           path: 'notifications',
@@ -112,6 +114,7 @@ function App() {
   return (
     <>
       <RouterProvider router={router} />
+      <Toaster />
     </>
   );
 }

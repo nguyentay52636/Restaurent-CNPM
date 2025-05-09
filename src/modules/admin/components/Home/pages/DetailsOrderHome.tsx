@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { X, Search } from 'lucide-react';
+import { X, Search, Printer, CheckCircle } from 'lucide-react';
 import SelectPayment from '../components/SelectPayment';
 import { dataCustomers, Customer } from '../../AccountManager/components/AcountData';
 import {
@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/select';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import DialogNewCustomer from '../components/DialogNewCustomer';
+import { toast } from '@/components/ui/use-toast';
 
 // Define the OrderItem interface
 interface OrderItem {
@@ -43,7 +44,11 @@ export default function DetailsOrderHome({
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
+    const [isPaid, setIsPaid] = useState(false);
     const charges = 24000; // Fixed charges in VND
+
+    // Calculate the final total with charges
+    const finalTotal = total + charges;
 
     // Filter customers with role "Khách hàng" (Customer)
     const customerRoleCustomers = useMemo(
@@ -66,7 +71,7 @@ export default function DetailsOrderHome({
     );
 
     // Calculate points to be added (1 point per 10,000 VND spent)
-    const pointsToAdd = Math.floor(total / 10000);
+    const pointsToAdd = Math.floor(finalTotal / 10000);
 
     // Handle customer selection
     const handleCustomerSelect = (customerId: string) => {
@@ -82,21 +87,46 @@ export default function DetailsOrderHome({
 
     // Handle removing an item
     const handleRemoveItem = (id: number) => {
+        if (isPaid) {
+            toast({
+                title: "Không thể chỉnh sửa",
+                description: "Đơn hàng đã được thanh toán, không thể xóa sản phẩm.",
+                variant: "destructive"
+            });
+            return;
+        }
+
         setItems(items.filter((item) => item.id !== id));
         setCart(cart.filter((item) => item.id !== id));
     };
 
-    // Handle print action (placeholder)
+    // Handle print action
     const handlePrint = () => {
         console.log('In hóa đơn...');
-        // Add print functionality here
+        // Implement print functionality
+        window.print();
     };
 
     // Handle payment method selection
     const handlePaymentMethodSelect = (method: string) => {
         console.log(`Selected payment method: ${method}`);
         setIsPaymentModalOpen(false);
-        // Add payment processing logic here
+
+        // Simulate payment processing
+        setTimeout(() => {
+            setIsPaid(true);
+            toast({
+                title: "Thanh toán thành công",
+                description: `Đã thanh toán đơn hàng bằng ${method}`,
+                variant: "default"
+            });
+
+            // If customer is selected, update their points
+            if (selectedCustomer) {
+                // This would normally call an API to update the customer's points
+                console.log(`Cộng ${pointsToAdd} điểm cho khách hàng ${selectedCustomer.name}`);
+            }
+        }, 1500);
     };
 
     const handleCustomerSubmit = (customerData: any) => {
@@ -107,9 +137,18 @@ export default function DetailsOrderHome({
     return (
         <div className="p-6 bg-white rounded-lg shadow-md">
             {/* Order Header */}
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                Hóa đơn #{Math.floor(Math.random() * 1000000)}
-            </h2>
+            <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-semibold text-gray-900">
+                    Hóa đơn #{Math.floor(Math.random() * 1000000)}
+                </h2>
+
+                {isPaid && (
+                    <div className="flex items-center text-green-600">
+                        <CheckCircle className="w-5 h-5 mr-2" />
+                        <span className="font-medium">Đã thanh toán</span>
+                    </div>
+                )}
+            </div>
 
             {/* Customer Selection */}
             <Card className="mb-6">
@@ -128,6 +167,7 @@ export default function DetailsOrderHome({
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="pl-10 w-full mb-2"
+                                disabled={isPaid}
                             />
                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                         </div>
@@ -140,6 +180,7 @@ export default function DetailsOrderHome({
                             <Select
                                 onValueChange={handleCustomerSelect}
                                 value={selectedCustomer?.id.toString() || 'guest'}
+                                disabled={isPaid}
                             >
                                 <SelectTrigger id="customerSelect">
                                     <SelectValue placeholder="Chọn khách hàng" />
@@ -175,7 +216,10 @@ export default function DetailsOrderHome({
                             </p>
                             <p className="text-sm font-bold">
                                 Tổng điểm sau khi cộng:{' '}
-                                {(selectedCustomer.spent + pointsToAdd).toLocaleString('vi-VN')}đ
+                                {isPaid
+                                    ? (selectedCustomer.spent + pointsToAdd).toLocaleString('vi-VN')
+                                    : (selectedCustomer.spent).toLocaleString('vi-VN')
+                                }đ
                             </p>
                         </div>
                     )}
@@ -183,8 +227,8 @@ export default function DetailsOrderHome({
             </Card>
 
             {/* Order Items and Summary */}
-            <div className="flex justify-between mb-6">
-                <div className="w-2/3 space-y-4">
+            <div className="flex flex-col md:flex-row justify-between mb-6">
+                <div className="w-full md:w-2/3 space-y-4">
                     {items.map((item) => (
                         <div key={item.id} className="flex items-center space-x-4">
                             <img
@@ -199,20 +243,22 @@ export default function DetailsOrderHome({
                                 </p>
                                 <p className="text-sm text-gray-500">Số lượng: {item.quantity}</p>
                             </div>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleRemoveItem(item.id)}
-                                className="text-gray-500 hover:text-gray-700"
-                            >
-                                <X className="h-4 w-4" />
-                            </Button>
+                            {!isPaid && (
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => handleRemoveItem(item.id)}
+                                    className="text-gray-500 hover:text-gray-700"
+                                >
+                                    <X className="h-4 w-4" />
+                                </Button>
+                            )}
                         </div>
                     ))}
                 </div>
 
                 {/* Order Summary */}
-                <div className="w-1/3 text-right space-y-2">
+                <div className="w-full md:w-1/3 text-right space-y-2 mt-6 md:mt-0">
                     <div className="flex justify-between">
                         <span className="text-gray-600">Tạm tính</span>
                         <span className="font-semibold text-gray-800">
@@ -232,10 +278,10 @@ export default function DetailsOrderHome({
                     <div className="border-t pt-2 flex justify-between">
                         <span className="text-gray-600">Tổng cộng</span>
                         <span className="font-bold text-lg text-gray-800">
-                            {total.toLocaleString('vi-VN')}đ
+                            {finalTotal.toLocaleString('vi-VN')}đ
                         </span>
                     </div>
-                    {selectedCustomer && (
+                    {selectedCustomer && isPaid && (
                         <div className="mt-2 p-2 bg-orange-50 rounded-md">
                             <p className="text-sm text-orange-600 font-medium">
                                 Điểm tích lũy: +{pointsToAdd.toLocaleString('vi-VN')}đ
@@ -247,24 +293,28 @@ export default function DetailsOrderHome({
 
             {/* Action Buttons */}
             <div className="flex justify-end space-x-3">
-                <Button
-                    onClick={handlePrint}
-                    className="bg-black hover:bg-gray-900 text-white rounded-md px-6 py-2 cursor-pointer"
-                >
-                    In hóa đơn
-                </Button>
-                <Button
-                    onClick={() => setIsPaymentModalOpen(true)}
-                    className="bg-orange-500 hover:bg-orange-600 text-white rounded-md px-6 py-2 cursor-pointer"
-                >
-                    Đặt món
-                </Button>
+                {isPaid ? (
+                    <Button
+                        onClick={handlePrint}
+                        className="flex items-center bg-green-600 hover:bg-green-700 text-white rounded-md px-6 py-2 cursor-pointer"
+                    >
+                        <Printer className="w-4 h-4 mr-2" />
+                        In hóa đơn
+                    </Button>
+                ) : (
+                    <Button
+                        onClick={() => setIsPaymentModalOpen(true)}
+                        className="bg-orange-500 hover:bg-orange-600 text-white rounded-md px-6 py-2 cursor-pointer"
+                    >
+                        Thanh toán
+                    </Button>
+                )}
                 <SelectPayment
                     onSelectPayment={handlePaymentMethodSelect}
                     onClose={() => setIsPaymentModalOpen(false)}
                     open={isPaymentModalOpen}
                     cart={cart}
-                    total={total}
+                    total={finalTotal}
                 />
             </div>
         </div>
