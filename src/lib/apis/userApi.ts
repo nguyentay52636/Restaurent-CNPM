@@ -55,8 +55,9 @@ export const addUserAPI = async ({fullName, email, password, phone, address, rol
       phone,
       address,
       roleId,
-      points,
-    }  
+      points
+    };
+    
     const { data } = await baseApi.post<IAPIResponseWrapper<IUserDataType>>('/users', userData);
     return data;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -72,8 +73,9 @@ export const updateUserAPI = async ({id, fullName, email, phone, address, roleId
       email,
       phone,
       address,
-      roleId,
       points,
+      roleId,
+
     } 
     const { data } = await baseApi.patch<IAPIResponseWrapper<IUserDataType>>(`/users/${id}`, userData);
     return data;

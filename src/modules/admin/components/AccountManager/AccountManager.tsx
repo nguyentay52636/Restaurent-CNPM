@@ -7,6 +7,7 @@ import { useState } from 'react';
 import PaginationAccount from './components/PaginationAccount';
 import { DialogEditAccount } from './components/Dialog/DialogEditAccount';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { DialogDeleteConfirmation } from './components/Dialog/DialogDeleteConfirmation';
 
 type SortField = 'email' | 'fullName' | 'phone' | 'address' | 'points' | 'roleId';
 type SortDirection = 'asc' | 'desc';
@@ -23,6 +24,8 @@ export default function AccountManager() {
   const [sortField, setSortField] = useState<SortField>('email');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
   const [activeTab, setActiveTab] = useState<CategoryTab>('all');
+  const [deletingUser, setDeletingUser] = useState<IUserDataType | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const { mutate: deleteUserMutate } = useDeleteUserMutation();
   const { data } = useGetAllUserQuery();
@@ -39,15 +42,16 @@ export default function AccountManager() {
   // Filter users based on search query and active tab
   const filteredUsers = data?.data.filter(user => {
     // First filter by search query
-    const matchesSearch =
-      user.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.fullName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.phone?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = user.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (user.fullName ? user.fullName.toLowerCase().includes(searchQuery.toLowerCase()) : false) ||
+      (user.phone ? user.phone.toLowerCase().includes(searchQuery.toLowerCase()) : false);
 
     // Then filter by category tab
     if (activeTab === 'all') return matchesSearch;
 
     const roleId = typeof user.roleId === 'object' ? user.roleId?.id : user.roleId;
+
+    if (!roleId) return false;
 
     return matchesSearch && (
       (activeTab === 'admin' && roleId === 1) ||
@@ -70,14 +74,19 @@ export default function AccountManager() {
       // Convert to numbers for numerical comparison
       valueA = valueA ? Number(valueA) : 0;
       valueB = valueB ? Number(valueB) : 0;
-    } else {
+    } else if (sortField === 'fullName' || sortField === 'email' || sortField === 'phone' || sortField === 'address') {
       valueA = a[sortField] || '';
       valueB = b[sortField] || '';
 
       if (typeof valueA === 'string') {
         valueA = valueA.toLowerCase();
+      }
+      if (typeof valueB === 'string') {
         valueB = valueB.toLowerCase();
       }
+    } else {
+      valueA = a[sortField] || 0;
+      valueB = b[sortField] || 0;
     }
 
     if (sortDirection === 'asc') {
@@ -111,6 +120,11 @@ export default function AccountManager() {
   };
 
   const handleDelete = (customer: IUserDataType) => {
+    setDeletingUser(customer);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = (customer: IUserDataType) => {
     if (customer.id) {
       deleteUserMutate(customer.id);
     }
@@ -225,6 +239,13 @@ export default function AccountManager() {
           open={isEditDialogOpen}
           onOpenChange={setIsEditDialogOpen}
           user={editingUser}
+        />
+
+        <DialogDeleteConfirmation
+          open={isDeleteDialogOpen}
+          onOpenChange={setIsDeleteDialogOpen}
+          user={deletingUser}
+          onConfirm={confirmDelete}
         />
       </div>
     )

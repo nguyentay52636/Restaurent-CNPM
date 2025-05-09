@@ -8,19 +8,16 @@ export interface IUserDataType {
   id?: number;
   fullName?: string;
   email: string;
-  roleId: Role | null;
-  phone: string;
+  roleId: number | Role;
+  phone?: string;
   password?: string;
-  address: string;
-  points: number;
-
- 
-
+  address?: string;
+  points?: number;
 }
 
-interface Role {
+export interface Role {
   id: number;
   name: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
 }

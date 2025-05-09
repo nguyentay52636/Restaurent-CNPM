@@ -50,10 +50,16 @@ export const useAddUserMutation = () => {
     points?: number;
   }) => {
     try {
-      const { data } = await addUserAPI(userData);
-      return data;
+      // Always set points to 0 for new users regardless of what was provided
+      const formattedData = {
+        ...userData,
+        points: 0
+      };
+      
+      const response = await addUserAPI(formattedData);
+      return response;
     } catch (error) {
-      console.log(error);
+      console.error("Add user API error:", error);
       throw error;
     }
   };
@@ -74,6 +80,8 @@ export const useAddUserMutation = () => {
           data: [...oldData.data, newUser as IUserDataType],
         };
       });
+      
+      queryClient.invalidateQueries({ queryKey: ['users'] });
     },
   });
 

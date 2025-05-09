@@ -23,6 +23,7 @@ import { useAddUserMutation } from '../mutations';
 import { toast } from 'sonner';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useGetRolesQuery } from '../querys';
+import { useEffect } from 'react';
 
 const formSchema = z.object({
   fullName: z.string().optional(),
@@ -62,14 +63,42 @@ export function DialogAddAccount({ open, onOpenChange }: DialogAddAccountProps) 
       phone: '',
       address: '',
       roleId: 2, // Default to user role
-      points: 0,
+      points: 0, // Always default to 0
     },
   });
+
+  // Default roles in case API fails
+  const defaultRoles: Role[] = [
+    { id: 1, name: "Quản trị" },
+    { id: 2, name: "Người dùng" },
+    { id: 3, name: "nhân viên bán hàng" },
+    { id: 5, name: "Bếp" }
+  ];
+
+  // Use API roles if available, otherwise fallback to default roles
+  const roles = rolesData?.data || defaultRoles;
+
+  // Set roleId value when roles are loaded
+  useEffect(() => {
+    if (roles && roles.length > 0) {
+      // Find user role (id=2) or use the first role
+      const userRole = roles.find((role: Role) => role.id === 2) || roles[0];
+      form.setValue('roleId', userRole.id);
+    }
+  }, [roles, form]);
 
   const { mutate } = useAddUserMutation();
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    mutate(values, {
+    // Make sure points is always 0 when adding a new user regardless of what was entered
+    const userData = {
+      ...values,
+      points: 0,
+    };
+
+    console.log('Submitting with roleId:', values.roleId);
+
+    mutate(userData, {
       onSuccess: () => {
         toast.success('Tạo tài khoản thành công ✅', {
           description: 'Tài khoản người dùng mới đã được thêm',
@@ -81,6 +110,7 @@ export function DialogAddAccount({ open, onOpenChange }: DialogAddAccountProps) 
         onOpenChange(false);
       },
       onError: (error: any) => {
+        console.error("Add user error:", error);
         toast.error('Lỗi khi tạo tài khoản ❌', {
           description: error?.response?.data?.message || 'Đã xảy ra lỗi. Vui lòng thử lại.',
           duration: 3000,
@@ -90,17 +120,6 @@ export function DialogAddAccount({ open, onOpenChange }: DialogAddAccountProps) 
       },
     });
   }
-
-  // Default roles in case API fails
-  const defaultRoles: Role[] = [
-    { id: 1, name: 'admin' },
-    { id: 2, name: 'user' },
-    { id: 3, name: 'nhân viên bán hàng' },
-    { id: 4, name: 'Người dùng' }
-  ];
-
-  // Use API roles if available, otherwise fallback to default roles
-  const roles = rolesData?.data || defaultRoles;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -185,12 +204,18 @@ export function DialogAddAccount({ open, onOpenChange }: DialogAddAccountProps) 
                 <FormItem>
                   <FormLabel>Vai trò</FormLabel>
                   <Select
-                    onValueChange={(value) => field.onChange(Number(value))}
-                    defaultValue={field.value?.toString() || "2"}
+                    onValueChange={(value) => {
+                      const roleId = Number(value);
+                      field.onChange(roleId);
+                      console.log('Selected role ID:', roleId);
+                    }}
+                    value={field.value?.toString()}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Chọn vai trò" />
+                        <SelectValue placeholder="Chọn vai trò">
+                          {field.value ? roles.find((r: Role) => r.id === field.value)?.name || "Chọn vai trò" : "Chọn vai trò"}
+                        </SelectValue>
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>

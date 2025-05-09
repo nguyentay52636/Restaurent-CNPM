@@ -111,7 +111,7 @@ export default function AccountTable({
               <TableCell>{customer.fullName || 'Chưa cập nhật'}</TableCell>
               <TableCell>{customer.phone || 'Chưa cập nhật'}</TableCell>
               <TableCell>{customer.address || 'Chưa cập nhật'}</TableCell>
-              <TableCell>{customer.points}</TableCell>
+              <TableCell>{customer.points || 0}</TableCell>
               <TableCell>
                 {(() => {
                   const roleId = typeof customer.roleId === 'object' ? customer.roleId?.id : customer.roleId;
@@ -121,7 +121,7 @@ export default function AccountTable({
 
                   return (
                     <span className={`inline-block ${getRoleColor(roleId)} text-xs px-2 py-1 rounded-full`}>
-                      {roleName}
+                      {roleName || 'Không xác định'}
                     </span>
                   );
                 })()}
