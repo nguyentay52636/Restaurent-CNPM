@@ -8,9 +8,11 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Banknote } from "lucide-react";
 
 // Dữ liệu phương thức thanh toán
 const paymentMethods = [
+    { value: "cash", label: "Thanh toán tiền mặt", icon: "/images/cash-icon.png" },
     { value: "vnpay", label: "Thanh toán qua VNPAY", icon: "/images/vnpay-logo.png" },
     { value: "momo", label: "Thanh toán qua Momo", icon: "/images/momo-logo.png" },
     { value: "bank", label: "Thanh toán qua Ngân hàng", icon: "/images/bank-logo.png" },
@@ -36,6 +38,14 @@ export default function SelectPayment({ onSelectPayment, onClose, open, cart, to
             onSelectPayment(selectedMethod);
             onClose();
         }
+    };
+
+    // Helper to render payment method icon
+    const renderMethodIcon = (method: string, iconUrl: string) => {
+        if (method === 'cash') {
+            return <Banknote className="w-6 h-6 text-green-600" />;
+        }
+        return <img src={iconUrl} alt={method} className="w-6 h-6" />;
     };
 
     return (
@@ -72,7 +82,7 @@ export default function SelectPayment({ onSelectPayment, onClose, open, cart, to
                                     value={method.value}
                                     className="flex items-center gap-3 py-3 px-4 hover:bg-blue-50 transition-all duration-200"
                                 >
-                                    <img src={method.icon} alt={method.label} className="w-6 h-6" />
+                                    {renderMethodIcon(method.value, method.icon)}
                                     <span className="text-base text-gray-800">{method.label}</span>
                                 </SelectItem>
                             ))}

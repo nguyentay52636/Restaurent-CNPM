@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { X, Search, Printer, CheckCircle } from 'lucide-react';
+import { X, Search, Download, CheckCircle } from 'lucide-react';
 import SelectPayment from '../components/SelectPayment';
 import { dataCustomers, Customer } from '../../AccountManager/components/AcountData';
 import {
@@ -15,6 +15,8 @@ import {
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import DialogNewCustomer from '../components/DialogNewCustomer';
 import { toast } from '@/components/ui/use-toast';
+// Import the PDF generator and interfaces
+import { generatePDF, OrderItem as PDFOrderItem } from '../utils/pdfGenerator';
 
 // Define the OrderItem interface
 interface OrderItem {
@@ -46,6 +48,9 @@ export default function DetailsOrderHome({
     const [searchTerm, setSearchTerm] = useState('');
     const [isPaid, setIsPaid] = useState(false);
     const charges = 24000; // Fixed charges in VND
+
+    // Generate random invoice number (in actual app this would come from the server)
+    const invoiceNumber = useMemo(() => Math.floor(Math.random() * 1000000), []);
 
     // Calculate the final total with charges
     const finalTotal = total + charges;
@@ -100,11 +105,37 @@ export default function DetailsOrderHome({
         setCart(cart.filter((item) => item.id !== id));
     };
 
-    // Handle print action
+    // Handle PDF generation
     const handlePrint = () => {
-        console.log('In hóa đơn...');
-        // Implement print functionality
-        window.print();
+        try {
+            // Prepare data for PDF generation
+            const invoiceData = {
+                invoiceNumber,
+                items,
+                subtotal,
+                tax,
+                charges,
+                finalTotal,
+                selectedCustomer,
+                pointsToAdd
+            };
+
+            // Generate the PDF
+            generatePDF(invoiceData);
+
+            toast({
+                title: "Xuất hóa đơn thành công",
+                description: `Đã tạo file PDF hóa đơn #${invoiceNumber}`,
+                variant: "default"
+            });
+        } catch (error) {
+            console.error("Error generating PDF:", error);
+            toast({
+                title: "Lỗi xuất hóa đơn",
+                description: "Không thể tạo file PDF. Vui lòng thử lại sau.",
+                variant: "destructive"
+            });
+        }
     };
 
     // Handle payment method selection
@@ -139,7 +170,7 @@ export default function DetailsOrderHome({
             {/* Order Header */}
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-semibold text-gray-900">
-                    Hóa đơn #{Math.floor(Math.random() * 1000000)}
+                    Hóa đơn #{invoiceNumber}
                 </h2>
 
                 {isPaid && (
@@ -298,8 +329,8 @@ export default function DetailsOrderHome({
                         onClick={handlePrint}
                         className="flex items-center bg-green-600 hover:bg-green-700 text-white rounded-md px-6 py-2 cursor-pointer"
                     >
-                        <Printer className="w-4 h-4 mr-2" />
-                        In hóa đơn
+                        <Download className="w-4 h-4 mr-2" />
+                        Xuất PDF
                     </Button>
                 ) : (
                     <Button
