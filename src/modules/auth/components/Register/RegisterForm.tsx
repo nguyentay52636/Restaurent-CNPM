@@ -2,27 +2,68 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { MoveLeft, Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
-import { registerSchema, RegisterType } from '@/lib/validations';
 import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { toast } from 'sonner';
+import { registerAPI } from '@/lib/apis/userApi';
+
+const registerSchema = z.object({
+  fullName: z.string().min(2, {
+    message: 'Họ và tên phải có ít nhất 2 ký tự',
+  }),
+  email: z.string().email({
+    message: 'Vui lòng nhập email hợp lệ',
+  }),
+  password: z.string().min(6, {
+    message: 'Mật khẩu phải có ít nhất 6 ký tự',
+  }),
+  confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: 'Mật khẩu không khớp',
+  path: ['confirmPassword'],
+});
+
+type RegisterFormData = z.infer<typeof registerSchema>;
 
 export function RegisterForm({ className, ...props }: React.ComponentProps<'form'>) {
   const [showPassword, setShowPassword] = useState(false);
-  const { register, handleSubmit } = useForm<RegisterType>({
-    defaultValues: {
-      email: '',
-      password: '',
-    
-    },
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
-    mode: 'onTouched',
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const onSubmit = (data: any) => {
-    console.log(data);
+  const onSubmit = async (data: RegisterFormData) => {
+    try {
+      setIsLoading(true);
+      const response = await registerAPI({
+        email: data.email,
+        password: data.password,
+        fullName: data.fullName,
+        roleId: 2, // Default role for new users
+      });
+
+      if (response.statusCode === 200) {
+        toast.success('Đăng ký thành công!', {
+          description: 'Vui lòng đăng nhập để tiếp tục',
+        });
+        navigate('/auth/login');
+      }
+    } catch (error) {
+      toast.error('Đăng ký thất bại', {
+        description: 'Có lỗi xảy ra, vui lòng thử lại',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -31,7 +72,11 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'form
       className={`p-6 md:p-8 w-full max-w-md ${className || ''}`}
       {...props}
     >
-      <Button className='bg-transparent text-white border-2 rounded-none border-[#A27B5C] hover:bg-transparent  absolute top-12 cursor-pointer right-20'>
+      <Button 
+        type="button"
+        className='bg-transparent text-white border-2 rounded-none border-[#A27B5C] hover:bg-transparent absolute top-12 cursor-pointer right-20'
+        onClick={() => navigate('/')}
+      >
         <MoveLeft /> Quay về Home
       </Button>
       <div className='flex flex-col gap-6'>
@@ -39,6 +84,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'form
           <h1 className='text-4xl font-bold my-6'>Tạo Tài Khoản</h1>
           <p className='text-muted-foreground text-sm'>Điền thông tin để đăng ký tài khoản mới.</p>
         </div>
+
         <Button
           variant='outline'
           type='button'
@@ -74,19 +120,25 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'form
               />
             </g>
           </svg>
-          Đăng Nhập Bằng Google
+          Đăng Ký Bằng Google
         </Button>
 
         <div className='text-center text-sm text-muted-foreground'>Hoặc đăng ký bằng email</div>
 
-        {/* {error && (
-          <Alert variant='destructive'>
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )} */}
-
         <div className='grid gap-4'>
-   
+          <div className='grid gap-2'>
+            <Label htmlFor='fullName'>Họ và tên</Label>
+            <Input
+              {...register('fullName')}
+              id='fullName'
+              type='text'
+              placeholder='Nhập họ và tên'
+              required
+            />
+            {errors.fullName && (
+              <p className='text-sm text-red-500'>{errors.fullName.message}</p>
+            )}
+          </div>
 
           <div className='grid gap-2'>
             <Label htmlFor='email'>Email</Label>
@@ -97,6 +149,9 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'form
               placeholder='Nhập email'
               required
             />
+            {errors.email && (
+              <p className='text-sm text-red-500'>{errors.email.message}</p>
+            )}
           </div>
 
           <div className='grid gap-2'>
@@ -123,18 +178,34 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'form
                 )}
               </Button>
             </div>
+            {errors.password && (
+              <p className='text-sm text-red-500'>{errors.password.message}</p>
+            )}
           </div>
 
-       
-
-    
+          <div className='grid gap-2'>
+            <Label htmlFor='confirmPassword'>Xác nhận mật khẩu</Label>
+            <div className='relative'>
+              <Input
+                {...register('confirmPassword')}
+                id='confirmPassword'
+                type={showPassword ? 'text' : 'password'}
+                placeholder='Nhập lại mật khẩu'
+                required
+              />
+            </div>
+            {errors.confirmPassword && (
+              <p className='text-sm text-red-500'>{errors.confirmPassword.message}</p>
+            )}
+          </div>
         </div>
 
         <Button
           type='submit'
           className='w-full bg-[#C95D2F] text-white hover:bg-[#4A3223] cursor-pointer'
+          disabled={isLoading}
         >
-          Đăng Ký
+          {isLoading ? 'Đang đăng ký...' : 'Đăng Ký'}
         </Button>
 
         <div className='text-center text-sm'>

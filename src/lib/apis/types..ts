@@ -6,13 +6,16 @@ export interface IAPIResponseWrapper<T> {
 
 export interface IUserDataType {
   id: number;
-  email: string;
-  password: string;
-  points: number;
-  roleId: Role | null;
   fullName?: string;
+  email: string;
+  roleId: Role | null;
   phone?: string;
+  password: string;
   address?: string;
+  points: number;
+
+ 
+
 }
 
 interface Role {
