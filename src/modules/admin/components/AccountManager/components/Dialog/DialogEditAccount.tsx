@@ -23,6 +23,8 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
 import { useUpdateUserMutation } from '../mutations';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Role, useGetRolesQuery } from '../querys';
 
 const formSchema = z.object({
     id: z.number(),
@@ -32,7 +34,7 @@ const formSchema = z.object({
     }),
     phone: z.string().optional(),
     address: z.string().optional(),
-    role_id: z.number().optional(),
+    roleId: z.number(),
     points: z.number().optional(),
 });
 
@@ -43,6 +45,9 @@ interface DialogEditAccountProps {
 }
 
 export function DialogEditAccount({ open, onOpenChange, user }: DialogEditAccountProps) {
+    // Fetch roles
+    const { data: rolesData } = useGetRolesQuery();
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -51,7 +56,7 @@ export function DialogEditAccount({ open, onOpenChange, user }: DialogEditAccoun
             email: user?.email || '',
             phone: user?.phone || '',
             address: user?.address || '',
-            role_id: user?.roleId?.id,
+            roleId: typeof user?.roleId === 'object' ? user?.roleId?.id : user?.roleId || 2,
             points: user?.points || 0,
         },
     });
@@ -60,12 +65,12 @@ export function DialogEditAccount({ open, onOpenChange, user }: DialogEditAccoun
     useEffect(() => {
         if (user) {
             form.reset({
-                id: user.id,
+                id: user.id || 0,
                 fullName: user.fullName || '',
                 email: user.email || '',
                 phone: user.phone || '',
                 address: user.address || '',
-                role_id: user.roleId?.id,
+                roleId: typeof user.roleId === 'object' ? user.roleId?.id : user.roleId || 2,
                 points: user.points || 0,
             });
         }
@@ -76,18 +81,35 @@ export function DialogEditAccount({ open, onOpenChange, user }: DialogEditAccoun
     function onSubmit(values: z.infer<typeof formSchema>) {
         mutate(values, {
             onSuccess: () => {
-                toast('Cập nhật tài khoản thành công', {
+                toast.success('Cập nhật tài khoản thành công ✅', {
                     description: 'Thông tin tài khoản đã được cập nhật',
+                    duration: 3000,
+                    position: 'top-center',
+                    style: { background: '#4CAF50', color: 'white', border: 'none' },
                 });
                 onOpenChange(false);
             },
-            onError: () => {
-                toast('Lỗi khi cập nhật tài khoản', {
-                    description: 'Đã xảy ra lỗi. Vui lòng thử lại.',
+            onError: (error: any) => {
+                toast.error('Lỗi khi cập nhật tài khoản ❌', {
+                    description: error?.response?.data?.message || 'Đã xảy ra lỗi. Vui lòng thử lại.',
+                    duration: 3000,
+                    position: 'top-center',
+                    style: { background: '#F44336', color: 'white', border: 'none' },
                 });
             },
         });
     }
+
+    // Default roles in case API fails
+    const defaultRoles: Role[] = [
+        { id: 1, name: 'admin' },
+        { id: 2, name: 'user' },
+        { id: 3, name: 'nhân viên bán hàng' },
+        { id: 4, name: 'Người dùng' }
+    ];
+
+    // Use API roles if available, otherwise fallback to default roles
+    const roles = rolesData?.data || defaultRoles;
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -107,7 +129,7 @@ export function DialogEditAccount({ open, onOpenChange, user }: DialogEditAccoun
                                 <FormItem>
                                     <FormLabel>Họ và tên</FormLabel>
                                     <FormControl>
-                                        <Input placeholder='Nhập họ và tên' {...field} />
+                                        <Input placeholder='Nhập họ và tên' {...field} value={field.value || ''} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -133,7 +155,7 @@ export function DialogEditAccount({ open, onOpenChange, user }: DialogEditAccoun
                                 <FormItem>
                                     <FormLabel>Số điện thoại</FormLabel>
                                     <FormControl>
-                                        <Input placeholder='Nhập số điện thoại' {...field} />
+                                        <Input placeholder='Nhập số điện thoại' {...field} value={field.value || ''} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -146,8 +168,45 @@ export function DialogEditAccount({ open, onOpenChange, user }: DialogEditAccoun
                                 <FormItem>
                                     <FormLabel>Địa chỉ</FormLabel>
                                     <FormControl>
-                                        <Input placeholder='Nhập địa chỉ' {...field} />
+                                        <Input placeholder='Nhập địa chỉ' {...field} value={field.value || ''} />
                                     </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name='roleId'
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Vai trò</FormLabel>
+                                    <Select
+                                        onValueChange={(value) => field.onChange(Number(value))}
+                                        defaultValue={field.value?.toString()}
+                                        value={field.value?.toString()}
+                                    >
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Chọn vai trò" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {roles.map((role: Role) => (
+                                                <SelectItem
+                                                    key={role.id}
+                                                    value={role.id.toString()}
+                                                    className={
+                                                        role.id === 1 ? 'text-red-600' :
+                                                            role.id === 2 ? 'text-blue-600' :
+                                                                role.id === 3 ? 'text-green-600' :
+                                                                    role.id === 5 ? 'text-purple-600' : 'text-gray-600'
+                                                    }
+                                                >
+                                                    {role.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                     <FormMessage />
                                 </FormItem>
                             )}

@@ -11,6 +11,7 @@ export const useDeleteUserMutation = () => {
       return data;
     } catch (error) {
       console.log(error);
+      throw error;
     }
   };
 
@@ -45,7 +46,7 @@ export const useAddUserMutation = () => {
     password: string;
     phone?: string;
     address?: string;
-    role_id?: number;
+    roleId: number;
     points?: number;
   }) => {
     try {
@@ -53,6 +54,7 @@ export const useAddUserMutation = () => {
       return data;
     } catch (error) {
       console.log(error);
+      throw error;
     }
   };
 
@@ -87,7 +89,7 @@ export const useUpdateUserMutation = () => {
     email: string;
     phone?: string;
     address?: string;
-    role_id?: number;
+    roleId: number;
     points?: number;
   }) => {
     try {
@@ -95,6 +97,7 @@ export const useUpdateUserMutation = () => {
       return data;
     } catch (error) {
       console.log(error);
+      throw error;
     }
   };
 

@@ -9,6 +9,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { ArrowDown, ArrowUp, Pencil, Trash2 } from 'lucide-react';
 import { IUserDataType } from '@/lib/apis/types.';
+import { useGetRolesQuery, Role } from './querys';
 
 type SortField = 'email' | 'fullName' | 'phone' | 'address' | 'points' | 'roleId';
 type SortDirection = 'asc' | 'desc';
@@ -30,6 +31,8 @@ export default function AccountTable({
   sortDirection,
   onSort
 }: AccountTableProps) {
+  // Lấy dữ liệu vai trò từ API
+  const { data: rolesData } = useGetRolesQuery();
 
   const renderSortIcon = (field: SortField) => {
     if (sortField !== field) return null;
@@ -37,6 +40,24 @@ export default function AccountTable({
     return sortDirection === 'asc'
       ? <ArrowUp className="h-4 w-4 ml-1 inline" />
       : <ArrowDown className="h-4 w-4 ml-1 inline" />;
+  };
+
+  // Hàm lấy tên vai trò dựa vào ID
+  const getRoleName = (roleId: number | undefined) => {
+    if (!roleId || !rolesData?.data) return 'Không xác định';
+
+    const role = rolesData.data.find((r: Role) => r.id === roleId);
+    return role?.name || 'Không xác định';
+  };
+
+  // Hàm lấy màu sắc cho từng loại vai trò
+  const getRoleColor = (roleId: number | undefined) => {
+    if (!roleId) return 'bg-gray-100 text-gray-800';
+    if (roleId === 1) return 'bg-red-100 text-red-800'; // Admin
+    if (roleId === 2) return 'bg-blue-100 text-blue-800'; // Người dùng
+    if (roleId === 3) return 'bg-green-100 text-green-800'; // Nhân viên bán hàng
+    if (roleId === 5) return 'bg-purple-100 text-purple-800'; // Bếp
+    return 'bg-gray-100 text-gray-800'; // Vai trò khác
   };
 
   return (
@@ -92,9 +113,18 @@ export default function AccountTable({
               <TableCell>{customer.address || 'Chưa cập nhật'}</TableCell>
               <TableCell>{customer.points}</TableCell>
               <TableCell>
-                <span className='inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full'>
-                  {customer.roleId?.name || 'Không xác định'}
-                </span>
+                {(() => {
+                  const roleId = typeof customer.roleId === 'object' ? customer.roleId?.id : customer.roleId;
+                  const roleName = typeof customer.roleId === 'object'
+                    ? customer.roleId?.name
+                    : getRoleName(roleId);
+
+                  return (
+                    <span className={`inline-block ${getRoleColor(roleId)} text-xs px-2 py-1 rounded-full`}>
+                      {roleName}
+                    </span>
+                  );
+                })()}
               </TableCell>
               <TableCell>
                 <div className='flex space-x-2'>

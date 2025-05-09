@@ -5,13 +5,13 @@ export interface IAPIResponseWrapper<T> {
 }
 
 export interface IUserDataType {
-  id: number;
+  id?: number;
   fullName?: string;
   email: string;
   roleId: Role | null;
-  phone?: string;
-  password: string;
-  address?: string;
+  phone: string;
+  password?: string;
+  address: string;
   points: number;
 
  

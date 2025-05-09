@@ -42,10 +42,13 @@ export function LoginUI({
     try {
       setIsLoading(true);
       const response = await loginAPI(data);
-      
+
       if (response.statusCode === 200) {
-        toast.success("Đăng nhập thành công!", {
-          description: `Chào mừng ${response.data.user.fullName}`,
+        toast.success("Đăng nhập thành công! 🎉", {
+          description: `Chào mừng ${response.data.user.fullName} đã quay trở lại!`,
+          duration: 5000,
+          position: 'top-center',
+          style: { background: '#4CAF50', color: 'white', border: 'none' },
         });
 
         // Redirect based on role
@@ -55,9 +58,12 @@ export function LoginUI({
           navigate("/");
         }
       }
-    } catch (error) {
-      toast.error("Đăng nhập thất bại", {
-        description: "Email hoặc mật khẩu không đúng",
+    } catch (error: any) {
+      toast.error("Đăng nhập thất bại ❌", {
+        description: error?.response?.data?.message || "Email hoặc mật khẩu không đúng, vui lòng kiểm tra lại.",
+        duration: 5000,
+        position: 'top-center',
+        style: { background: '#F44336', color: 'white', border: 'none' },
       });
     } finally {
       setIsLoading(false);
@@ -67,7 +73,7 @@ export function LoginUI({
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)} className="p-6 md:p-8 w-full max-w-md">
-        <Button 
+        <Button
           type="button"
           className="bg-transparent text-white border-2 rounded-none border-[#A27B5C] hover:bg-transparent text-bg-primary absolute top-12 cursor-pointer right-20"
           onClick={() => navigate("/")}

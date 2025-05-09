@@ -1,6 +1,6 @@
 import AccountActions from './components/AccountActions';
 import AccountTable from './components/AccountTable';
-import { useGetAllUserQuery } from './components/querys';
+import { useGetAllUserQuery, useGetRolesQuery, Role } from './components/querys';
 import { IUserDataType } from '@/lib/apis/types.';
 import { useDeleteUserMutation } from './components/mutations';
 import { useState } from 'react';
@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 type SortField = 'email' | 'fullName' | 'phone' | 'address' | 'points' | 'roleId';
 type SortDirection = 'asc' | 'desc';
-type CategoryTab = 'all' | 'admin' | 'customer' | 'staff';
+type CategoryTab = 'all' | 'admin' | 'customer' | 'staff' | 'kitchen';
 
 // Define the Customer interface based on the table in the image
 
@@ -26,6 +26,15 @@ export default function AccountManager() {
 
   const { mutate: deleteUserMutate } = useDeleteUserMutation();
   const { data } = useGetAllUserQuery();
+  const { data: rolesData } = useGetRolesQuery();
+
+  // Get role names from API or use defaults
+  const roleNames = {
+    admin: rolesData?.data?.find((role: Role) => role.id === 1)?.name || 'Quản trị',
+    user: rolesData?.data?.find((role: Role) => role.id === 2)?.name || 'Người dùng',
+    staff: rolesData?.data?.find((role: Role) => role.id === 3)?.name || 'Nhân viên bán hàng',
+    kitchen: rolesData?.data?.find((role: Role) => role.id === 5)?.name || 'Bếp'
+  };
 
   // Filter users based on search query and active tab
   const filteredUsers = data?.data.filter(user => {
@@ -38,11 +47,13 @@ export default function AccountManager() {
     // Then filter by category tab
     if (activeTab === 'all') return matchesSearch;
 
-    const roleName = user.roleId?.name?.toLowerCase() || '';
+    const roleId = typeof user.roleId === 'object' ? user.roleId?.id : user.roleId;
+
     return matchesSearch && (
-      (activeTab === 'admin' && roleName === 'admin') ||
-      (activeTab === 'customer' && roleName === 'customer') ||
-      (activeTab === 'staff' && roleName === 'staff')
+      (activeTab === 'admin' && roleId === 1) ||
+      (activeTab === 'customer' && roleId === 2) ||
+      (activeTab === 'staff' && roleId === 3) ||
+      (activeTab === 'kitchen' && roleId === 5)
     );
   }) || [];
 
@@ -52,16 +63,21 @@ export default function AccountManager() {
     let valueB: any;
 
     if (sortField === 'roleId') {
-      valueA = a.roleId?.name || '';
-      valueB = b.roleId?.name || '';
+      // Extract role IDs for sorting
+      valueA = typeof a.roleId === 'object' ? a.roleId?.id : a.roleId;
+      valueB = typeof b.roleId === 'object' ? b.roleId?.id : b.roleId;
+
+      // Convert to numbers for numerical comparison
+      valueA = valueA ? Number(valueA) : 0;
+      valueB = valueB ? Number(valueB) : 0;
     } else {
       valueA = a[sortField] || '';
       valueB = b[sortField] || '';
-    }
 
-    if (typeof valueA === 'string') {
-      valueA = valueA.toLowerCase();
-      valueB = valueB.toLowerCase();
+      if (typeof valueA === 'string') {
+        valueA = valueA.toLowerCase();
+        valueB = valueB.toLowerCase();
+      }
     }
 
     if (sortDirection === 'asc') {
@@ -124,9 +140,22 @@ export default function AccountManager() {
   // Count users by role for tab badges
   const userCounts = {
     all: data?.data.length || 0,
-    admin: data?.data.filter(user => user.roleId?.name?.toLowerCase() === 'admin').length || 0,
-    customer: data?.data.filter(user => user.roleId?.name?.toLowerCase() === 'customer').length || 0,
-    staff: data?.data.filter(user => user.roleId?.name?.toLowerCase() === 'staff').length || 0
+    admin: data?.data.filter(user => {
+      const roleId = typeof user.roleId === 'object' ? user.roleId?.id : user.roleId;
+      return roleId === 1;
+    }).length || 0,
+    customer: data?.data.filter(user => {
+      const roleId = typeof user.roleId === 'object' ? user.roleId?.id : user.roleId;
+      return roleId === 2;
+    }).length || 0,
+    staff: data?.data.filter(user => {
+      const roleId = typeof user.roleId === 'object' ? user.roleId?.id : user.roleId;
+      return roleId === 3;
+    }).length || 0,
+    kitchen: data?.data.filter(user => {
+      const roleId = typeof user.roleId === 'object' ? user.roleId?.id : user.roleId;
+      return roleId === 5;
+    }).length || 0
   };
 
   return (
@@ -135,7 +164,7 @@ export default function AccountManager() {
         <AccountActions onSearch={handleSearch} searchQuery={searchQuery} />
 
         <Tabs defaultValue="all" value={activeTab} onValueChange={handleTabChange} className="mb-6">
-          <TabsList className="grid grid-cols-4 mb-4">
+          <TabsList className="grid grid-cols-5 mb-4">
             <TabsTrigger value="all" className="flex items-center justify-center">
               Tất cả
               <span className="ml-2 bg-gray-100 text-gray-700 text-xs px-2 py-0.5 rounded-full">
@@ -143,21 +172,27 @@ export default function AccountManager() {
               </span>
             </TabsTrigger>
             <TabsTrigger value="admin" className="flex items-center justify-center">
-              Admin
+              {roleNames.admin}
               <span className="ml-2 bg-red-100 text-red-700 text-xs px-2 py-0.5 rounded-full">
                 {userCounts.admin}
               </span>
             </TabsTrigger>
             <TabsTrigger value="customer" className="flex items-center justify-center">
-              Khách hàng
+              {roleNames.user}
               <span className="ml-2 bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full">
                 {userCounts.customer}
               </span>
             </TabsTrigger>
             <TabsTrigger value="staff" className="flex items-center justify-center">
-              Nhân viên
+              {roleNames.staff}
               <span className="ml-2 bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full">
                 {userCounts.staff}
+              </span>
+            </TabsTrigger>
+            <TabsTrigger value="kitchen" className="flex items-center justify-center">
+              {roleNames.kitchen}
+              <span className="ml-2 bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded-full">
+                {userCounts.kitchen}
               </span>
             </TabsTrigger>
           </TabsList>

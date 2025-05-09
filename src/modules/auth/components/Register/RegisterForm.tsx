@@ -52,14 +52,20 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'form
       });
 
       if (response.statusCode === 200) {
-        toast.success('Đăng ký thành công!', {
-          description: 'Vui lòng đăng nhập để tiếp tục',
+        toast.success('Đăng ký thành công! 🎉', {
+          description: `Chào mừng ${data.fullName} đã tham gia với chúng tôi! Vui lòng đăng nhập để tiếp tục.`,
+          duration: 5000,
+          position: 'top-center',
+          style: { background: '#4CAF50', color: 'white', border: 'none' },
         });
         navigate('/auth/login');
       }
-    } catch (error) {
-      toast.error('Đăng ký thất bại', {
-        description: 'Có lỗi xảy ra, vui lòng thử lại',
+    } catch (error: any) {
+      toast.error('Đăng ký thất bại ❌', {
+        description: error?.response?.data?.message || 'Email đã tồn tại hoặc hệ thống đang gặp sự cố, vui lòng thử lại sau.',
+        duration: 5000,
+        position: 'top-center',
+        style: { background: '#F44336', color: 'white', border: 'none' },
       });
     } finally {
       setIsLoading(false);
@@ -72,7 +78,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'form
       className={`p-6 md:p-8 w-full max-w-md ${className || ''}`}
       {...props}
     >
-      <Button 
+      <Button
         type="button"
         className='bg-transparent text-white border-2 rounded-none border-[#A27B5C] hover:bg-transparent absolute top-12 cursor-pointer right-20'
         onClick={() => navigate('/')}

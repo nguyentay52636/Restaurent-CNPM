@@ -21,6 +21,8 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { useAddUserMutation } from '../mutations';
 import { toast } from 'sonner';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useGetRolesQuery } from '../querys';
 
 const formSchema = z.object({
   fullName: z.string().optional(),
@@ -32,7 +34,7 @@ const formSchema = z.object({
   }),
   phone: z.string().optional(),
   address: z.string().optional(),
-  role_id: z.number().optional(),
+  roleId: z.number(),
   points: z.number().optional(),
 });
 
@@ -41,7 +43,16 @@ interface DialogAddAccountProps {
   onOpenChange: (open: boolean) => void;
 }
 
+// Define role interface
+interface Role {
+  id: number;
+  name: string;
+}
+
 export function DialogAddAccount({ open, onOpenChange }: DialogAddAccountProps) {
+  // Fetch roles
+  const { data: rolesData, isLoading: isLoadingRoles } = useGetRolesQuery();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -50,8 +61,8 @@ export function DialogAddAccount({ open, onOpenChange }: DialogAddAccountProps) 
       password: '',
       phone: '',
       address: '',
-      role_id: undefined,
-      points: undefined,
+      roleId: 2, // Default to user role
+      points: 0,
     },
   });
 
@@ -60,18 +71,36 @@ export function DialogAddAccount({ open, onOpenChange }: DialogAddAccountProps) 
   function onSubmit(values: z.infer<typeof formSchema>) {
     mutate(values, {
       onSuccess: () => {
-        toast('Tạo tài khoản thành công', {
+        toast.success('Tạo tài khoản thành công ✅', {
           description: 'Tài khoản người dùng mới đã được thêm',
+          duration: 3000,
+          position: 'top-center',
+          style: { background: '#4CAF50', color: 'white', border: 'none' },
         });
+        form.reset();
         onOpenChange(false);
       },
-      onError: () => {
-        toast('Lỗi khi tạo tài khoản', {
-          description: 'Đã xảy ra lỗi. Vui lòng thử lại.',
+      onError: (error: any) => {
+        toast.error('Lỗi khi tạo tài khoản ❌', {
+          description: error?.response?.data?.message || 'Đã xảy ra lỗi. Vui lòng thử lại.',
+          duration: 3000,
+          position: 'top-center',
+          style: { background: '#F44336', color: 'white', border: 'none' },
         });
       },
     });
   }
+
+  // Default roles in case API fails
+  const defaultRoles: Role[] = [
+    { id: 1, name: 'admin' },
+    { id: 2, name: 'user' },
+    { id: 3, name: 'nhân viên bán hàng' },
+    { id: 4, name: 'Người dùng' }
+  ];
+
+  // Use API roles if available, otherwise fallback to default roles
+  const roles = rolesData?.data || defaultRoles;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -91,7 +120,7 @@ export function DialogAddAccount({ open, onOpenChange }: DialogAddAccountProps) 
                 <FormItem>
                   <FormLabel>Họ và tên</FormLabel>
                   <FormControl>
-                    <Input placeholder='Nhập họ và tên' {...field} />
+                    <Input placeholder='Nhập họ và tên' {...field} value={field.value || ''} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -130,7 +159,7 @@ export function DialogAddAccount({ open, onOpenChange }: DialogAddAccountProps) 
                 <FormItem>
                   <FormLabel>Số điện thoại</FormLabel>
                   <FormControl>
-                    <Input placeholder='Nhập số điện thoại' {...field} />
+                    <Input placeholder='Nhập số điện thoại' {...field} value={field.value || ''} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -143,8 +172,44 @@ export function DialogAddAccount({ open, onOpenChange }: DialogAddAccountProps) 
                 <FormItem>
                   <FormLabel>Địa chỉ</FormLabel>
                   <FormControl>
-                    <Input placeholder='Nhập địa chỉ' {...field} />
+                    <Input placeholder='Nhập địa chỉ' {...field} value={field.value || ''} />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='roleId'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Vai trò</FormLabel>
+                  <Select
+                    onValueChange={(value) => field.onChange(Number(value))}
+                    defaultValue={field.value?.toString() || "2"}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Chọn vai trò" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {roles.map((role: Role) => (
+                        <SelectItem
+                          key={role.id}
+                          value={role.id.toString()}
+                          className={
+                            role.id === 1 ? 'text-red-600' :
+                              role.id === 2 ? 'text-blue-600' :
+                                role.id === 3 ? 'text-green-600' :
+                                  role.id === 5 ? 'text-purple-600' : 'text-gray-600'
+                          }
+                        >
+                          {role.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
