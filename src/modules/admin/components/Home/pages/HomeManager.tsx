@@ -141,6 +141,13 @@ const HomeManager: React.FC = () => {
     setIsCartOpen(false);
   };
 
+  // Handle resetting the cart after a completed order
+  const handleOrderComplete = () => {
+    // Reset cart and return to menu
+    setCart([]);
+    setShowDetailsOrder(false);
+  };
+
   // Pagination control handlers
   const goToPage = (page: number) => {
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
@@ -167,6 +174,7 @@ const HomeManager: React.FC = () => {
           subtotal={subtotal}
           tax={tax}
           total={total}
+          onReset={handleOrderComplete}
         />
       ) : (
         <div className="flex">

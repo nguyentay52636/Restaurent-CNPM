@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { X, Search, Download, CheckCircle } from 'lucide-react';
+import { X, Search, Download, CheckCircle, RotateCcw, ArrowLeft } from 'lucide-react';
 import SelectPayment from '../components/SelectPayment';
 import { dataCustomers, Customer } from '../../AccountManager/components/AcountData';
 import {
@@ -32,6 +32,7 @@ interface DetailsOrderHomeProps {
     subtotal: number;
     tax: number;
     total: number;
+    onReset?: () => void; // Add callback to reset from parent
 }
 
 export default function DetailsOrderHome({
@@ -39,6 +40,7 @@ export default function DetailsOrderHome({
     subtotal,
     tax,
     total,
+    onReset,
 }: DetailsOrderHomeProps) {
     const [items, setItems] = useState<OrderItem[]>(cartItems);
     const [cart, setCart] = useState<OrderItem[]>(cartItems);
@@ -47,6 +49,7 @@ export default function DetailsOrderHome({
     const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [isPaid, setIsPaid] = useState(false);
+    const [showResetConfirm, setShowResetConfirm] = useState(false);
     const charges = 24000; // Fixed charges in VND
 
     // Generate random invoice number (in actual app this would come from the server)
@@ -138,6 +141,20 @@ export default function DetailsOrderHome({
         }
     };
 
+    // Reset the current order and start a new one
+    const handleResetOrder = () => {
+        if (onReset) {
+            onReset();
+        } else {
+            // If no onReset callback provided, just show the toast
+            toast({
+                title: "Đã tạo đơn hàng mới",
+                description: "Đơn hàng trước đã được lưu lại thành công.",
+                variant: "default"
+            });
+        }
+    };
+
     // Handle payment method selection
     const handlePaymentMethodSelect = (method: string) => {
         console.log(`Selected payment method: ${method}`);
@@ -146,11 +163,18 @@ export default function DetailsOrderHome({
         // Simulate payment processing
         setTimeout(() => {
             setIsPaid(true);
+
+            // Show payment success toast with reset confirmation
             toast({
                 title: "Thanh toán thành công",
-                description: `Đã thanh toán đơn hàng bằng ${method}`,
+                description: `Đã thanh toán đơn hàng bằng ${method === 'cash' ? 'tiền mặt' : method}. Bạn có thể xuất PDF hoặc tạo đơn hàng mới.`,
                 variant: "default"
             });
+
+            // Show reset confirmation after 2 seconds
+            setTimeout(() => {
+                setShowResetConfirm(true);
+            }, 2000);
 
             // If customer is selected, update their points
             if (selectedCustomer) {
@@ -325,13 +349,25 @@ export default function DetailsOrderHome({
             {/* Action Buttons */}
             <div className="flex justify-end space-x-3">
                 {isPaid ? (
-                    <Button
-                        onClick={handlePrint}
-                        className="flex items-center bg-green-600 hover:bg-green-700 text-white rounded-md px-6 py-2 cursor-pointer"
-                    >
-                        <Download className="w-4 h-4 mr-2" />
-                        Xuất PDF
-                    </Button>
+                    <div className="flex space-x-3">
+                        <Button
+                            onClick={handlePrint}
+                            className="flex items-center bg-green-600 hover:bg-green-700 text-white rounded-md px-6 py-2 cursor-pointer"
+                        >
+                            <Download className="w-4 h-4 mr-2" />
+                            Xuất PDF
+                        </Button>
+
+                        {showResetConfirm && (
+                            <Button
+                                onClick={handleResetOrder}
+                                className="flex items-center bg-blue-500 hover:bg-blue-600 text-white rounded-md px-6 py-2 cursor-pointer"
+                            >
+                                <RotateCcw className="w-4 h-4 mr-2" />
+                                Đơn hàng mới
+                            </Button>
+                        )}
+                    </div>
                 ) : (
                     <Button
                         onClick={() => setIsPaymentModalOpen(true)}
