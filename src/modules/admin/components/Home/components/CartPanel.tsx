@@ -1,14 +1,10 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Minus, Plus, Trash2 } from 'lucide-react';
+import { ProductWithId } from '@/lib/apis/types';
 
-interface CartItem {
-    id: number;
-    name: string;
-    price: number;
+interface CartItem extends ProductWithId {
     quantity: number;
-    imageUrl: string;
-    category?: string;
     selectedSize?: { name: string, price: number };
 }
 
@@ -78,7 +74,7 @@ export default function CartPanel({
                                 className="flex items-center space-x-4 border-b py-2"
                             >
                                 <img
-                                    src={item.imageUrl}
+                                    src={item.image}
                                     alt={item.name}
                                     className="w-16 h-16 object-cover rounded"
                                 />

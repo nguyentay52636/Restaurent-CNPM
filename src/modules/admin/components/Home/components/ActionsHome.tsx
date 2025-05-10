@@ -4,10 +4,14 @@ import { Button } from '@/components/ui/button'
 import { Search, Bell } from 'lucide-react'
 import { getCategories } from '@/lib/apis/categoriesApi'
 
-export default function ActionsHome() {
+interface ActionsHomeProps {
+    onCategorySelect: (categoryId: string) => void;
+}
+
+export default function ActionsHome({ onCategorySelect }: ActionsHomeProps) {
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [categories, setCategories] = useState([
-        { name: 'All', icon: '🌐', itemCount: 0 }
+        { id: 'All', name: 'All', icon: '🌐', itemCount: 0 }
     ]);
 
     const getIconForCategory = (categoryName: string): string => {
@@ -25,11 +29,12 @@ export default function ActionsHome() {
             try {
                 const response = await getCategories();
                 const apiCategories = response.data.map((category: any) => ({
+                    id: category.id,
                     name: category.name,
                     icon: getIconForCategory(category.name),
                     itemCount: 0
                 }));
-                setCategories([{ name: 'All', icon: '🌐', itemCount: 0 }, ...apiCategories]);
+                setCategories([{ id: 'All', name: 'All', icon: '🌐', itemCount: 0 }, ...apiCategories]);
             } catch (error) {
                 console.error('Error fetching categories:', error);
             }
@@ -37,6 +42,11 @@ export default function ActionsHome() {
 
         fetchCategories();
     }, []);
+
+    const handleCategorySelect = (categoryId: string) => {
+        setSelectedCategory(categoryId);
+        onCategorySelect(categoryId);
+    };
 
     return (
         <>
@@ -69,25 +79,25 @@ export default function ActionsHome() {
             <div className="flex justify-center">
                 <section className="my-8 flex justify-center items-center">
                     <div className="flex flex-wrap gap-5">
-                        {categories.map((category, index) => (
+                        {categories.map((category) => (
                             <div
-                                key={index}
+                                key={category.id}
                                 className={`flex flex-col items-center justify-center w-32 h-32 rounded-lg shadow-sm border transition-all duration-200 cursor-pointer
-                                    ${selectedCategory === category.name
+                                    ${selectedCategory === category.id
                                         ? 'border-orange-500 bg-orange-50 shadow-md scale-105'
                                         : 'border-gray-200 bg-white hover:bg-gray-50 hover:border-orange-300'
                                     }`}
-                                onClick={() => setSelectedCategory(category.name)}
-                                aria-pressed={selectedCategory === category.name}
+                                onClick={() => handleCategorySelect(category.id)}
+                                aria-pressed={selectedCategory === category.id}
                             >
                                 <span className="text-5xl mb-2">{category.icon}</span>
-                                <span className={`text-sm font-semibold ${selectedCategory === category.name
+                                <span className={`text-sm font-semibold ${selectedCategory === category.id
                                     ? 'text-orange-700'
                                     : 'text-gray-800'
                                     }`}>
                                     {category.name}
                                 </span>
-                                <span className={`text-xs ${selectedCategory === category.name
+                                <span className={`text-xs ${selectedCategory === category.id
                                     ? 'text-orange-600'
                                     : 'text-gray-500'
                                     }`}>
