@@ -168,13 +168,15 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import lg from '@/assets/logo_coffee.png';
 
-const navLinks = ["Trang Chủ", "Thực Đơn", "Đặt bàn", "Về Chúng Tôi"];
+const navLinks = ["Trang Chủ", "Thực Đơn", "Đặt bàn", "Về Chúng Tôi",];
 const routeMap: { [key: string]: string } = {
   "Trang Chủ": "/",
   "Thực Đơn": "/products",
   "Đặt bàn": "/dat-ban",
   "Về Chúng Tôi": "/ve-chung-toi",
+  "Đăng Nhập": "/auth/login", 
 };
+
 
 const cartItemCount = 3;
 
@@ -230,7 +232,22 @@ const Header = () => {
               {link}
             </Button>
           ))}
+
+          {/* Chỉ hiển thị "Đăng Nhập" trong menu mobile */}
+          <div className="md:hidden">
+            <Button
+              variant="link"
+              className="text-black hover:text-orange-500 text-lg font-medium p-0 transition-transform duration-200 hover:scale-105"
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                navigate(routeMap["Đăng Nhập"]);
+              }}
+            >
+              Đăng Nhập
+            </Button>
+          </div>
         </nav>
+
 
         {/* Right section */}
         <div className="flex items-center space-x-4">
@@ -245,7 +262,10 @@ const Header = () => {
             </Button>
 
             {/* Login */}
-            <Button className="bg-orange-500 text-white hover:bg-orange-600 font-medium shadow-md rounded-full px-4 py-2 transition-colors">
+            <Button
+              className="bg-orange-500 text-white hover:bg-orange-600 font-medium shadow-md rounded-full px-4 py-2 transition-colors"
+              onClick={() => navigate("/auth/login")}
+            >
               Đăng Nhập
             </Button>
 
