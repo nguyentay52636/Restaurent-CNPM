@@ -5,27 +5,21 @@ import { getCategories } from '@/lib/apis/categoriesApi';
 import { getAllProducts, deleteProduct, updateProduct } from '@/lib/apis/productApi';
 import ProductTable from './ProductTable';
 import PaginationProduct from './PaginationProduct';
-import { ProductType } from '@/lib/apis/types.';
+import { Category, ProductWithId } from '@/lib/apis/types.';
 
-// Define product categories
+// Define product categories based on API response
 const CATEGORIES = {
     ALL: 'all',
-    COFFEE: 'coffee',
-    TEA: 'tea',
-    FOOD: 'food',
-    DESSERT: 'dessert',
+    COFFEE: 'Cà phê',
+    TEA: 'Trà',
+    FOOD: 'Đồ ăn',
+    DESSERT: 'Tráng miệng',
+    SNACK: 'Đồ ăn nhẹ'
 };
 
-type CategoryTab = 'all' | 'coffee' | 'tea' | 'food' | 'dessert';
+type CategoryTab = 'all' | 'Cà phê' | 'Trà' | 'Đồ ăn' | 'Tráng miệng' | 'Đồ ăn nhẹ';
 
-interface Category {
-    id: number;
-    name: string;
-}
 
-interface ProductWithId extends ProductType {
-    id: number;
-}
 
 interface TabsCategoriesProductProps {
     onEditProduct: (product: ProductWithId) => void;
@@ -37,7 +31,6 @@ interface TabsCategoriesProductProps {
 
 export default function TabsCategoriesProduct({
     onEditProduct,
-    onProductAdded,
     onProductUpdated,
     onProductDeleted
 }: TabsCategoriesProductProps) {
@@ -71,10 +64,16 @@ export default function TabsCategoriesProduct({
         fetchData();
     }, []);
 
+    // Get category ID by name
+    const getCategoryIdByName = (categoryName: string): number | undefined => {
+        return categories.find(c => c.name === categoryName)?.id;
+    };
+
     // Filter products based on active tab
     const filteredProducts = products.filter((product) => {
         if (activeTab === CATEGORIES.ALL) return true;
-        return product.categoryId.toString().toLowerCase() === activeTab;
+        const categoryId = getCategoryIdByName(activeTab);
+        return categoryId === product.categoryId;
     });
 
     const totalPages = Math.ceil(filteredProducts.length / rowsPerPage);
@@ -130,10 +129,11 @@ export default function TabsCategoriesProduct({
     // Count products by category
     const productCounts = {
         all: products.length,
-        coffee: products.filter(p => p.categoryId === 1).length,
-        tea: products.filter(p => p.categoryId === 2).length,
-        food: products.filter(p => p.categoryId === 3).length,
-        dessert: products.filter(p => p.categoryId === 4).length,
+        [CATEGORIES.COFFEE]: products.filter(p => getCategoryIdByName(CATEGORIES.COFFEE) === p.categoryId).length,
+        [CATEGORIES.TEA]: products.filter(p => getCategoryIdByName(CATEGORIES.TEA) === p.categoryId).length,
+        [CATEGORIES.FOOD]: products.filter(p => getCategoryIdByName(CATEGORIES.FOOD) === p.categoryId).length,
+        [CATEGORIES.DESSERT]: products.filter(p => getCategoryIdByName(CATEGORIES.DESSERT) === p.categoryId).length,
+        [CATEGORIES.SNACK]: products.filter(p => getCategoryIdByName(CATEGORIES.SNACK) === p.categoryId).length,
     };
 
     if (loading) return <div>Loading...</div>;
@@ -141,7 +141,7 @@ export default function TabsCategoriesProduct({
 
     return (
         <Tabs defaultValue={CATEGORIES.ALL} value={activeTab} onValueChange={handleTabChange} className="mb-6">
-            <TabsList className="grid grid-cols-5 mb-4 bg-gray-100 p-1 rounded-xl">
+            <TabsList className="grid grid-cols-6 mb-4 bg-gray-100 p-1 rounded-xl">
                 <TabsTrigger
                     value={CATEGORIES.ALL}
                     className="flex items-center justify-center gap-2 data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm rounded-lg py-2 cursor-pointer transition-all"
@@ -159,9 +159,9 @@ export default function TabsCategoriesProduct({
                 >
                     <Coffee className="h-4 w-4" />
                     <span className="flex items-center gap-1.5">
-                        Cà phê
+                        {CATEGORIES.COFFEE}
                         <span className="bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded-full">
-                            {productCounts.coffee}
+                            {productCounts[CATEGORIES.COFFEE]}
                         </span>
                     </span>
                 </TabsTrigger>
@@ -171,9 +171,9 @@ export default function TabsCategoriesProduct({
                 >
                     <CupSoda className="h-4 w-4" />
                     <span className="flex items-center gap-1.5">
-                        Trà
+                        {CATEGORIES.TEA}
                         <span className="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full">
-                            {productCounts.tea}
+                            {productCounts[CATEGORIES.TEA]}
                         </span>
                     </span>
                 </TabsTrigger>
@@ -183,9 +183,9 @@ export default function TabsCategoriesProduct({
                 >
                     <Utensils className="h-4 w-4" />
                     <span className="flex items-center gap-1.5">
-                        Đồ ăn
+                        {CATEGORIES.FOOD}
                         <span className="bg-orange-100 text-orange-700 text-xs px-2 py-0.5 rounded-full">
-                            {productCounts.food}
+                            {productCounts[CATEGORIES.FOOD]}
                         </span>
                     </span>
                 </TabsTrigger>
@@ -195,9 +195,21 @@ export default function TabsCategoriesProduct({
                 >
                     <Cake className="h-4 w-4" />
                     <span className="flex items-center gap-1.5">
-                        Tráng miệng
+                        {CATEGORIES.DESSERT}
                         <span className="bg-pink-100 text-pink-700 text-xs px-2 py-0.5 rounded-full">
-                            {productCounts.dessert}
+                            {productCounts[CATEGORIES.DESSERT]}
+                        </span>
+                    </span>
+                </TabsTrigger>
+                <TabsTrigger
+                    value={CATEGORIES.SNACK}
+                    className="flex items-center justify-center gap-2 data-[state=active]:bg-white data-[state=active]:text-blue-700 data-[state=active]:shadow-sm rounded-lg py-2 cursor-pointer transition-all"
+                >
+                    <Utensils className="h-4 w-4" />
+                    <span className="flex items-center gap-1.5">
+                        {CATEGORIES.SNACK}
+                        <span className="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full">
+                            {productCounts[CATEGORIES.SNACK]}
                         </span>
                     </span>
                 </TabsTrigger>

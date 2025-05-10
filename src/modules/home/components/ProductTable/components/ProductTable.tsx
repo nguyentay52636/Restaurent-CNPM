@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Pencil, Trash2, Loader2 } from 'lucide-react';
+import { Pencil, Trash2, Loader2, Eye } from 'lucide-react';
 import { ProductType } from '@/lib/apis/types.';
 import { Badge } from '@/components/ui/badge';
 import DialogConfirmDelete from './Dialog/DialogConfirmDelete';
+import DialogViewProduct from './Dialog/DialogViewProduct';
 import { toast } from 'sonner';
 
 interface ProductWithId extends ProductType {
@@ -21,7 +22,9 @@ interface ProductTableProps {
 
 export default function ProductTable({ products, onStatusToggle, onDelete, onEdit, isLoading = false }: ProductTableProps) {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [viewDialogOpen, setViewDialogOpen] = useState(false);
     const [productToDelete, setProductToDelete] = useState<ProductWithId | null>(null);
+    const [productToView, setProductToView] = useState<ProductWithId | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
 
     const handleDeleteClick = (product: ProductWithId) => {
@@ -55,16 +58,21 @@ export default function ProductTable({ products, onStatusToggle, onDelete, onEdi
         }
     };
 
+    const handleViewClick = (product: ProductWithId) => {
+        setProductToView(product);
+        setViewDialogOpen(true);
+    };
+
     // Function to get category badge color
     const getCategoryBadgeColor = (categoryId: number) => {
         switch (categoryId) {
-            case 1:
+            case 6:
                 return 'bg-amber-100 text-amber-700';
-            case 2:
+            case 7:
                 return 'bg-green-100 text-green-700';
-            case 3:
+            case 8:
                 return 'bg-orange-100 text-orange-700';
-            case 4:
+            case 9:
                 return 'bg-pink-100 text-pink-700';
             default:
                 return 'bg-gray-100 text-gray-700';
@@ -74,13 +82,13 @@ export default function ProductTable({ products, onStatusToggle, onDelete, onEdi
     // Function to get category name
     const getCategoryName = (categoryId: number) => {
         switch (categoryId) {
-            case 1:
+            case 6:
                 return 'Cà phê';
-            case 2:
+            case 7:
                 return 'Trà';
-            case 3:
+            case 8:
                 return 'Đồ ăn';
-            case 4:
+            case 9:
                 return 'Tráng miệng';
             default:
                 return 'Khác';
@@ -143,6 +151,16 @@ export default function ProductTable({ products, onStatusToggle, onDelete, onEdi
                                         <Button
                                             variant="outline"
                                             size="sm"
+                                            className="text-green-600 border-green-600 hover:bg-green-50 cursor-pointer"
+                                            onClick={() => handleViewClick(product)}
+                                            disabled={isLoading}
+                                        >
+                                            <Eye className="h-4 w-4 mr-1" />
+                                            Xem
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
                                             className="text-blue-600 border-blue-600 hover:bg-blue-50 cursor-pointer"
                                             onClick={() => onEdit(product)}
                                             disabled={isLoading}
@@ -180,6 +198,12 @@ export default function ProductTable({ products, onStatusToggle, onDelete, onEdi
                 onConfirm={handleConfirmDelete}
                 isLoading={isDeleting}
                 productName={productToDelete?.name}
+            />
+
+            <DialogViewProduct
+                isOpen={viewDialogOpen}
+                onOpenChange={setViewDialogOpen}
+                product={productToView}
             />
         </>
     );

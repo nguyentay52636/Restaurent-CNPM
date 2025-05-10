@@ -43,3 +43,18 @@ export interface ProductType {
   categoryId : number; 
   status : string; 
 }
+
+export interface Category {
+    id: number;
+    name: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+ export interface ProductWithId extends ProductType {
+    id: number;
+    categoryId: number;
+    status: string;
+    createdAt: string;
+    updatedAt: string;
+}

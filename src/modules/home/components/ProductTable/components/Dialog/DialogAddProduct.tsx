@@ -165,7 +165,7 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({
               </SelectTrigger>
               <SelectContent>
                 {isLoadingCategories ? (
-                  <SelectItem disabled value="">
+                  <SelectItem value="loading" disabled>
                     <span className="flex items-center">
                       <Loader2 className="h-4 w-4 animate-spin text-orange-500 mr-2" />
                       Đang tải danh mục...
@@ -182,7 +182,7 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({
                     </SelectItem>
                   ))
                 ) : (
-                  <SelectItem disabled value="">
+                  <SelectItem value="no-categories" disabled>
                     Không có danh mục nào
                   </SelectItem>
                 )}
