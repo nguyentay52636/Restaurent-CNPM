@@ -165,10 +165,12 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({
               </SelectTrigger>
               <SelectContent>
                 {isLoadingCategories ? (
-                  <div className="flex items-center justify-center p-2">
-                    <Loader2 className="h-4 w-4 animate-spin text-orange-500" />
-                    <span className="ml-2 text-sm text-gray-500">Đang tải danh mục...</span>
-                  </div>
+                  <SelectItem disabled value="">
+                    <span className="flex items-center">
+                      <Loader2 className="h-4 w-4 animate-spin text-orange-500 mr-2" />
+                      Đang tải danh mục...
+                    </span>
+                  </SelectItem>
                 ) : categories.length > 0 ? (
                   categories.map((category) => (
                     <SelectItem
@@ -180,9 +182,9 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({
                     </SelectItem>
                   ))
                 ) : (
-                  <div className="p-2 text-sm text-gray-500 text-center">
+                  <SelectItem disabled value="">
                     Không có danh mục nào
-                  </div>
+                  </SelectItem>
                 )}
               </SelectContent>
             </Select>
