@@ -1,128 +1,99 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Funnel, Plus, Coffee, Utensils, Cake, CupSoda } from 'lucide-react';
-import { Product, dataProducts } from './components/DataProducts';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-
+import { Funnel } from 'lucide-react';
 import DialogAddProduct from './components/Dialog/DialogAddProduct';
 import DialogEditProduct from './components/Dialog/DialogEditProduct';
-import ProductTable from './components/ProductTable';
-import PaginationProduct from './components/PaginationProduct';
+import TabsCategoriesProduct from './components/TabsCategoriesProduct';
+import { ProductType } from '@/lib/apis/types.';
+import { createProduct, updateProduct } from '@/lib/apis/productApi';
+import { toast } from 'sonner';
 
-// Define product categories
-const CATEGORIES = {
-  ALL: 'all',
-  COFFEE: 'coffee',
-  TEA: 'tea',
-  FOOD: 'food',
-  DESSERT: 'dessert',
-};
-
-type CategoryTab = 'all' | 'coffee' | 'tea' | 'food' | 'dessert';
+interface ProductWithId extends ProductType {
+  id: number;
+}
 
 export default function ProductManager() {
-  const [products, setProducts] = useState<Product[]>(dataProducts);
   const [searchTerm, setSearchTerm] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [editProduct, setEditProduct] = useState<Product | null>(null);
+  const [editProduct, setEditProduct] = useState<ProductWithId | null>(null);
   const [isAddOpen, setIsAddOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<CategoryTab>('all');
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [isLoading, setIsLoading] = useState(false);
   const [newProduct, setNewProduct] = useState({
     name: '',
-    category: 'Coffee',
+    description: '',
+    categoryId: 1,
     price: 0,
-    stock: 0,
-    status: true,
     image: 'https://placehold.co/200x200/A27B5C/FFF?text=Coffee',
-    size: null as string | null,
+    status: 'active',
   });
 
-  // Search and filter products
-  const filteredProducts = useMemo(() => {
-    return products.filter((product) => {
-      // First filter by search term
-      const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
-
-      // Then filter by category tab
-      if (activeTab === CATEGORIES.ALL) return matchesSearch;
-
-      const category = product.category.toLowerCase();
-      return matchesSearch && (
-        (activeTab === CATEGORIES.COFFEE && category === 'coffee') ||
-        (activeTab === CATEGORIES.TEA && category === 'tea') ||
-        (activeTab === CATEGORIES.FOOD && category === 'food') ||
-        (activeTab === CATEGORIES.DESSERT && category === 'dessert')
-      );
-    });
-  }, [products, searchTerm, activeTab]);
-
-  const totalPages = Math.ceil(filteredProducts.length / rowsPerPage);
-  const paginatedProducts = filteredProducts.slice(
-    (currentPage - 1) * rowsPerPage,
-    currentPage * rowsPerPage,
-  );
-
-  // Handlers
-  const handleStatusToggle = (id: number) => {
-    setProducts(
-      products.map((product) =>
-        product.id === id ? { ...product, status: !product.status } : product,
-      ),
-    );
-  };
-
-  const handleDelete = (id: number) => {
-    setProducts(products.filter((product) => product.id !== id));
-  };
-
-  const handleEdit = (product: Product) => {
-    setEditProduct({ ...product });
-  };
-
-  const handleSaveEdit = () => {
-    if (editProduct) {
-      setProducts(
-        products.map((product) => (product.id === editProduct.id ? editProduct : product)),
-      );
-      setEditProduct(null);
+  const handleAddProduct = async () => {
+    try {
+      setIsLoading(true);
+      await createProduct(newProduct);
+      toast.success('Thêm sản phẩm thành công ✅', {
+        description: 'Sản phẩm mới đã được thêm vào danh sách',
+        duration: 3000,
+        position: 'top-center',
+        style: { background: '#4CAF50', color: 'white', border: 'none' },
+      });
+      setIsAddOpen(false);
+      setNewProduct({
+        name: '',
+        description: '',
+        categoryId: 1,
+        price: 0,
+        image: 'https://placehold.co/200x200/A27B5C/FFF?text=Coffee',
+        status: 'active',
+      });
+    } catch (error: any) {
+      toast.error('Lỗi khi thêm sản phẩm ❌', {
+        description: error?.response?.data?.message || 'Đã xảy ra lỗi. Vui lòng thử lại.',
+        duration: 3000,
+        position: 'top-center',
+        style: { background: '#F44336', color: 'white', border: 'none' },
+      });
+      console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleAddProduct = () => {
-    const newId = products.length ? Math.max(...products.map((p) => p.id)) + 1 : 1;
-    // @ts-ignore - Ignore the size property if it's not part of the Product interface
-    setProducts([...products, { id: newId, ...newProduct }]);
-    setNewProduct({
-      name: '',
-      category: 'Coffee',
-      price: 0,
-      stock: 0,
-      status: true,
-      image: 'https://placehold.co/200x200/A27B5C/FFF?text=Coffee',
-      size: null,
-    });
-    setIsAddOpen(false);
+  const handleSaveEdit = async () => {
+    if (!editProduct) return;
+
+    try {
+      setIsLoading(true);
+      await updateProduct(editProduct.id, {
+        name: editProduct.name,
+        description: editProduct.description,
+        price: editProduct.price,
+        image: editProduct.image,
+        categoryId: editProduct.categoryId,
+        status: editProduct.status,
+      });
+      toast.success('Cập nhật sản phẩm thành công ✅', {
+        description: 'Thông tin sản phẩm đã được cập nhật',
+        duration: 3000,
+        position: 'top-center',
+        style: { background: '#4CAF50', color: 'white', border: 'none' },
+      });
+      setEditProduct(null);
+    } catch (error: any) {
+      toast.error('Lỗi khi cập nhật sản phẩm ❌', {
+        description: error?.response?.data?.message || 'Đã xảy ra lỗi. Vui lòng thử lại.',
+        duration: 3000,
+        position: 'top-center',
+        style: { background: '#F44336', color: 'white', border: 'none' },
+      });
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleTabChange = (value: string) => {
-    setActiveTab(value as CategoryTab);
-    setCurrentPage(1); // Reset to first page when changing tabs
-  };
-
-  const handleRowsPerPageChange = (rows: number) => {
-    setRowsPerPage(rows);
-    setCurrentPage(1); // Reset to first page when changing rows per page
-  };
-
-  // Count products by category for tab badges
-  const productCounts = {
-    all: products.length,
-    coffee: products.filter(p => p.category.toLowerCase() === 'coffee').length,
-    tea: products.filter(p => p.category.toLowerCase() === 'tea').length,
-    food: products.filter(p => p.category.toLowerCase() === 'food').length,
-    dessert: products.filter(p => p.category.toLowerCase() === 'dessert').length,
+  const handleEditProduct = (product: ProductWithId) => {
+    setEditProduct(product);
   };
 
   return (
@@ -143,10 +114,12 @@ export default function ProductManager() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className='flex-1 border-gray-300 focus:border-orange-500 focus:ring-orange-500 transition-colors'
+            disabled={isLoading}
           />
           <Button
             variant='outline'
             className='flex items-center border-gray-300 text-gray-600 hover:border-orange-500 cursor-pointer'
+            disabled={isLoading}
           >
             <Funnel className='h-4 w-4 mr-2' /> Lọc
           </Button>
@@ -156,99 +129,18 @@ export default function ProductManager() {
             newProduct={newProduct}
             onNewProductChange={setNewProduct}
             onAddProduct={handleAddProduct}
+            isLoading={isLoading}
           />
         </div>
       </div>
 
-      {/* Category Tabs */}
-      <Tabs defaultValue={CATEGORIES.ALL} value={activeTab} onValueChange={handleTabChange} className="mb-6">
-        <TabsList className="grid grid-cols-5 mb-4 bg-gray-100 p-1 rounded-xl">
-          <TabsTrigger
-            value={CATEGORIES.ALL}
-            className="flex items-center justify-center gap-2 data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm rounded-lg py-2 cursor-pointer transition-all"
-          >
-            <span className="flex items-center gap-1.5">
-              Tất cả
-              <span className="bg-gray-200 text-gray-700 text-xs px-2 py-0.5 rounded-full">
-                {productCounts.all}
-              </span>
-            </span>
-          </TabsTrigger>
-          <TabsTrigger
-            value={CATEGORIES.COFFEE}
-            className="flex items-center justify-center gap-2 data-[state=active]:bg-white data-[state=active]:text-amber-700 data-[state=active]:shadow-sm rounded-lg py-2 cursor-pointer transition-all"
-          >
-            <Coffee className="h-4 w-4" />
-            <span className="flex items-center gap-1.5">
-              Cà phê
-              <span className="bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded-full">
-                {productCounts.coffee}
-              </span>
-            </span>
-          </TabsTrigger>
-          <TabsTrigger
-            value={CATEGORIES.TEA}
-            className="flex items-center justify-center gap-2 data-[state=active]:bg-white data-[state=active]:text-green-700 data-[state=active]:shadow-sm rounded-lg py-2 cursor-pointer transition-all"
-          >
-            <CupSoda className="h-4 w-4" />
-            <span className="flex items-center gap-1.5">
-              Trà
-              <span className="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full">
-                {productCounts.tea}
-              </span>
-            </span>
-          </TabsTrigger>
-          <TabsTrigger
-            value={CATEGORIES.FOOD}
-            className="flex items-center justify-center gap-2 data-[state=active]:bg-white data-[state=active]:text-orange-700 data-[state=active]:shadow-sm rounded-lg py-2 cursor-pointer transition-all"
-          >
-            <Utensils className="h-4 w-4" />
-            <span className="flex items-center gap-1.5">
-              Đồ ăn
-              <span className="bg-orange-100 text-orange-700 text-xs px-2 py-0.5 rounded-full">
-                {productCounts.food}
-              </span>
-            </span>
-          </TabsTrigger>
-          <TabsTrigger
-            value={CATEGORIES.DESSERT}
-            className="flex items-center justify-center gap-2 data-[state=active]:bg-white data-[state=active]:text-pink-700 data-[state=active]:shadow-sm rounded-lg py-2 cursor-pointer transition-all"
-          >
-            <Cake className="h-4 w-4" />
-            <span className="flex items-center gap-1.5">
-              Tráng miệng
-              <span className="bg-pink-100 text-pink-700 text-xs px-2 py-0.5 rounded-full">
-                {productCounts.dessert}
-              </span>
-            </span>
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value={activeTab} className="mt-0">
-          {/* Table Section */}
-          <ProductTable
-            products={paginatedProducts}
-            onStatusToggle={handleStatusToggle}
-            onDelete={handleDelete}
-            onEdit={handleEdit}
-          />
-
-          {/* Pagination Section */}
-          {filteredProducts.length > 0 && (
-            <PaginationProduct
-              currentPage={currentPage}
-              totalPages={totalPages}
-              rowsPerPage={rowsPerPage}
-              onPageChange={setCurrentPage}
-              onRowsPerPageChange={handleRowsPerPageChange}
-              totalItems={filteredProducts.length}
-            />
-          )}
-        </TabsContent>
-      </Tabs>
-
-      {/* Add Dialog */}
-
+      {/* Tabs and Table Section */}
+      <TabsCategoriesProduct
+        onEditProduct={handleEditProduct}
+        onProductAdded={handleAddProduct}
+        onProductUpdated={handleSaveEdit}
+        isLoading={isLoading}
+      />
 
       {/* Edit Dialog */}
       <DialogEditProduct
@@ -257,6 +149,7 @@ export default function ProductManager() {
         editProduct={editProduct}
         onEditProductChange={setEditProduct}
         onSaveEdit={handleSaveEdit}
+        isLoading={isLoading}
       />
     </div>
   );

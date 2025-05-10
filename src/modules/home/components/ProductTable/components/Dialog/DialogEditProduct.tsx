@@ -3,18 +3,22 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
-import { Product } from '../DataProducts';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Link, Upload } from 'lucide-react';
+import { ProductType } from '@/lib/apis/types.';
+
+interface ProductWithId extends ProductType {
+    id: number;
+}
 
 interface DialogEditProductProps {
     isOpen: boolean;
     onOpenChange: (open: boolean) => void;
-    editProduct: Product | null;
-    onEditProductChange: (product: Product) => void;
-    onSaveEdit: () => void;
+    editProduct: ProductWithId | null;
+    onEditProductChange: (product: ProductWithId | null) => void;
+    onSaveEdit: () => Promise<void>;
+    isLoading?: boolean;
 }
 
 const DialogEditProduct: React.FC<DialogEditProductProps> = ({
@@ -67,25 +71,38 @@ const DialogEditProduct: React.FC<DialogEditProductProps> = ({
                             className="border-gray-300 focus:border-orange-500 focus:ring-orange-500 transition-colors rounded-md shadow-sm"
                         />
                     </div>
+
+                    <div className='space-y-2'>
+                        <Label htmlFor="edit-description" className='text-sm font-medium text-gray-700'>Mô tả</Label>
+                        <Input
+                            id="edit-description"
+                            value={editProduct.description}
+                            onChange={(e) => onEditProductChange({ ...editProduct, description: e.target.value })}
+                            placeholder="Nhập mô tả sản phẩm"
+                            className="border-gray-300 focus:border-orange-500 focus:ring-orange-500 transition-colors rounded-md shadow-sm"
+                        />
+                    </div>
+
                     <div className='space-y-2'>
                         <Label htmlFor="edit-category" className='text-sm font-medium text-gray-700'>Danh Mục</Label>
                         <Select
-                            value={editProduct.category}
+                            value={editProduct.categoryId.toString()}
                             onValueChange={(value) =>
-                                onEditProductChange({ ...editProduct, category: value })
+                                onEditProductChange({ ...editProduct, categoryId: parseInt(value) })
                             }
                         >
                             <SelectTrigger className="border-gray-300 focus:border-orange-500 focus:ring-orange-500 rounded-md shadow-sm cursor-pointer">
                                 <SelectValue placeholder="Chọn danh mục" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="Coffee" className="cursor-pointer">Cà Phê</SelectItem>
-                                <SelectItem value="Tea" className="cursor-pointer">Trà</SelectItem>
-                                <SelectItem value="Food" className="cursor-pointer">Đồ Ăn</SelectItem>
-                                <SelectItem value="Dessert" className="cursor-pointer">Tráng Miệng</SelectItem>
+                                <SelectItem value="1" className="cursor-pointer">Cà Phê</SelectItem>
+                                <SelectItem value="2" className="cursor-pointer">Trà</SelectItem>
+                                <SelectItem value="3" className="cursor-pointer">Đồ Ăn</SelectItem>
+                                <SelectItem value="4" className="cursor-pointer">Tráng Miệng</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
+
                     <div className='space-y-2'>
                         <Label htmlFor="edit-price" className='text-sm font-medium text-gray-700'>Giá</Label>
                         <Input
@@ -94,17 +111,6 @@ const DialogEditProduct: React.FC<DialogEditProductProps> = ({
                             value={editProduct.price}
                             onChange={(e) => onEditProductChange({ ...editProduct, price: parseFloat(e.target.value) })}
                             placeholder="Nhập giá"
-                            className="border-gray-300 focus:border-orange-500 focus:ring-orange-500 transition-colors rounded-md shadow-sm"
-                        />
-                    </div>
-                    <div className='space-y-2'>
-                        <Label htmlFor="edit-stock" className='text-sm font-medium text-gray-700'>Số Lượng</Label>
-                        <Input
-                            id="edit-stock"
-                            type="number"
-                            value={editProduct.stock}
-                            onChange={(e) => onEditProductChange({ ...editProduct, stock: parseInt(e.target.value) })}
-                            placeholder="Nhập số lượng"
                             className="border-gray-300 focus:border-orange-500 focus:ring-orange-500 transition-colors rounded-md shadow-sm"
                         />
                     </div>
@@ -171,15 +177,22 @@ const DialogEditProduct: React.FC<DialogEditProductProps> = ({
                     </div>
 
                     <div className="flex items-center space-x-3">
-                        <Switch
-                            checked={editProduct.status}
-                            onCheckedChange={(checked) =>
-                                onEditProductChange({ ...editProduct, status: checked })
+                        <Select
+                            value={editProduct.status}
+                            onValueChange={(value) =>
+                                onEditProductChange({ ...editProduct, status: value })
                             }
-                            className="data-[state=checked]:bg-orange-500 focus:ring-orange-500 cursor-pointer"
-                        />
-                        <Label className='text-sm font-medium text-gray-700'>Còn hàng</Label>
+                        >
+                            <SelectTrigger className="border-gray-300 focus:border-orange-500 focus:ring-orange-500 rounded-md shadow-sm cursor-pointer">
+                                <SelectValue placeholder="Chọn trạng thái" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="active" className="cursor-pointer">Còn hàng</SelectItem>
+                                <SelectItem value="inactive" className="cursor-pointer">Hết hàng</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
+
                     <Button
                         onClick={onSaveEdit}
                         className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 rounded-md shadow-sm transition-colors duration-200 cursor-pointer"

@@ -1,14 +1,8 @@
 
 import baseApi from "./baseApi";
-export interface categoryType {
-    name: string;
-} 
-export interface orderType { 
-user_id: number , 
-status: string , 
-total_price: number , 
-earned_points : number ,
-}
+import { categoryType } from "./types.";
+
+
 export  const getCategories = async ()=> { 
 try {
 const {data} = await baseApi.get('/categories');

@@ -3,7 +3,9 @@ export interface IAPIResponseWrapper<T> {
   message: string;
   data: T;
 }
-
+export interface categoryType {
+  name: string;
+}
 export interface IUserDataType {
   id?: number;
   fullName?: string;
