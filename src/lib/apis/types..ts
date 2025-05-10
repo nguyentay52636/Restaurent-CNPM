@@ -18,6 +18,26 @@ export interface IUserDataType {
 export interface Role {
   id: number;
   name: string;
-  createdAt?: string;
-  updatedAt?: string;
+}
+
+
+export interface IReservationDataType {  
+  customerName : string; 
+  reservationDate : string; 
+  tableNumber : number; 
+  note :string
+}
+export interface IReviewDataType { 
+    productId: number;
+    userId: string;
+    rating: number;
+  comment : string
+} 
+export interface ProductType { 
+  name : string; 
+  description : string; 
+  price : number; 
+  image : string; 
+  categoryId : number; 
+  status : string; 
 }

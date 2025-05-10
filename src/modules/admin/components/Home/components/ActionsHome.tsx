@@ -1,20 +1,42 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Search, Bell } from 'lucide-react'
+import { getCategories } from '@/lib/apis/categoriesApi'
 
 export default function ActionsHome() {
     const [selectedCategory, setSelectedCategory] = useState('All');
+    const [categories, setCategories] = useState([
+        { name: 'All', icon: '🌐', itemCount: 0 }
+    ]);
 
-    const categories = [
-        { name: 'All', icon: '🌐', itemCount: 0 },
-        { name: 'Phổ biến', icon: '⭐', itemCount: 0 },
-        { name: 'Nước ép', icon: '🍦', itemCount: 0 },
-        { name: 'Cơm', icon: '🍚', itemCount: 0 },
-        { name: 'Coffee', icon: '☕', itemCount: 0 },
-        { name: 'Đồ ăn', icon: '🍿', itemCount: 0 },
-        { name: 'Salad', icon: '🥗', itemCount: 0 },
-    ];
+    const getIconForCategory = (categoryName: string): string => {
+        const name = categoryName.toLowerCase();
+        if (name.includes('cà phê') || name.includes('coffee')) return '☕';
+        if (name.includes('trà') || name.includes('tea')) return '🫖';
+        if (name.includes('đồ ăn nhẹ') || name.includes('snack')) return '🍿';
+        if (name.includes('đồ ăn') || name.includes('food')) return '🍽️';
+        if (name.includes('tráng miệng') || name.includes('dessert')) return '🍰';
+        return '🍽️'; // Default icon
+    };
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await getCategories();
+                const apiCategories = response.data.map((category: any) => ({
+                    name: category.name,
+                    icon: getIconForCategory(category.name),
+                    itemCount: 0
+                }));
+                setCategories([{ name: 'All', icon: '🌐', itemCount: 0 }, ...apiCategories]);
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+            }
+        };
+
+        fetchCategories();
+    }, []);
 
     return (
         <>

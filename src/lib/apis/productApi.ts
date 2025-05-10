@@ -1,36 +1,52 @@
-import baseApi from "./baseApi"
-export type ProductStatus = "in_stock" | "out_of_stock" | "running_low";
+import baseApi from "./baseApi";
+import { ProductType } from "./types.";
 
-export interface ProductType { 
-   name: string; 
-   description: string; 
-   price: number; 
-   category_id: number; 
-   status: ProductStatus; // status chỉ là 1 string enum
+export const getAllProducts = async () => {  
+try {
+    const { data } = await baseApi.get("/products");
+    return data;
+} catch (error: any) {
+    throw new Error(error);
 }
-
-export interface ProductSize { 
-   size: string; 
-   price: number;
-   quantity: number; 
-}
-
-
-export const getProducts = async ()=> { 
+} 
+export const createProduct = async ({name , description , price , image , categoryId , status}: ProductType)=> { 
     try {
-const {data} = await baseApi.get('/products');
-return data;
-    }catch(error) { 
-        throw error
+        const newProduct : ProductType = { 
+            name,
+            description,
+            price,
+            image,
+            categoryId,
+            status,
+           
+        }
+        const { data } = await baseApi.post("/products", newProduct);
+        return data;
+    } catch (error: any) {
+        throw new Error(error);
     }
 }
-export const createProduct = async ({name , description , price , category_id , status}: ProductType)=> { 
+export const updateProduct = async (id: number, { name , description , price , image , categoryId , status}: ProductType)=> { 
     try {
-const newProduct = {name , description , price , category_id , status};
-const {data} = await baseApi.post('/products',newProduct);
-return data;
-    }catch(error) {  
-        throw error
-    } 
-} 
-
+        const updateProduct : ProductType = {  
+            name,
+            description,
+            price,
+            image,
+            categoryId,
+            status,
+        } 
+        const { data } = await baseApi.patch(`/products/${id}`, updateProduct);
+        return data;
+    } catch (error: any) {
+        throw new Error(error);
+    }
+ } 
+ export const deleteProduct = async (id: number)=> {  
+    try {
+        const { data } = await baseApi.delete(`/products/${id}`);
+        return data;
+    } catch (error: any) {
+        throw new Error(error);
+    }
+ } 
