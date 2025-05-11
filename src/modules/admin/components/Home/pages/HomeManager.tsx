@@ -154,7 +154,6 @@ const HomeManager: React.FC = () => {
   };
 
   const handleOrderComplete = () => {
-    setCart([]);
     setShowDetailsOrder(false);
   };
 
@@ -185,6 +184,19 @@ const HomeManager: React.FC = () => {
           tax={tax}
           total={total}
           onReset={handleOrderComplete}
+          onRemoveItem={(itemId) => {
+            removeFromCart(itemId);
+            if (cart.length === 1) {
+              setShowDetailsOrder(false);
+            }
+          }}
+          onUpdateQuantity={(itemId, newQuantity) => {
+            setCart(cart.map(item =>
+              item.id === itemId
+                ? { ...item, quantity: newQuantity }
+                : item
+            ));
+          }}
         />
       ) : (
         <div className="flex">

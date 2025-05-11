@@ -51,10 +51,23 @@ export interface Category {
     updatedAt: string;
 }
 
- export interface ProductWithId extends ProductType {
+export interface ProductWithId extends ProductType {
     id: number;
-    categoryId: number;
-    status: string;
     createdAt: string;
     updatedAt: string;
+    availableSizes?: { name: string; price: number }[];
 }
+
+export interface OrderType {
+  userId: number;
+  note : string;
+  status : string;
+  totalPrice : number;
+}
+export interface OrderItemType { 
+  orderId : number; 
+  productId : number; 
+  quantity : number; 
+  price : number; 
+
+} 
