@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { toast } from '@/components/ui/use-toast';
 
 import CartPanel from '../components/CartPanel';
 import DetailsOrderHome from './DetailsOrderHome';
@@ -155,6 +156,10 @@ const HomeManager: React.FC = () => {
 
   const handleOrderComplete = () => {
     setShowDetailsOrder(false);
+    toast({
+      title: "Thành công",
+      description: "Đã quay lại trang chọn món. Các món đã chọn vẫn được giữ nguyên.",
+    });
   };
 
   // Pagination control handlers
@@ -184,6 +189,7 @@ const HomeManager: React.FC = () => {
           tax={tax}
           total={total}
           onReset={handleOrderComplete}
+          setIsCartOpen={setIsCartOpen}
           onRemoveItem={(itemId) => {
             removeFromCart(itemId);
             if (cart.length === 1) {

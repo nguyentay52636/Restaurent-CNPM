@@ -35,6 +35,18 @@ interface DialogAddProductProps {
   isLoading?: boolean;
 }
 
+// Helper để lấy base URL từ biến môi trường và ghép đường dẫn ảnh
+const getBaseUrl = () => {
+  const apiUrl = import.meta.env.VITE_API_URL as string;
+  return apiUrl.replace(/\/api\/?$/, '');
+};
+
+const getFullImageUrl = (path: string) => {
+  if (!path) return '';
+  if (path.startsWith('http')) return path;
+  return `${getBaseUrl()}${path}`;
+};
+
 const DialogAddProduct: React.FC<DialogAddProductProps> = ({
   isOpen,
   onOpenChange,
@@ -70,12 +82,30 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({
     }
   }, [isOpen]);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setPreviewImage(imageUrl);
-      onNewProductChange({ ...newProduct, image: imageUrl });
+      // Tạo form data để upload file
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        // Gọi API upload file
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        const result = await response.json();
+
+        // Lấy đường dẫn ảnh từ backend trả về
+        const imageUrl = result.data?.image;
+        if (imageUrl) {
+          setPreviewImage(imageUrl);
+          onNewProductChange({ ...newProduct, image: imageUrl });
+        }
+      } catch (error) {
+        console.error('Upload failed:', error);
+      }
     }
   };
 
@@ -263,7 +293,7 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({
               <div className="mt-4 flex justify-center">
                 <div className="relative w-32 h-32 rounded-md overflow-hidden border border-gray-200">
                   <img
-                    src={previewImage || newProduct.image}
+                    src={getFullImageUrl(previewImage || newProduct.image)}
                     alt="Preview"
                     className="w-full h-full object-cover"
                     onError={(e) => {

@@ -42,6 +42,7 @@ export interface ProductType {
   image : string; 
   categoryId : number; 
   status : string; 
+  file?:File
 }
 
 export interface Category {
