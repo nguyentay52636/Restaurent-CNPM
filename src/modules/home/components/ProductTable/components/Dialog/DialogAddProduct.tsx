@@ -101,7 +101,8 @@ const DialogAddProduct: React.FC<DialogAddProductProps> = ({
         const imageUrl = result.data?.image;
         if (imageUrl) {
           setPreviewImage(imageUrl);
-          onNewProductChange({ ...newProduct, image: imageUrl });
+          // Gán cả image và file là link ảnh trả về
+          onNewProductChange({ ...newProduct, image: imageUrl, file: imageUrl });
         }
       } catch (error) {
         console.error('Upload failed:', error);
