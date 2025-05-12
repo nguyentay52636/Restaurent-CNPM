@@ -18,6 +18,15 @@ interface DialogViewProductProps {
   product: ProductWithId | null;
 }
 
+// Helper để lấy link ảnh đầy đủ từ backend
+const getFullImageUrl = (path: string) => {
+  if (!path) return '';
+  if (/^https?:\/\//.test(path)) return path;
+  const apiUrl = import.meta.env.VITE_API_URL as string;
+  const baseUrl = apiUrl.replace(/\/api\/?$/, '');
+  return `${baseUrl}${path}`;
+};
+
 export default function DialogViewProduct({ isOpen, onOpenChange, product }: DialogViewProductProps) {
   if (!product) return null;
 
@@ -64,7 +73,7 @@ export default function DialogViewProduct({ isOpen, onOpenChange, product }: Dia
           <div className="flex justify-center">
             <div className="relative w-48 h-48 rounded-lg overflow-hidden border border-gray-200">
               <img
-                src={product.image}
+                src={getFullImageUrl(product.image)}
                 alt={product.name}
                 className="w-full h-full object-cover"
                 onError={(e) => {

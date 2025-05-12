@@ -42,7 +42,11 @@ export interface ProductType {
   image : string; 
   categoryId : number; 
   status : string; 
+<<<<<<< HEAD
   file?: File;
+=======
+  file?:File
+>>>>>>> 1f203bb463135dac1bd99904c9a604c0b952e066
 }
 
 export interface Category {
@@ -52,12 +56,11 @@ export interface Category {
     updatedAt: string;
 }
 
- export interface ProductWithId extends ProductType {
+export interface ProductWithId extends ProductType {
     id: number;
-    categoryId: number;
-    status: string;
     createdAt: string;
     updatedAt: string;
+<<<<<<< HEAD
 }
 export interface OrderType { 
   userId : number ;
@@ -80,3 +83,21 @@ price : number ;
   amount : number; 
   status : string ; 
  }
+=======
+    availableSizes?: { name: string; price: number }[];
+}
+
+export interface OrderType {
+  userId: number;
+  note : string;
+  status : string;
+  totalPrice : number;
+}
+export interface OrderItemType { 
+  orderId : number; 
+  productId : number; 
+  quantity : number; 
+  price : number; 
+
+} 
+>>>>>>> 1f203bb463135dac1bd99904c9a604c0b952e066

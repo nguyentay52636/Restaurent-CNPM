@@ -5,7 +5,7 @@ import { Pencil, Trash2, Loader2, Eye } from 'lucide-react';
 import { ProductType } from '@/lib/apis/types.';
 import { Badge } from '@/components/ui/badge';
 import DialogConfirmDelete from './Dialog/DialogConfirmDelete';
-import DialogViewProduct from './Dialog/DialogViewProduct';
+import DialogViewProduct from './Dialog/DialogviewProduct';
 import { toast } from 'sonner';
 
 interface ProductWithId extends ProductType {
@@ -19,6 +19,15 @@ interface ProductTableProps {
     onEdit: (product: ProductWithId) => void;
     isLoading?: boolean;
 }
+
+const getFullImageUrl = (path: string) => {
+    if (!path) return '';
+    if (/^https?:\/\//.test(path)) return path;
+    // Lấy base url từ biến môi trường, loại bỏ /api nếu có
+    const apiUrl = import.meta.env.VITE_API_URL as string;
+    const baseUrl = apiUrl.replace(/\/api\/?$/, '');
+    return `${baseUrl}${path}`;
+};
 
 export default function ProductTable({ products, onStatusToggle, onDelete, onEdit, isLoading = false }: ProductTableProps) {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -124,7 +133,7 @@ export default function ProductTable({ products, onStatusToggle, onDelete, onEdi
                                 <TableCell>
                                     <div className="flex items-center space-x-3">
                                         <img
-                                            src={product.image}
+                                            src={getFullImageUrl(product.image)}
                                             alt={product.name}
                                             className="w-10 h-10 rounded-md object-cover"
                                             onError={(e) => {
