@@ -42,6 +42,7 @@ export interface ProductType {
   image : string; 
   categoryId : number; 
   status : string; 
+  file?: File;
 }
 
 export interface Category {
@@ -58,3 +59,24 @@ export interface Category {
     createdAt: string;
     updatedAt: string;
 }
+export interface OrderType { 
+  userId : number ;
+   totalPrice : number ; 
+   status : string ;
+    orderItems : OrderItemType[] ; 
+    earnedPoints:number ;
+  }
+
+export interface OrderItemType { 
+orderId : number ; 
+productId : number ; 
+quantity : number ; 
+price : number ; 
+
+}
+ export interface PaymentType { 
+  orderId :number ; 
+  paymentMethod : string;
+  amount : number; 
+  status : string ; 
+ }

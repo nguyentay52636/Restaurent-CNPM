@@ -5,8 +5,8 @@ export const getAllProducts = async () => {
 try {
     const { data } = await baseApi.get("/products");
     return data;
-} catch (error: any) {
-    throw new Error(error);
+} catch (error: unknown) {
+    throw new Error(error instanceof Error ? error.message : String(error));
 }
 } 
 export const createProduct = async ({name , description , price , image , categoryId , status}: ProductType)=> { 
@@ -22,8 +22,8 @@ export const createProduct = async ({name , description , price , image , catego
         }
         const { data } = await baseApi.post("/products", newProduct);
         return data;
-    } catch (error: any) {
-        throw new Error(error);
+    } catch (error: unknown) {
+        throw new Error(error instanceof Error ? error.message : String(error));
     }
 }
 export const updateProduct = async (id: number, { name , description , price , image , categoryId , status}: ProductType)=> { 
@@ -38,15 +38,15 @@ export const updateProduct = async (id: number, { name , description , price , i
         } 
         const { data } = await baseApi.patch(`/products/${id}`, updateProduct);
         return data;
-    } catch (error: any) {
-        throw new Error(error);
+    } catch (error: unknown) {
+        throw new Error(error instanceof Error ? error.message : String(error));
     }
  } 
  export const deleteProduct = async (id: number)=> {  
     try {
         const { data } = await baseApi.delete(`/products/${id}`);
         return data;
-    } catch (error: any) {
-        throw new Error(error);
+    } catch (error: unknown) {
+        throw new Error(error instanceof Error ? error.message : String(error));
     }
  } 
