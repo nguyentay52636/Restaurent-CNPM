@@ -1,18 +1,24 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
-import { Product } from '../DataProducts';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Link, Upload } from 'lucide-react';
+import { ProductType } from '@/lib/apis/types.';
+
+interface ProductWithId extends ProductType {
+    id: number;
+}
 
 interface DialogEditProductProps {
     isOpen: boolean;
     onOpenChange: (open: boolean) => void;
-    editProduct: Product | null;
-    onEditProductChange: (product: Product) => void;
-    onSaveEdit: () => void;
+    editProduct: ProductWithId | null;
+    onEditProductChange: (product: ProductWithId | null) => void;
+    onSaveEdit: () => Promise<void>;
+    isLoading?: boolean;
 }
 
 const DialogEditProduct: React.FC<DialogEditProductProps> = ({
@@ -22,77 +28,174 @@ const DialogEditProduct: React.FC<DialogEditProductProps> = ({
     onEditProductChange,
     onSaveEdit
 }) => {
+    const [imageTab, setImageTab] = useState<'url' | 'upload'>('url');
+    const [previewImage, setPreviewImage] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
     if (!editProduct) return null;
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            // Create a URL for the file
+            const imageUrl = URL.createObjectURL(file);
+            setPreviewImage(imageUrl);
+            onEditProductChange({ ...editProduct, image: imageUrl });
+        }
+    };
+
+    const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const url = e.target.value;
+        onEditProductChange({ ...editProduct, image: url });
+        setPreviewImage(url);
+    };
+
+    const triggerFileInput = () => {
+        fileInputRef.current?.click();
+    };
 
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent>
+            <DialogContent className='sm:max-w-md p-6 bg-white rounded-lg shadow-lg'>
                 <DialogHeader>
-                    <DialogTitle>Chỉnh Sửa Sản Phẩm</DialogTitle>
+                    <DialogTitle className='text-xl font-bold text-gray-900'>Chỉnh Sửa Sản Phẩm</DialogTitle>
                 </DialogHeader>
-                <div className="space-y-4">
-                    <div>
-                        <Label htmlFor="edit-name">Tên Sản Phẩm</Label>
+                <div className="space-y-4 mt-4">
+                    <div className='space-y-2'>
+                        <Label htmlFor="edit-name" className='text-sm font-medium text-gray-700'>Tên Sản Phẩm</Label>
                         <Input
                             id="edit-name"
                             value={editProduct.name}
                             onChange={(e) => onEditProductChange({ ...editProduct, name: e.target.value })}
                             placeholder="Nhập tên sản phẩm"
-                            className="border-gray-300 focus:border-[#F67F20] transition-colors"
+                            className="border-gray-300 focus:border-orange-500 focus:ring-orange-500 transition-colors rounded-md shadow-sm"
                         />
                     </div>
-                    <div>
-                        <Label htmlFor="edit-category">Danh Mục</Label>
+
+                    <div className='space-y-2'>
+                        <Label htmlFor="edit-description" className='text-sm font-medium text-gray-700'>Mô tả</Label>
+                        <Input
+                            id="edit-description"
+                            value={editProduct.description}
+                            onChange={(e) => onEditProductChange({ ...editProduct, description: e.target.value })}
+                            placeholder="Nhập mô tả sản phẩm"
+                            className="border-gray-300 focus:border-orange-500 focus:ring-orange-500 transition-colors rounded-md shadow-sm"
+                        />
+                    </div>
+
+                    <div className='space-y-2'>
+                        <Label htmlFor="edit-category" className='text-sm font-medium text-gray-700'>Danh Mục</Label>
                         <Select
-                            value={editProduct.category}
+                            value={editProduct.categoryId.toString()}
                             onValueChange={(value) =>
-                                onEditProductChange({ ...editProduct, category: value })
+                                onEditProductChange({ ...editProduct, categoryId: parseInt(value) })
                             }
                         >
-                            <SelectTrigger className="border-gray-300 focus:border-[#F67F20]">
+                            <SelectTrigger className="border-gray-300 focus:border-orange-500 focus:ring-orange-500 rounded-md shadow-sm cursor-pointer">
                                 <SelectValue placeholder="Chọn danh mục" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="Coffee and Beverage">Cà Phê và Đồ Uống</SelectItem>
-                                <SelectItem value="Food and Snack">Đồ Ăn và Đồ Ăn Nhẹ</SelectItem>
+                                <SelectItem value="1" className="cursor-pointer">Cà Phê</SelectItem>
+                                <SelectItem value="2" className="cursor-pointer">Trà</SelectItem>
+                                <SelectItem value="3" className="cursor-pointer">Đồ Ăn</SelectItem>
+                                <SelectItem value="4" className="cursor-pointer">Tráng Miệng</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
-                    <div>
-                        <Label htmlFor="edit-price">Giá</Label>
+
+                    <div className='space-y-2'>
+                        <Label htmlFor="edit-price" className='text-sm font-medium text-gray-700'>Giá</Label>
                         <Input
                             id="edit-price"
                             type="number"
                             value={editProduct.price}
                             onChange={(e) => onEditProductChange({ ...editProduct, price: parseFloat(e.target.value) })}
                             placeholder="Nhập giá"
-                            className="border-gray-300 focus:border-[#A27B5C] transition-colors"
+                            className="border-gray-300 focus:border-orange-500 focus:ring-orange-500 transition-colors rounded-md shadow-sm"
                         />
                     </div>
-                    <div>
-                        <Label htmlFor="edit-stock">Số Lượng</Label>
-                        <Input
-                            id="edit-stock"
-                            type="number"
-                            value={editProduct.stock}
-                            onChange={(e) => onEditProductChange({ ...editProduct, stock: parseInt(e.target.value) })}
-                            placeholder="Nhập số lượng"
-                            className="border-gray-300 focus:border-[#A27B5C] transition-colors"
-                        />
+
+                    {/* Image Upload Section */}
+                    <div className='space-y-3'>
+                        <Label className='text-sm font-medium text-gray-700'>Hình ảnh sản phẩm</Label>
+
+                        <Tabs defaultValue="url" value={imageTab} onValueChange={(value) => setImageTab(value as 'url' | 'upload')} className="w-full">
+                            <TabsList className="grid grid-cols-2 mb-2">
+                                <TabsTrigger value="url" className="flex items-center gap-1 cursor-pointer">
+                                    <Link className="h-4 w-4" /> URL
+                                </TabsTrigger>
+                                <TabsTrigger value="upload" className="flex items-center gap-1 cursor-pointer">
+                                    <Upload className="h-4 w-4" /> Tải lên
+                                </TabsTrigger>
+                            </TabsList>
+
+                            <TabsContent value="url" className="mt-2">
+                                <Input
+                                    id="edit-image"
+                                    value={editProduct.image}
+                                    onChange={handleUrlChange}
+                                    placeholder="Nhập đường dẫn hình ảnh"
+                                    className="border-gray-300 focus:border-orange-500 focus:ring-orange-500 transition-colors rounded-md shadow-sm"
+                                />
+                            </TabsContent>
+
+                            <TabsContent value="upload" className="mt-2">
+                                <div className="flex flex-col items-center justify-center">
+                                    <input
+                                        type="file"
+                                        ref={fileInputRef}
+                                        accept="image/*"
+                                        onChange={handleFileChange}
+                                        className="hidden"
+                                    />
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={triggerFileInput}
+                                        className="w-full h-24 border-dashed border-2 border-gray-300 hover:border-orange-500 flex flex-col items-center justify-center gap-2 cursor-pointer"
+                                    >
+                                        <Upload className="h-6 w-6 text-gray-400" />
+                                        <span className="text-sm text-gray-500">Chọn ảnh từ máy tính</span>
+                                    </Button>
+                                </div>
+                            </TabsContent>
+                        </Tabs>
+
+                        {/* Image Preview */}
+                        <div className="mt-4 flex justify-center">
+                            <div className="relative w-32 h-32 rounded-md overflow-hidden border border-gray-200">
+                                <img
+                                    src={previewImage || editProduct.image}
+                                    alt="Preview"
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                        (e.target as HTMLImageElement).src = 'https://placehold.co/200x200/F5F5F5/CCCCCC?text=No+Image';
+                                    }}
+                                />
+                            </div>
+                        </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                        <Switch
-                            checked={editProduct.status}
-                            onCheckedChange={(checked) =>
-                                onEditProductChange({ ...editProduct, status: checked })
+
+                    <div className="flex items-center space-x-3">
+                        <Select
+                            value={editProduct.status}
+                            onValueChange={(value) =>
+                                onEditProductChange({ ...editProduct, status: value })
                             }
-                            className="data-[state=checked]:bg-[#A27B5C]"
-                        />
-                        <Label>Trạng Thái</Label>
+                        >
+                            <SelectTrigger className="border-gray-300 focus:border-orange-500 focus:ring-orange-500 rounded-md shadow-sm cursor-pointer">
+                                <SelectValue placeholder="Chọn trạng thái" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="active" className="cursor-pointer">Còn hàng</SelectItem>
+                                <SelectItem value="inactive" className="cursor-pointer">Hết hàng</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
+
                     <Button
                         onClick={onSaveEdit}
-                        className="w-full bg-[#A27B5C] hover:bg-[#8c674b] text-white"
+                        className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 rounded-md shadow-sm transition-colors duration-200 cursor-pointer"
                     >
                         Lưu Thay Đổi
                     </Button>

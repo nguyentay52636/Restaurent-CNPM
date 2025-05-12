@@ -1,12 +1,37 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Chat } from '../DataChat'; // Adjust the import path
 import ItemChat from './ItemChat';
 
 interface RoomChatProps {
     selectedChat: Chat | null;
+    onSendMessage: (content: string) => void;
 }
 
-export default function RoomChat({ selectedChat }: RoomChatProps) {
+export default function RoomChat({ selectedChat, onSendMessage }: RoomChatProps) {
+    const [message, setMessage] = useState('');
+    const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    // Auto-scroll to bottom when messages change
+    useEffect(() => {
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [selectedChat?.messages]);
+
+    const handleSendMessage = () => {
+        if (message.trim()) {
+            onSendMessage(message);
+            setMessage(''); // Clear the input after sending
+        }
+    };
+
+    const handleKeyPress = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleSendMessage();
+        }
+    };
+
     return (
         <div className="flex-1 flex flex-col h-full">
             {selectedChat ? (
@@ -23,7 +48,9 @@ export default function RoomChat({ selectedChat }: RoomChatProps) {
                                 {selectedChat.name}
                             </p>
                             <p className="text-sm text-gray-500">
-                                Sed veroe eos accusmus...
+                                {selectedChat.lastMessage.length > 30
+                                    ? `${selectedChat.lastMessage.substring(0, 30)}...`
+                                    : selectedChat.lastMessage}
                             </p>
                         </div>
                         <div className="flex space-x-2">
@@ -65,13 +92,16 @@ export default function RoomChat({ selectedChat }: RoomChatProps) {
                             TODAY
                         </div>
                         {selectedChat.messages.length > 0 ? (
-                            selectedChat.messages.map((message) => (
-                                <ItemChat
-                                    key={message.id}
-                                    message={message}
-                                    isOwnMessage={message.sender === 'You'}
-                                />
-                            ))
+                            <>
+                                {selectedChat.messages.map((message) => (
+                                    <ItemChat
+                                        key={message.id}
+                                        message={message}
+                                        isOwnMessage={message.sender === 'You'}
+                                    />
+                                ))}
+                                <div ref={messagesEndRef} />
+                            </>
                         ) : (
                             <div className="text-center text-gray-500">
                                 NO CHAT HISTORY AVAILABLE
@@ -99,8 +129,15 @@ export default function RoomChat({ selectedChat }: RoomChatProps) {
                             type="text"
                             placeholder="Write Message..."
                             className="flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                            value={message}
+                            onChange={(e) => setMessage(e.target.value)}
+                            onKeyPress={handleKeyPress}
                         />
-                        <button className="text-orange-500 hover:text-orange-600">
+                        <button
+                            className="text-orange-500 hover:text-orange-600"
+                            onClick={handleSendMessage}
+                            disabled={!message.trim()}
+                        >
                             <svg
                                 className="w-5 h-5"
                                 fill="none"

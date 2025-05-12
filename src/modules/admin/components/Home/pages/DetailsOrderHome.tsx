@@ -1,21 +1,28 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { X, Search } from 'lucide-react';
-import SelectPayment from '../components/SelectPayment';
-import { dataCustomers, Customer } from '../../AccountManager/components/AcountData';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
+import { Search, Plus, X, Minus } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Separator } from '@/components/ui/separator';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import DialogNewCustomer from '../components/DialogNewCustomer';
+import SelectPayment from '../components/SelectPayment';
+import { getAllUserAPI } from '@/lib/apis/userApi';
+import { toast } from '@/components/ui/use-toast';
+import { IUserDataType } from '@/lib/apis/types.';
+import { generatePDF } from '../utils/pdfGenerator';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
-// Define the OrderItem interface
 interface OrderItem {
     id: number;
     name: string;
@@ -24,11 +31,31 @@ interface OrderItem {
     image: string;
 }
 
+interface InvoiceData {
+    invoiceNumber: number;
+    items: OrderItem[];
+    subtotal: number;
+    tax: number;
+    charges: number;
+    finalTotal: number;
+    selectedCustomer: {
+        id: number;
+        name: string;
+        address: string;
+        spent: number;
+    } | null;
+    pointsToAdd: number;
+}
+
 interface DetailsOrderHomeProps {
     cartItems: OrderItem[];
     subtotal: number;
     tax: number;
     total: number;
+    onReset?: () => void;
+    onRemoveItem?: (itemId: number) => void;
+    onUpdateQuantity?: (itemId: number, newQuantity: number) => void;
+    setIsCartOpen?: (isOpen: boolean) => void;
 }
 
 export default function DetailsOrderHome({
@@ -36,237 +63,374 @@ export default function DetailsOrderHome({
     subtotal,
     tax,
     total,
+    onReset,
+    onRemoveItem,
+    onUpdateQuantity,
+    setIsCartOpen,
 }: DetailsOrderHomeProps) {
-    const [items, setItems] = useState<OrderItem[]>(cartItems);
-    const [cart, setCart] = useState<OrderItem[]>(cartItems);
-    const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+    const [users, setUsers] = useState<IUserDataType[]>([]);
+    const [selectedUser, setSelectedUser] = useState<IUserDataType | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
-    const charges = 24000; // Fixed charges in VND
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+    const [showInvoiceDialog, setShowInvoiceDialog] = useState(false);
+    const [invoiceData, setInvoiceData] = useState<InvoiceData | null>(null);
+    const [showBackConfirmDialog, setShowBackConfirmDialog] = useState(false);
 
-    // Filter customers with role "Khách hàng" (Customer)
-    const customerRoleCustomers = useMemo(
-        () =>
-            dataCustomers.filter((customer) =>
-                customer.roles_id.some((role) => role.name === 'Khách hàng')
-            ),
-        []
-    );
+    // Fetch users with role_id = 2 (customers)
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const response = await getAllUserAPI();
+                const customers = response.data.filter((user: IUserDataType) =>
+                    user.roleId === 2
+                );
+                setUsers(customers);
+            } catch (error) {
+                console.error('Error fetching users:', error);
+                toast({
+                    title: "Lỗi",
+                    description: "Không thể tải danh sách khách hàng",
+                    variant: "destructive"
+                });
+            }
+        };
 
-    // Filter customers based on search term
-    const filteredCustomers = useMemo(
-        () =>
-            customerRoleCustomers.filter(
-                (customer) =>
-                    customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    customer.address.toLowerCase().includes(searchTerm.toLowerCase())
-            ),
-        [searchTerm, customerRoleCustomers]
-    );
+        fetchUsers();
+    }, []);
 
-    // Calculate points to be added (1 point per 10,000 VND spent)
+    // Filter users based on search term
+    const filteredUsers = useMemo(() => {
+        return users.filter(user =>
+            user.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            user.phone?.includes(searchTerm) ||
+            user.email.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    }, [users, searchTerm]);
+
+    // Calculate points to be added (1 point per 10,000 VND)
     const pointsToAdd = Math.floor(total / 10000);
 
-    // Handle customer selection
-    const handleCustomerSelect = (customerId: string) => {
-        if (customerId === 'guest') {
-            setSelectedCustomer(null);
-        } else {
-            const customer = customerRoleCustomers.find((c) => c.id.toString() === customerId);
-            if (customer) {
-                setSelectedCustomer(customer);
-            }
+    const handleUserSelect = (userId: string) => {
+        const user = users.find(u => u.id?.toString() === userId);
+        setSelectedUser(user || null);
+    };
+
+    const handleNewCustomer = async (customerData: IUserDataType) => {
+        try {
+            // Add the new customer to the users list
+            setUsers(prevUsers => [...prevUsers, customerData]);
+
+            // Select the newly created customer
+            setSelectedUser(customerData);
+
+            // Close the dialog
+            setIsDialogOpen(false);
+        } catch (error) {
+            console.error('Error handling new customer:', error);
         }
     };
 
-    // Handle removing an item
-    const handleRemoveItem = (id: number) => {
-        setItems(items.filter((item) => item.id !== id));
-        setCart(cart.filter((item) => item.id !== id));
+    const handlePayment = () => {
+        if (!selectedUser) {
+            toast({
+                title: "Cảnh báo",
+                description: "Vui lòng chọn khách hàng trước khi thanh toán",
+                variant: "destructive"
+            });
+            return;
+        }
+        setIsPaymentModalOpen(true);
     };
 
-    // Handle print action (placeholder)
-    const handlePrint = () => {
-        console.log('In hóa đơn...');
-        // Add print functionality here
-    };
-
-    // Handle payment method selection
     const handlePaymentMethodSelect = (method: string) => {
-        console.log(`Selected payment method: ${method}`);
         setIsPaymentModalOpen(false);
-        // Add payment processing logic here
+        // Here you would typically call an API to process the payment
+        console.log(`Processing payment with ${method} for user ${selectedUser?.fullName}`);
+
+        // Generate invoice number (you might want to get this from your backend)
+        const invoiceNumber = Math.floor(Math.random() * 1000000);
+
+        // Prepare data for PDF generation
+        const data = {
+            invoiceNumber,
+            items: cartItems,
+            subtotal,
+            tax,
+            charges: 0, // Add any additional charges if needed
+            finalTotal: total,
+            selectedCustomer: selectedUser ? {
+                id: selectedUser.id || 0,
+                name: selectedUser.fullName || '',
+                address: selectedUser.address || '',
+                spent: total
+            } : null,
+            pointsToAdd
+        };
+
+        // Show success message and ask about invoice
+        toast({
+            title: "Thanh toán thành công",
+            description: `Đã thanh toán bằng ${method}. Điểm tích lũy: +${pointsToAdd}`,
+        });
+
+        // Store invoice data and show dialog
+        setInvoiceData(data);
+        setShowInvoiceDialog(true);
     };
 
-    const handleCustomerSubmit = (customerData: any) => {
-        console.log('New customer data:', customerData);
-        setIsDialogOpen(false);
+    const handlePrintInvoice = () => {
+        if (invoiceData) {
+            try {
+                generatePDF(invoiceData);
+                toast({
+                    title: "Thành công",
+                    description: "Hóa đơn đã được tạo",
+                });
+            } catch (error) {
+                console.error('Error generating invoice:', error);
+                toast({
+                    title: "Lỗi",
+                    description: "Không thể tạo hóa đơn. Vui lòng liên hệ nhân viên.",
+                    variant: "destructive"
+                });
+            }
+        }
+        setShowInvoiceDialog(false);
+        if (onReset) onReset();
+    };
+
+    const handleSkipInvoice = () => {
+        setShowInvoiceDialog(false);
+        if (onReset) onReset();
+    };
+
+    const handleBackClick = () => {
+        setShowBackConfirmDialog(true);
+    };
+
+    const handleConfirmBack = () => {
+        setShowBackConfirmDialog(false);
+        if (onReset) {
+            onReset();
+            // Nếu có sản phẩm trong giỏ hàng, mở CartPanel
+            if (cartItems.length > 0 && setIsCartOpen) {
+                setIsCartOpen(true);
+            }
+            toast({
+                title: "Thành công",
+                description: "Đã quay lại trang chọn món. Các món đã chọn vẫn được giữ nguyên.",
+            });
+        }
     };
 
     return (
-        <div className="p-6 bg-white rounded-lg shadow-md">
-            {/* Order Header */}
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                Hóa đơn #{Math.floor(Math.random() * 1000000)}
-            </h2>
-
-            {/* Customer Selection */}
-            <Card className="mb-6">
-                <CardHeader>
-                    <CardTitle>Chọn khách hàng để tích điểm</CardTitle>
+        <div className="min-h-screen bg-gray-100 p-6">
+            <Card className="w-full max-w-[1400px] mx-auto">
+                <CardHeader className="border-b pb-4">
+                    <CardTitle className="text-2xl font-bold">Chi tiết đơn hàng</CardTitle>
                 </CardHeader>
-                <CardContent>
-                    <div className="mb-4">
-                        <Label htmlFor="customerSelect" className="block text-sm font-medium text-gray-700 mb-1">
-                            Tìm kiếm khách hàng
-                        </Label>
-                        <div className="relative">
+                <CardContent className="p-6">
+                    {/* Customer Selection */}
+                    <div className="mb-8">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-lg font-semibold">Chọn khách hàng</h3>
+                            <Button
+                                onClick={() => setIsDialogOpen(true)}
+                                className="bg-orange-500 hover:bg-orange-600 text-white"
+                            >
+                                Khách hàng mới
+                            </Button>
+                        </div>
+                        <div className="relative mb-4">
                             <Input
                                 type="text"
-                                placeholder="Tìm theo tên hoặc địa chỉ..."
+                                placeholder="Tìm kiếm khách hàng..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-10 w-full mb-2"
+                                className="pl-10"
                             />
                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                         </div>
-
+                        <Select onValueChange={handleUserSelect}>
+                            <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Chọn khách hàng" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {filteredUsers.map((user) => (
+                                    <SelectItem key={user.id} value={user.id?.toString() || ''}>
+                                        {user.fullName} - {user.phone || 'Chưa có số điện thoại'} (Điểm: {user.points || 0})
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        {selectedUser && (
+                            <div className="mt-4 p-4 bg-orange-50 rounded-lg">
+                                <p className="font-medium">Khách hàng: {selectedUser.fullName}</p>
+                                <p className="text-sm text-gray-600">Điểm hiện tại: {selectedUser.points || 0}</p>
+                                <p className="text-sm text-orange-600">Điểm sẽ được cộng: +{pointsToAdd}</p>
+                            </div>
+                        )}
                     </div>
 
-                    {/* Customer Details Form (Read-Only) */}
-                    <div className="my-8 flex items-center justify-between">
-                        <div className="">
-                            <Select
-                                onValueChange={handleCustomerSelect}
-                                value={selectedCustomer?.id.toString() || 'guest'}
-                            >
-                                <SelectTrigger id="customerSelect">
-                                    <SelectValue placeholder="Chọn khách hàng" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="guest">Danh sách khách hàng</SelectItem>
-                                    {filteredCustomers.map((customer) => (
-                                        <SelectItem key={customer.id} value={customer.id.toString()}>
-                                            {customer.name} - {customer.spent.toLocaleString('vi-VN')}đ
-                                        </SelectItem>
+                    <Separator className="my-6" />
+
+                    {/* Order Items */}
+                    <div className="mb-8">
+                        <h3 className="text-lg font-semibold mb-4">Danh sách món ăn</h3>
+                        <div className="border rounded-lg overflow-hidden">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead className="w-[40%]">Sản phẩm</TableHead>
+                                        <TableHead className="text-right">Số lượng</TableHead>
+                                        <TableHead className="text-right">Đơn giá</TableHead>
+                                        <TableHead className="text-right">Thành tiền</TableHead>
+                                        <TableHead className="w-[50px]"></TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {cartItems.map((item) => (
+                                        <TableRow key={item.id}>
+                                            <TableCell>
+                                                <div className="flex items-center space-x-4">
+                                                    <img
+                                                        src={item.image}
+                                                        alt={item.name}
+                                                        className="w-16 h-16 object-cover rounded"
+                                                    />
+                                                    <span>{item.name}</span>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className="flex items-center justify-end space-x-2">
+                                                    <Button
+                                                        variant="outline"
+                                                        size="icon"
+                                                        className="h-8 w-8"
+                                                        onClick={() => onUpdateQuantity?.(item.id, Math.max(1, item.quantity - 1))}
+                                                    >
+                                                        <Minus className="h-4 w-4" />
+                                                    </Button>
+                                                    <span className="w-8 text-center">{item.quantity}</span>
+                                                    <Button
+                                                        variant="outline"
+                                                        size="icon"
+                                                        className="h-8 w-8"
+                                                        onClick={() => onUpdateQuantity?.(item.id, item.quantity + 1)}
+                                                    >
+                                                        <Plus className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                {item.price.toLocaleString('vi-VN')} đ
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                {(item.price * item.quantity).toLocaleString('vi-VN')} đ
+                                            </TableCell>
+                                            <TableCell>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50"
+                                                    onClick={() => onRemoveItem?.(item.id)}
+                                                >
+                                                    <X className="h-4 w-4" />
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
                                     ))}
-                                </SelectContent>
-                            </Select>
+                                </TableBody>
+                            </Table>
                         </div>
-                        <div className="">
-                            <DialogNewCustomer
-                                open={isDialogOpen}
-                                onClose={() => setIsDialogOpen(false)}
-                                onSubmit={handleCustomerSubmit}
-                            />
-                        </div>
-
                     </div>
-                    {selectedCustomer && (
-                        <div className="mt-4 p-4 bg-gray-50 rounded-md">
-                            <h3 className="font-medium text-gray-900">{selectedCustomer.name}</h3>
-                            <p className="text-sm text-gray-600">Địa chỉ: {selectedCustomer.address}</p>
-                            <p className="text-sm text-gray-600">
-                                Điểm hiện tại: {selectedCustomer.spent.toLocaleString('vi-VN')}đ
-                            </p>
-                            <p className="text-sm text-orange-500 font-medium">
-                                Điểm sẽ được cộng: +{pointsToAdd.toLocaleString('vi-VN')}đ
-                            </p>
-                            <p className="text-sm font-bold">
-                                Tổng điểm sau khi cộng:{' '}
-                                {(selectedCustomer.spent + pointsToAdd).toLocaleString('vi-VN')}đ
-                            </p>
+
+                    <Separator className="my-6" />
+
+                    {/* Order Summary */}
+                    <div className="space-y-4 bg-gray-50 p-6 rounded-lg">
+                        <h3 className="text-lg font-semibold mb-4">Tổng kết đơn hàng</h3>
+                        <div className="space-y-2">
+                            <div className="flex justify-between">
+                                <span className="text-gray-500">Tạm tính</span>
+                                <span className="font-medium">{subtotal.toLocaleString('vi-VN')} đ</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-gray-500">Thuế VAT (10%)</span>
+                                <span className="font-medium">{tax.toLocaleString('vi-VN')} đ</span>
+                            </div>
+                            <div className="flex justify-between text-lg font-semibold pt-2 border-t">
+                                <span>Tổng cộng</span>
+                                <span>{total.toLocaleString('vi-VN')} đ</span>
+                            </div>
                         </div>
-                    )}
+                    </div>
+
+                    <div className="mt-8 flex justify-end space-x-4">
+                        <Button
+                            variant="outline"
+                            onClick={handleBackClick}
+                            className="border-orange-500 text-orange-500 hover:bg-orange-50"
+                        >
+                            Quay lại
+                        </Button>
+                        <Button
+                            className="bg-orange-500 hover:bg-orange-600 text-white px-8"
+                            onClick={handlePayment}
+                        >
+                            Thanh toán
+                        </Button>
+                    </div>
                 </CardContent>
             </Card>
 
-            {/* Order Items and Summary */}
-            <div className="flex justify-between mb-6">
-                <div className="w-2/3 space-y-4">
-                    {items.map((item) => (
-                        <div key={item.id} className="flex items-center space-x-4">
-                            <img
-                                src={item.image}
-                                alt={item.name}
-                                className="w-16 h-16 rounded-md object-cover"
-                            />
-                            <div className="flex-1">
-                                <p className="font-medium text-gray-800">{item.name}</p>
-                                <p className="text-orange-500 font-semibold">
-                                    {item.price.toLocaleString('vi-VN')}đ
-                                </p>
-                                <p className="text-sm text-gray-500">Số lượng: {item.quantity}</p>
-                            </div>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleRemoveItem(item.id)}
-                                className="text-gray-500 hover:text-gray-700"
-                            >
-                                <X className="h-4 w-4" />
-                            </Button>
-                        </div>
-                    ))}
-                </div>
+            {/* Modals */}
+            <SelectPayment
+                open={isPaymentModalOpen}
+                onClose={() => setIsPaymentModalOpen(false)}
+                onSelectPayment={handlePaymentMethodSelect}
+                cart={cartItems}
+                total={total}
+            />
 
-                {/* Order Summary */}
-                <div className="w-1/3 text-right space-y-2">
-                    <div className="flex justify-between">
-                        <span className="text-gray-600">Tạm tính</span>
-                        <span className="font-semibold text-gray-800">
-                            {subtotal.toLocaleString('vi-VN')}đ
-                        </span>
-                    </div>
-                    <div className="flex justify-between">
-                        <span className="text-gray-600">Thuế</span>
-                        <span className="font-semibold text-gray-800">{tax.toLocaleString('vi-VN')}đ</span>
-                    </div>
-                    <div className="flex justify-between">
-                        <span className="text-gray-600">Phí dịch vụ</span>
-                        <span className="font-semibold text-gray-800">
-                            {charges.toLocaleString('vi-VN')}đ
-                        </span>
-                    </div>
-                    <div className="border-t pt-2 flex justify-between">
-                        <span className="text-gray-600">Tổng cộng</span>
-                        <span className="font-bold text-lg text-gray-800">
-                            {total.toLocaleString('vi-VN')}đ
-                        </span>
-                    </div>
-                    {selectedCustomer && (
-                        <div className="mt-2 p-2 bg-orange-50 rounded-md">
-                            <p className="text-sm text-orange-600 font-medium">
-                                Điểm tích lũy: +{pointsToAdd.toLocaleString('vi-VN')}đ
-                            </p>
-                        </div>
-                    )}
-                </div>
-            </div>
+            <DialogNewCustomer
+                open={isDialogOpen}
+                onClose={() => setIsDialogOpen(false)}
+                onSubmit={handleNewCustomer}
+            />
 
-            {/* Action Buttons */}
-            <div className="flex justify-end space-x-3">
-                <Button
-                    onClick={handlePrint}
-                    className="bg-black hover:bg-gray-900 text-white rounded-md px-6 py-2 cursor-pointer"
-                >
-                    In hóa đơn
-                </Button>
-                <Button
-                    onClick={() => setIsPaymentModalOpen(true)}
-                    className="bg-orange-500 hover:bg-orange-600 text-white rounded-md px-6 py-2 cursor-pointer"
-                >
-                    Đặt món
-                </Button>
-                <SelectPayment
-                    onSelectPayment={handlePaymentMethodSelect}
-                    onClose={() => setIsPaymentModalOpen(false)}
-                    open={isPaymentModalOpen}
-                    cart={cart}
-                    total={total}
-                />
-            </div>
+            {/* Invoice Dialog */}
+            <AlertDialog open={showInvoiceDialog} onOpenChange={setShowInvoiceDialog}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>In hóa đơn</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Bạn có muốn in hóa đơn cho đơn hàng này không?
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel onClick={handleSkipInvoice}>Bỏ qua</AlertDialogCancel>
+                        <AlertDialogAction onClick={handlePrintInvoice}>In hóa đơn</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            {/* Back Confirmation Dialog */}
+            <AlertDialog open={showBackConfirmDialog} onOpenChange={setShowBackConfirmDialog}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Xác nhận quay lại</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Bạn có muốn quay lại trang chọn món để thêm món mới không? Các món đã chọn sẽ được giữ nguyên.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Hủy</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleConfirmBack}>Xác nhận</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 }

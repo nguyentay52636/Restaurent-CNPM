@@ -100,6 +100,7 @@ export default function OrderTable({ paginatedOrders, calculateTotalAmount, hand
                     ))}
                 </TableBody>
             </Table>
+           
         </div>
 
     )

@@ -3,18 +3,18 @@ import { Truck, Leaf, Package } from "lucide-react";
 const features = [
   {
     icon: <Truck className="w-8 h-8 text-red-500" />,
-    title: "Fast Delivery",
-    description: "Promise to deliver within 30 mins",
+    title: "Giao Hàng Nhanh",
+    description: "Cam kết giao hàng trong vòng 30 phút",
   },
   {
     icon: <Leaf className="w-8 h-8 text-green-600" />,
-    title: "Fresh Food",
-    description: "Your food will be delivered 100% fresh to your home.",
+    title: "Thực Phẩm Tươi",
+    description: "Thực phẩm của bạn sẽ được giao tận nhà 100% tươi ngon.",
   },
   {
     icon: <Package className="w-8 h-8 text-yellow-500" />,
-    title: "Free Delivery",
-    description: "Your food delivery is absolutely free. No cost just order",
+    title: "Miễn Phí Giao Hàng",
+    description: "Giao hàng hoàn toàn miễn phí. Không phí phát sinh khi đặt hàng",
   },
 ];
 

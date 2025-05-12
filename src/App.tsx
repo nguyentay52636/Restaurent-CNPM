@@ -18,6 +18,10 @@ import NotificationsHistoryOrder from './modules/admin/components/OrderHistory/c
 import AccountManager from './modules/admin/components/AccountManager/AccountManager';
 import ChatManager from './modules/admin/components/Chat/ChatManager';
 import OrderManager from './modules/admin/components/Order/OrderManager';
+import SetATable from './modules/admin/components/SetATable';
+import FeedbackManager from './modules/admin/components/Feedback/FeedbackManager';
+import ManagerDashBoard from './modules/admin/components/DashBoard/ManagerDashBoard';
+import { Toaster } from '@/components/ui/toaster';
 
 function App() {
   const router = createBrowserRouter([
@@ -31,15 +35,6 @@ function App() {
           index: true,
           element: <HomePages />,
         },
-        {
-          path:'products',
-          element:<ProductList/>
-        },
-        {
-          path: 'about',
-          element: <h1>About</h1>,
-        },
-
       ],
     },
     {
@@ -48,25 +43,25 @@ function App() {
       children: [
         {
           path: 'login',
-          element: <LoginForm />
+          element: <LoginForm />,
         },
         {
           path: 'register',
-          element: <RegisterForm />
+          element: <RegisterForm />,
         },
         {
           path: 'forget-password',
-          element: <ForgetPasswordForm />
+          element: <ForgetPasswordForm />,
         },
         {
           path: 'confirm-password',
-          element: <ComfirmPassword />
+          element: <ComfirmPassword />,
         },
         {
           path: 'new-password',
-          element: <SetNewPasswordForm />
-        }
-      ]
+          element: <SetNewPasswordForm />,
+        },
+      ],
     },
     // Admin layout
     {
@@ -75,38 +70,52 @@ function App() {
       children: [
         {
           path: 'home',
-          element: <HomeManager />
+          element: <HomeManager />,
         },
         {
           path: 'products',
-          element: <ProductManager />
+          element: <ProductManager />,
         },
         {
           path: 'order',
-          element: <OrderManager />
+          element: <OrderHistoryManager />,
         },
+
         {
           path: 'order-history',
-          element: <OrderHistoryManager />
+          element: < OrderManager />,
         },
         {
           path: 'notifications',
-          element: <NotificationsHistoryOrder />
+          element: <NotificationsHistoryOrder />,
         },
         {
           path: 'accounts',
-          element: <AccountManager />
+          element: <AccountManager />,
         },
         {
           path: 'chats',
-          element: <ChatManager />
-        }
-      ]
+          element: <ChatManager />,
+        },
+        {
+          path: 'settable',
+          element: <SetATable />,
+        },
+        {
+          path: 'feedback',
+          element: <FeedbackManager />,
+        },
+        {
+          path: 'dashboard',
+          element: <ManagerDashBoard />,
+        },
+      ],
     },
   ]);
   return (
     <>
       <RouterProvider router={router} />
+      <Toaster />
     </>
   );
 }

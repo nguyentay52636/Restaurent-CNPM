@@ -1,22 +1,83 @@
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { MoveLeft, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { toast } from "sonner";
+import { loginAPI } from "@/lib/apis/userApi";
+
+const loginSchema = z.object({
+  email: z.string().email({
+    message: "Vui lòng nhập email hợp lệ",
+  }),
+  password: z.string().min(6, {
+    message: "Mật khẩu phải có ít nhất 6 ký tự",
+  }),
+});
+
+type LoginFormData = z.infer<typeof loginSchema>;
 
 export function LoginUI({
   className,
   ...props
 }: React.ComponentProps<"div">) {
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+  });
+
+  const onSubmit = async (data: LoginFormData) => {
+    try {
+      setIsLoading(true);
+      const response = await loginAPI(data);
+
+      if (response.statusCode === 200) {
+        toast.success("Đăng nhập thành công! 🎉", {
+          description: `Chào mừng ${response.data.user.fullName} đã quay trở lại!`,
+          duration: 5000,
+          position: 'top-center',
+          style: { background: '#4CAF50', color: 'white', border: 'none' },
+        });
+
+        // Redirect based on role
+        if (response.data.user.roleId === 1) {
+          navigate("/admin/home");
+        } else {
+          navigate("/");
+        }
+      }
+    } catch (error: any) {
+      toast.error("Đăng nhập thất bại ❌", {
+        description: error?.response?.data?.message || "Email hoặc mật khẩu không đúng, vui lòng kiểm tra lại.",
+        duration: 5000,
+        position: 'top-center',
+        style: { background: '#F44336', color: 'white', border: 'none' },
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <>
-      <form className="p-6 md:p-8 w-full max-w-md">
-        <Button className=" bg-transparent text-white border-2 rounded-none border-[#A27B5C] hover:bg-transparent text-bg-primary absolute top-12 cursor-pointer  right-20">
+      <form onSubmit={handleSubmit(onSubmit)} className="p-6 md:p-8 w-full max-w-md">
+        <Button
+          type="button"
+          className="bg-transparent text-white border-2 rounded-none border-[#A27B5C] hover:bg-transparent text-bg-primary absolute top-12 cursor-pointer right-20"
+          onClick={() => navigate("/")}
+        >
           <MoveLeft /> Quay về Home
         </Button>
         <div className="flex flex-col gap-6">
@@ -41,7 +102,6 @@ export function LoginUI({
                 <path id="Path_4" d="M10.2174 3.95833C11.7244 3.95833 13.0697 4.46667 14.134 5.45833L17.0458 2.60833C15.2834 0.991667 12.976 0 10.2174 0C6.22422 0 2.77594 2.25 1.09863 5.51667L4.48731 8.09167C5.29616 5.71667 7.55244 3.95833 10.2174 3.95833Z" fill="#EA4335" />
               </g>
             </svg>
-
             Đăng Nhập Bằng Google
           </Button>
 
@@ -53,11 +113,15 @@ export function LoginUI({
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
             <Input
+              {...register("email")}
               id="email"
               type="email"
               placeholder="Nhập email"
               required
             />
+            {errors.email && (
+              <p className="text-sm text-red-500">{errors.email.message}</p>
+            )}
           </div>
 
           {/* Password Input */}
@@ -65,6 +129,7 @@ export function LoginUI({
             <Label htmlFor="password">Mật Khẩu</Label>
             <div className="relative">
               <Input
+                {...register("password")}
                 id="password"
                 type={showPassword ? "text" : "password"}
                 placeholder="Nhập mật khẩu"
@@ -84,9 +149,12 @@ export function LoginUI({
                 )}
               </Button>
             </div>
+            {errors.password && (
+              <p className="text-sm text-red-500">{errors.password.message}</p>
+            )}
           </div>
-          <div className="flex justify-between">
 
+          <div className="flex justify-between">
             <div className="flex items-center justify-begin gap-2">
               <Checkbox id="remember" />
               <Label htmlFor="remember" className="text-sm">
@@ -94,7 +162,8 @@ export function LoginUI({
               </Label>
             </div>
             <div className="flex items-center justify-end gap-2">
-              <Link to="/auth/forget-password"
+              <Link
+                to="/auth/forget-password"
                 className="text-sm text-blue-600 hover:underline"
               >
                 Quên Mật Khẩu?
@@ -102,15 +171,13 @@ export function LoginUI({
             </div>
           </div>
 
-          {/* Remember Me Checkbox */}
-
-
           {/* Sign In Button */}
           <Button
             type="submit"
             className="w-full bg-[#EA7E41] text-white hover:bg-[#4A3223] cursor-pointer"
+            disabled={isLoading}
           >
-            Đăng Nhập
+            {isLoading ? "Đang đăng nhập..." : "Đăng Nhập"}
           </Button>
 
           {/* Sign Up Link */}
@@ -122,7 +189,6 @@ export function LoginUI({
             >
               Tạo tài khoản
             </Link>
-
           </div>
         </div>
       </form>
