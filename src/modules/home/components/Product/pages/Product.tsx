@@ -15,6 +15,7 @@ interface CartItem extends ProductWithId {
 }
 
 const Product: React.FC = () => {
+  const [searchTerm, setSearchTerm] = useState('');
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [showDetailsOrder, setShowDetailsOrder] = useState(false);
@@ -26,11 +27,23 @@ const Product: React.FC = () => {
   const [showItemDetail, setShowItemDetail] = useState(false);
 
   const itemsPerPage = 12;
-
+  
   const filteredProducts = useMemo(() => {
-    if (selectedCategory === 'All') return products;
-    return products.filter(product => product.categoryId === parseInt(selectedCategory));
-  }, [products, selectedCategory]);
+  let filtered = products;
+
+  if (selectedCategory !== 'All') {
+    filtered = filtered.filter(product => product.categoryId === parseInt(selectedCategory));
+  }
+
+  if (searchTerm.trim() !== '') {
+    filtered = filtered.filter(product =>
+      product.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }
+
+  return filtered;
+}, [products, selectedCategory, searchTerm]);
+
 
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
 
@@ -132,7 +145,7 @@ const Product: React.FC = () => {
       description: "Đã quay lại trang chọn món. Các món đã chọn vẫn được giữ nguyên.",
     });
   };
-  
+
   return (
     <div className="min-h-screen bg-gray-100 font-sans">
       {showDetailsOrder ? (
@@ -169,7 +182,8 @@ const Product: React.FC = () => {
         <>
           <div className="flex">
             <div className={`flex-1 transition-all duration-300 ${isCartOpen ? 'mr-80' : ''}`}>
-              <ActionsHome onCategorySelect={setSelectedCategory} />
+              <ActionsHome onCategorySelect={setSelectedCategory}
+                onSearchChange={setSearchTerm} />
               <main className="max-w-7xl mx-auto p-6">
                 <h2 className="text-xl font-semibold mb-6">Thực đơn đặc biệt dành cho bạn</h2>
                 {loading ? (
@@ -181,7 +195,7 @@ const Product: React.FC = () => {
                         key={item.id}
                         item={item}
                         onAddToCart={addToCart}
-                        
+
                       />
                     ))}
                   </div>
