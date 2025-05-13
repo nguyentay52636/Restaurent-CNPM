@@ -132,14 +132,6 @@ export default function DetailsOrderHome({
     };
 
     const handlePayment = () => {
-        if (!selectedUser) {
-            toast({
-                title: "Cảnh báo",
-                description: "Vui lòng chọn khách hàng trước khi thanh toán",
-                variant: "destructive"
-            });
-            return;
-        }
         setIsPaymentModalOpen(true);
     };
 
