@@ -22,6 +22,7 @@ import SetATable from './modules/admin/components/SetATable';
 import FeedbackManager from './modules/admin/components/Feedback/FeedbackManager';
 import ManagerDashBoard from './modules/admin/components/DashBoard/ManagerDashBoard';
 import { Toaster } from '@/components/ui/toaster';
+import Product from './modules/home/components/Product/pages/Product';
 
 function App() {
   const router = createBrowserRouter([
@@ -35,6 +36,10 @@ function App() {
           index: true,
           element: <HomePages />,
         },
+        {
+          path :'products',
+          element : <Product/>
+        }
       ],
     },
     {

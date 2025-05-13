@@ -1,7 +1,12 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Minus, Plus, Trash2 } from 'lucide-react';
+import { ProductWithId } from '@/lib/apis/types';
 
+interface CartItem extends ProductWithId {
+    quantity: number;
+    selectedSize?: { name: string, price: number };
+}
 interface CartPanelProps {
     isCartOpen: boolean;
     closeCart: () => void;
@@ -9,9 +14,9 @@ interface CartPanelProps {
     subtotal: number;
     tax: number;
     total: number;
-    decrementQuantity: (id: number) => void;
-    incrementQuantity: (id: number) => void;
-    removeFromCart: (id: number) => void;
+    decrementQuantity: (id: number, sizeName?: string) => void;
+    incrementQuantity: (id: number, sizeName?: string) => void;
+    removeFromCart: (id: number, sizeName?: string) => void;
     handlePayment: () => void;
 }
 
@@ -29,7 +34,7 @@ export default function CartPanel({
 }: CartPanelProps) {
     return (
         <div
-            className={`fixed top-0 right-0 h-full w-80 bg-white shadow-lg transform transition-all duration-300 ease-in-out ${isCartOpen ? 'translate-x-0' : 'translate-x-full'
+            className={`fixed right-0 h-[90vh] w-80 bg-white shadow-lg transform transition-all duration-300 ease-in-out ${isCartOpen ? 'translate-x-0' : 'translate-x-full'
                 }`}
             style={{ zIndex: 40 }}
         >
@@ -66,16 +71,23 @@ export default function CartPanel({
                     <div className="flex-1 space-y-4 overflow-y-auto">
                         {cart.map((item) => (
                             <div
-                                key={item.id}
+                                 key={item.selectedSize ? `${item.id}-${item.selectedSize.name}` : item.id}
                                 className="flex items-center space-x-4 border-b py-2"
                             >
                                 <img
-                                    src={item.imageUrl}
+                                    src={item.image}
                                     alt={item.name}
                                     className="w-16 h-16 object-cover rounded"
                                 />
                                 <div className="flex-1">
-                                    <h4 className="text-sm font-medium">{item.name}</h4>
+                                    <h4 className="text-sm font-medium">
+                                        {item.name}
+                                        {item.selectedSize && (
+                                            <span className="text-xs ml-1 text-gray-500">
+                                                (Size {item.selectedSize.name})
+                                            </span>
+                                        )}
+                                    </h4>
                                     <p className="text-gray-600 text-sm">
                                         {item.price.toLocaleString('vi-VN')} đ
                                     </p>
@@ -84,7 +96,7 @@ export default function CartPanel({
                                             className='cursor-pointer'
                                             variant="outline"
                                             size="icon"
-                                            onClick={() => decrementQuantity(item.id)}
+                                            onClick={() => decrementQuantity(item.id, item.selectedSize?.name)}
                                         >
                                             <Minus className="w-4 h-4" />
                                         </Button>
@@ -92,14 +104,14 @@ export default function CartPanel({
                                         <Button
                                             className='bg-orange-500 hover:bg-orange-600 cursor-pointer'
                                             size="icon"
-                                            onClick={() => incrementQuantity(item.id)}
+                                            onClick={() => incrementQuantity(item.id, item.selectedSize?.name)}
                                         >
                                             <Plus className="w-4 h-4" />
                                         </Button>
                                         <Button
                                             variant="destructive"
                                             size="icon"
-                                            onClick={() => removeFromCart(item.id)}
+                                            onClick={() => removeFromCart(item.id, item.selectedSize?.name)}
                                         >
                                             <Trash2 className="w-4 h-4" />
                                         </Button>
