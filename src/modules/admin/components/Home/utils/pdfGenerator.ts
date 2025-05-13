@@ -44,11 +44,11 @@ export const generatePDF = (data: InvoiceData): void => {
         // Add logo and header
         doc.setFontSize(22);
         doc.setTextColor(33, 150, 243);
-        doc.text('RESTAURANT', 105, 20, { align: 'center' });
+        doc.text('SGU', 105, 20, { align: 'center' });
 
         doc.setFontSize(12);
         doc.setTextColor(100);
-        doc.text('123 Duong Am Thuc, Quan 1, TP.HCM', 105, 28, { align: 'center' });
+        doc.text('273 An Duong Vuong, Quan 5, TP.HCM', 105, 28, { align: 'center' });
         doc.text('SDT: 0123 456 789 | Email: info@restaurant.com', 105, 34, { align: 'center' });
 
         // Add invoice details
