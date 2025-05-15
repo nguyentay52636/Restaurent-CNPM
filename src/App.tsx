@@ -82,7 +82,7 @@ function App() {
 
         {
           path: 'order-history',
-          element: < OrderManager />,
+          element: <OrderManager />,
         },
         {
           path: 'notifications',

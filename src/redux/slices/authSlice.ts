@@ -37,7 +37,7 @@ export const login = createAsyncThunk(
     } catch (error) {
       return rejectWithValue((error as Error).message || 'Login failed');
     }
-  }
+  },
 );
 
 export const register = createAsyncThunk(
@@ -54,7 +54,7 @@ export const register = createAsyncThunk(
     } catch (error) {
       return rejectWithValue((error as Error).message || 'Registration failed');
     }
-  }
+  },
 );
 
 // Create the auth slice

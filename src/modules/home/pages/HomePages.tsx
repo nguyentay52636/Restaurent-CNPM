@@ -1,4 +1,3 @@
-
 import React from 'react';
 import HeroSection from '../components/Home/components/HeroSection';
 import Features from '../components/Home/components/Features';
@@ -13,8 +12,8 @@ export default function HomePages() {
       <Features />
       <BestDishes />
       <RegionTabs />
-      <RegularMenu/>
-      <PromotionCard/>
+      <RegularMenu />
+      <PromotionCard />
     </div>
   );
 }
