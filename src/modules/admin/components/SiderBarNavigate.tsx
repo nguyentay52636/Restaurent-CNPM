@@ -1,7 +1,6 @@
 import React from 'react';
 import { SidebarProvider, SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/app-sidebar';
-import { Button } from '@/components/ui/button';
 
 export default function SiderBarNavigate({ children }: { children: React.ReactNode }) {
   const { setOpen, isMobile } = useSidebar();

@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { IUserDataType } from '../../lib/apis/types.';
 import { loginAPI, registerAPI } from '../../lib/apis/userApi';
+import { RootState } from '../store';
 
 // Define the auth state type
 interface AuthState {
@@ -12,11 +13,14 @@ interface AuthState {
   registrationSuccess: boolean;
 }
 
+const isAuthenticated = JSON.parse(localStorage.getItem('isAuthenticated') || 'false');
+const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+
 // Initial state
 const initialState: AuthState = {
-  user: null,
+  user: currentUser,
   token: localStorage.getItem('token'),
-  isAuthenticated: !!localStorage.getItem('token'),
+  isAuthenticated,
   isLoading: false,
   error: null,
   registrationSuccess: false,
@@ -27,13 +31,17 @@ export const login = createAsyncThunk(
   'auth/login',
   async ({ email, password }: { email: string; password: string }, { rejectWithValue }) => {
     try {
-      const response = await loginAPI({ email, password });
-      // Assuming the API returns a token in the data
-      if (response.data && response.data.id) {
-        localStorage.setItem('token', response.data.id.toString());
-        return response.data;
-      }
-      return rejectWithValue(response.message || 'Login failed');
+      const data = await loginAPI({ email, password });
+
+      // Giả sử API trả về dạng:
+      // {
+      //   data: {
+      //     user: { id, email, ... },
+      //     token: "eyJhbGci... (JWT Token)"
+      //   }
+      // }
+
+      return data.data;
     } catch (error) {
       return rejectWithValue((error as Error).message || 'Login failed');
     }
@@ -44,7 +52,6 @@ export const register = createAsyncThunk(
   'auth/register',
   async ({ email, password }: { email: string; password: string }, { rejectWithValue }) => {
     try {
-      // Create a partial IUserDataType with required fields for registration
       const userData: Partial<IUserDataType> = {
         email,
         password,
@@ -63,10 +70,10 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     logout: (state) => {
-      state.user = null;
-      state.token = null;
       state.isAuthenticated = false;
-      localStorage.removeItem('token');
+      state.user = null;
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('isAuthenticated');
     },
     setCredentials: (state, action: PayloadAction<{ user: IUserDataType; token: string }>) => {
       state.user = action.payload.user;
@@ -89,14 +96,18 @@ const authSlice = createSlice({
       })
       .addCase(login.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user = action.payload;
-        state.token = action.payload.id.toString();
+        state.user = action.payload.user; // Giả sử payload có user
+        state.token = action.payload.accessToken; // Giả sử payload có
         state.isAuthenticated = true;
         state.error = null;
+        localStorage.setItem('currentUser', JSON.stringify(action.payload.user));
+        localStorage.setItem('isAuthenticated', JSON.stringify(true));
       })
       .addCase(login.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('isAuthenticated');
       });
 
     // Register cases
@@ -121,3 +132,4 @@ const authSlice = createSlice({
 
 export const { logout, setCredentials, clearError, resetRegistrationSuccess } = authSlice.actions;
 export default authSlice.reducer;
+export const selectAuth = (state: RootState) => state.auth;

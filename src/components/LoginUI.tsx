@@ -41,7 +41,7 @@ export function LoginUI({ className, ...props }: React.ComponentProps<'div'>) {
     try {
       setIsLoading(true);
       await dispatch(login(data)).unwrap();
-
+      console.log('doen');
       toast.success('Đăng nhập thành công! 🎉', {
         description: `Chào mừng  đã quay trở lại!`,
         duration: 5000,
