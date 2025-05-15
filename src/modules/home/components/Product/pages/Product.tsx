@@ -3,11 +3,16 @@ import MenuItem from "@/modules/admin/components/Home/components/MenuItem";
 import ActionsHome from "../components/ActionsHome";
 import Pagination from '../components/PaginationMenu';
 import { getAllProducts } from '@/lib/apis/productApi';
-import { ProductWithId } from '@/lib/apis/types';
+import { ProductWithId} from '@/lib/apis/types.'
 import DetailsOrderHome from './DetailsOrderHome';
 import CartPanel from '../components/CartPanel';
 import ItemDetailPanel from '../components/ItemDetailPanel';
 import { toast } from '@/components/ui/use-toast';
+import { createOrder, getAllOrders } from '@/lib/apis/orderApi';
+import { createOrderItem } from '@/lib/apis/orderItemApi';
+import { getAllUserAPI } from '@/lib/apis/userApi';
+import baseApi from '@/lib/apis/baseApi';
+import { count } from 'console';
 
 interface CartItem extends ProductWithId {
   quantity: number;
@@ -145,6 +150,61 @@ const Product: React.FC = () => {
       description: "Đã quay lại trang chọn món. Các món đã chọn vẫn được giữ nguyên.",
     });
   };
+  
+ const handleCheckout = async () => {
+  try {
+    if (cart.length === 0) {
+      toast({
+        title: "Lỗi",
+        description: "Giỏ hàng đang trống.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const orderItems = cart.map(item => ({
+      productId: item.id,
+      quantity: item.quantity,
+      price: item.price
+    }));
+
+    // Gửi đơn hàng
+    const orderResponse = await createOrder({
+      userId: 18,
+      status: "ChoDuyet",
+      orderItems: [], 
+    });
+    console.log("post order")
+    const orderId = orderResponse.data.id;
+    console.log(orderId)
+    for (const item of orderItems) {
+      await createOrderItem({
+        orderId: orderId,
+        productId: item.productId,
+        quantity: item.quantity,
+        price: item.price,
+      });
+    }
+    console.log("post order items")
+    toast({
+      title: "Đặt hàng thành công",
+      description: "Cảm ơn bạn đã đặt hàng. Đơn đang chờ duyệt.",
+    });
+
+    setCart([]);
+    setShowDetailsOrder(false);
+
+  } catch (error) {
+    console.error("Checkout error:", error);
+    toast({
+      title: "Lỗi",
+      description: "Đặt hàng thất bại. Vui lòng thử lại.",
+      variant: "destructive"
+    });
+  }
+};
+
+
 
   return (
     <div className="min-h-screen bg-gray-100 font-sans">
@@ -177,6 +237,7 @@ const Product: React.FC = () => {
                 : item
             ));
           }}
+           onConfirmOrder={handleCheckout}
         />
       ) : (
         <>

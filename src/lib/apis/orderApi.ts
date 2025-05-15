@@ -10,14 +10,12 @@ export const getAllOrders = async () => {
     }
 }
 
-export const createOrder = async ({ userId, totalPrice, status, orderItems, earnedPoints }: OrderType) => {
+export const createOrder = async ({ userId, status, orderItems }: OrderType) => {
     try {
         const newOrder: OrderType = {
             userId,
-            totalPrice,
             status,
             orderItems,
-            earnedPoints
         }
         const { data } = await baseApi.post("/orders", newOrder);
         return data;

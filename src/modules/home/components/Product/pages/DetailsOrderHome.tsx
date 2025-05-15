@@ -56,6 +56,7 @@ interface DetailsOrderHomeProps {
     onRemoveItem?: (itemId: number) => void;
     onUpdateQuantity?: (itemId: number, newQuantity: number) => void;
     setIsCartOpen?: (isOpen: boolean) => void;
+    onConfirmOrder: () => void;
 }
 
 export default function DetailsOrderHome({
@@ -67,6 +68,7 @@ export default function DetailsOrderHome({
     onRemoveItem,
     onUpdateQuantity,
     setIsCartOpen,
+    onConfirmOrder,
 }: DetailsOrderHomeProps) {
     const [users, setUsers] = useState<IUserDataType[]>([]);
     const [selectedUser, setSelectedUser] = useState<IUserDataType | null>(null);
@@ -159,7 +161,7 @@ export default function DetailsOrderHome({
             } : null,
             pointsToAdd
         };
-
+        if (onConfirmOrder) onConfirmOrder();
         // Show success message and ask about invoice
         toast({
             title: "Thanh toán thành công",
@@ -224,9 +226,9 @@ export default function DetailsOrderHome({
                 </CardHeader>
                 <CardContent className="p-6">
                     {/* Customer Selection */}
-                    
 
-                    
+
+
 
                     {/* Order Items */}
                     <div className="mb-8">
@@ -330,7 +332,10 @@ export default function DetailsOrderHome({
                         </Button>
                         <Button
                             className="bg-orange-500 hover:bg-orange-600 text-white px-8"
-                            onClick={handlePayment}
+                            onClick={() => {
+                                handlePayment();
+                                
+                            }}
                         >
                             Thanh toán
                         </Button>
@@ -347,7 +352,7 @@ export default function DetailsOrderHome({
                 total={total}
             />
 
-           
+
 
             {/* Invoice Dialog */}
             <AlertDialog open={showInvoiceDialog} onOpenChange={setShowInvoiceDialog}>
