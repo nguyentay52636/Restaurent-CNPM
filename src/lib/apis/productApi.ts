@@ -50,3 +50,11 @@ export const updateProduct = async (id: number, { name , description , price , i
         throw new Error(error instanceof Error ? error.message : String(error));
     }
  } 
+ export const getProductById = async (id: number)=> {  
+    try {
+        const { data } = await baseApi.get(`/products/${id}`);
+        return data;
+    } catch (error: unknown) {
+        throw new Error(error instanceof Error ? error.message : String(error));
+    }
+}

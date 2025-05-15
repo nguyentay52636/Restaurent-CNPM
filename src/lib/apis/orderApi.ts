@@ -10,14 +10,14 @@ export const getAllOrders = async () => {
     }
 }
 
-export const createOrder = async ({ userId, totalPrice, status, orderItems, earnedPoints }: OrderType) => {
+export const createOrder = async ({ userId, totalPrice, status, orderItems }: OrderType) => {
     try {
         const newOrder: OrderType = {
             userId,
             totalPrice,
             status,
             orderItems,
-            earnedPoints
+     
         }
         const { data } = await baseApi.post("/orders", newOrder);
         return data;
@@ -26,14 +26,14 @@ export const createOrder = async ({ userId, totalPrice, status, orderItems, earn
     }
 }
 
-export const updateOrder = async (id: number, { userId, totalPrice, status, orderItems, earnedPoints }: OrderType) => {
+export const updateOrder = async (id: number, { userId, totalPrice, status, orderItems }: OrderType) => {
     try {
         const updatedOrder: OrderType = {
             userId,
             totalPrice,
             status,
             orderItems,
-            earnedPoints
+         
         }
         const { data } = await baseApi.patch(`/orders/${id}`, updatedOrder);
         return data;

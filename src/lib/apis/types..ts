@@ -58,6 +58,7 @@ export interface ProductWithId extends ProductType {
   createdAt: string;
   updatedAt: string;
 }
+<<<<<<< HEAD
 export interface OrderType {
   userId: number;
   totalPrice: number;
@@ -84,3 +85,27 @@ export interface IAPILoginType {
   accessToken: string;
   refreshToken: string;
 }
+=======
+export interface OrderItemType { 
+  orderId : number ; 
+  productId : number ; 
+  quantity : number ; 
+  price : number ; 
+  
+  }
+export interface OrderType { 
+  userId : number ;
+   totalPrice : number ; 
+   status : string ;
+    orderItems : OrderItemType[] ; 
+   
+  }
+
+
+ export interface PaymentType { 
+  orderId :number ; 
+  paymentMethod : string;
+  amount : number; 
+  status : string ; 
+ }
+>>>>>>> 1f02be1 (new update)
