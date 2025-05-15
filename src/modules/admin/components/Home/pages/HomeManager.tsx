@@ -8,7 +8,8 @@ import ActionsHome from '../components/ActionsHome';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { getAllProducts } from '@/lib/apis/productApi';
-import { ProductWithId } from '@/lib/apis/types';
+import { ProductWithId } from '@/lib/apis/types.';
+
 
 interface CartItem extends ProductWithId {
   quantity: number;
