@@ -216,7 +216,14 @@ const Product: React.FC = () => {
     });
   }
 };
-
+const getFullImageUrl = (path: string) => {
+    if (!path) return '';
+    if (/^https?:\/\//.test(path)) return path;
+    // Lấy base url từ biến môi trường, loại bỏ /api nếu có
+    const apiUrl = import.meta.env.VITE_API_URL as string;
+    const baseUrl = apiUrl.replace(/\/api\/?$/, '');
+    return `${baseUrl}${path}`;
+};
 
 
   return (
@@ -268,10 +275,9 @@ const Product: React.FC = () => {
                     {currentItems.map((item) => (
                       <MenuItem
                         key={item.id}
-                        item={item}
+                        item={{ ...item, image: getFullImageUrl(item.image)}}
                         onAddToCart={addToCart}
-
-                      />
+                      /> 
                     ))}
                   </div>
                 )}

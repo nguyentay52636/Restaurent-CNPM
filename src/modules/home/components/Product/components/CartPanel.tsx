@@ -19,7 +19,17 @@ interface CartPanelProps {
     removeFromCart: (id: number, sizeName?: string) => void;
     handlePayment: () => void;
 }
-
+const getFullImageUrl = (path: string) => {
+    if (!path) return '';
+    if (/^https?:\/\//.test(path)) return path;
+    // Lấy base url từ biến môi trường, loại bỏ /api nếu có
+    const apiUrl = import.meta.env.VITE_API_URL as string;
+    console.log(apiUrl)
+    const baseUrl = apiUrl.replace(/\/api\/?$/, '');
+    console.log(baseUrl)
+    console.log(`${baseUrl}${path}`)
+    return `${baseUrl}${path}`;
+};
 export default function CartPanel({
     isCartOpen,
     closeCart,
@@ -75,7 +85,7 @@ export default function CartPanel({
                                 className="flex items-center space-x-4 border-b py-2"
                             >
                                 <img
-                                    src={item.image}
+                                    src={getFullImageUrl(item.image)}
                                     alt={item.name}
                                     className="w-16 h-16 object-cover rounded"
                                 />
