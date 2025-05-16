@@ -10,6 +10,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { toast } from 'sonner';
 import { loginAPI } from '@/lib/apis/userApi';
+import { useAppDispatch } from '@/redux/hooks/hooks';
+import { login } from '@/redux/slices/authSlice';
 
 const loginSchema = z.object({
   email: z.string().email({
@@ -26,7 +28,7 @@ export function LoginUI({ className, ...props }: React.ComponentProps<'div'>) {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-
+  const dispatch = useAppDispatch();
   const {
     register,
     handleSubmit,
@@ -38,7 +40,7 @@ export function LoginUI({ className, ...props }: React.ComponentProps<'div'>) {
   const onSubmit = async (data: LoginFormData) => {
     try {
       setIsLoading(true);
-      const response = await loginAPI(data);
+      const response = await dispatch(login(data)).unwrap();
 
       if (response.statusCode === 200) {
         toast.success('Đăng nhập thành công! 🎉', {
@@ -47,7 +49,6 @@ export function LoginUI({ className, ...props }: React.ComponentProps<'div'>) {
           position: 'top-center',
           style: { background: '#4CAF50', color: 'white', border: 'none' },
         });
-        localStorage.setItem('userInfo', JSON.stringify(response.data));
         // Redirect based on role
         if (response.data.user.roleId !== 2) {
           navigate('/admin/home');

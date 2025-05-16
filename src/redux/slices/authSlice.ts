@@ -33,7 +33,6 @@ export const login = createAsyncThunk(
     try {
       const response = await loginAPI({ email, password });
       // Assuming the API returns a token in the data
-
       return response;
     } catch (error) {
       return rejectWithValue((error as Error).message || 'Login failed');
@@ -46,11 +45,11 @@ export const register = createAsyncThunk(
   async ({ email, password }: { email: string; password: string }, { rejectWithValue }) => {
     try {
       // Create a partial IUserDataType with required fields for registration
-      const userData: Partial<IUserDataType> = {
+      const userData = {
         email,
         password,
       };
-      const response = await registerAPI(userData as IUserDataType);
+      const response = await registerAPI(userData);
       return response.data;
     } catch (error) {
       return rejectWithValue((error as Error).message || 'Registration failed');
@@ -92,14 +91,16 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(login.fulfilled, (state, action) => {
+        console.log(action.payload);
+
         state.isLoading = false;
-        state.user = action.payload.user;
-        state.token = action.payload.accessToken;
+        state.user = action.payload.data.user;
+        state.token = action.payload.data.accessToken;
         state.isAuthenticated = true;
         state.error = null;
-        localStorage.setItem('currentUser', JSON.stringify(action.payload.user));
+        localStorage.setItem('currentUser', JSON.stringify(action.payload.data.user));
         localStorage.setItem('isAuthenticated', JSON.stringify(true));
-        localStorage.setItem('token', action.payload.accessToken);
+        localStorage.setItem('token', action.payload.data.accessToken);
       })
       .addCase(login.rejected, (state, action) => {
         state.isLoading = false;
