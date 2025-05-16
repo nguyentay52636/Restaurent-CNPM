@@ -70,9 +70,11 @@ const Header = () => {
           </Button>
 
           {/* Login */}
-          <Button className="cursor-pointer bg-orange-500 text-white hover:bg-orange-600 font-medium shadow-md rounded-full px-4 py-2 transition-colors">
-            Đăng Nhập
-          </Button>
+          <Link to="/auth/login">
+            <Button className="cursor-pointer bg-orange-500 text-white hover:bg-orange-600 font-medium shadow-md rounded-full px-4 py-2 transition-colors">
+              Đăng Nhập
+            </Button>
+          </Link>
 
           {/* Cart */}
           <div className="relative hover:bg-white!">
