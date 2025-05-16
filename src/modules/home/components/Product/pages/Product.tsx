@@ -3,7 +3,7 @@ import MenuItem from "@/modules/admin/components/Home/components/MenuItem";
 import ActionsHome from "../components/ActionsHome";
 import Pagination from '../components/PaginationMenu';
 import { getAllProducts } from '@/lib/apis/productApi';
-import { ProductWithId} from '@/lib/apis/types.'
+import { ProductWithId } from '@/lib/apis/types.'
 import DetailsOrderHome from './DetailsOrderHome';
 import CartPanel from '../components/CartPanel';
 import ItemDetailPanel from '../components/ItemDetailPanel';
@@ -34,22 +34,22 @@ const Product: React.FC = () => {
   const [showItemDetail, setShowItemDetail] = useState(false);
 
   const itemsPerPage = 12;
-  
+
   const filteredProducts = useMemo(() => {
-  let filtered = products;
+    let filtered = products;
 
-  if (selectedCategory !== 'All') {
-    filtered = filtered.filter(product => product.categoryId === parseInt(selectedCategory));
-  }
+    if (selectedCategory !== 'All') {
+      filtered = filtered.filter(product => product.categoryId === parseInt(selectedCategory));
+    }
 
-  if (searchTerm.trim() !== '') {
-    filtered = filtered.filter(product =>
-      product.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }
+    if (searchTerm.trim() !== '') {
+      filtered = filtered.filter(product =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
 
-  return filtered;
-}, [products, selectedCategory, searchTerm]);
+    return filtered;
+  }, [products, selectedCategory, searchTerm]);
 
 
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
@@ -153,78 +153,82 @@ const Product: React.FC = () => {
     });
   };
   const handleReceivePaymentMethod = (method: string) => {
-    setPaymentMethod(method); 
+    setPaymentMethod(method);
     console.log("Received method from DetailsOrderHome:", method);
     handleCheckout(method);
-};
- const handleCheckout = async (method: string) => {
-  try {
-    if (cart.length === 0) {
+  };
+  const handleCheckout = async (method: string) => {
+    try {
+      if (cart.length === 0) {
+        toast({
+          title: "Lỗi",
+          description: "Giỏ hàng đang trống.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      const orderItems = cart.map(item => ({
+        productId: item.id,
+        quantity: item.quantity,
+        price: item.price
+      }));
+
+      // Gửi đơn hàng
+      const orderResponse = await createOrder({
+        userId: 18,
+        status: "ChoDuyet",
+        orderItems: [],
+      });
+      console.log("post order")
+      const orderId = orderResponse.data.id;
+      for (const item of orderItems) {
+        await createOrderItem({
+          orderId: orderId,
+          productId: item.productId,
+          quantity: item.quantity,
+          price: item.price,
+        });
+      }
+      console.log('method 2 :' + method)
+      console.log("post order items")
+      await createPayment({
+        orderId: orderId,
+        paymentMethod: method,
+        amount: total,
+        status: 'ChoXacNhanThanhToan'
+      })
+      console.log("post payment")
+      toast({
+        title: "Đặt hàng thành công",
+        description: "Cảm ơn bạn đã đặt hàng. Đơn đang chờ duyệt.",
+      });
+
+      setCart([]);
+      setShowDetailsOrder(false);
+
+    } catch (error) {
+      console.error("Checkout error:", error);
       toast({
         title: "Lỗi",
-        description: "Giỏ hàng đang trống.",
+        description: "Đặt hàng thất bại. Vui lòng thử lại.",
         variant: "destructive"
       });
-      return;
     }
-
-    const orderItems = cart.map(item => ({
-      productId: item.id,
-      quantity: item.quantity,
-      price: item.price
-    }));
-
-    // Gửi đơn hàng
-    const orderResponse = await createOrder({
-      userId: 18,
-      status: "ChoDuyet",
-      orderItems: [], 
-    });
-    console.log("post order")
-    const orderId = orderResponse.data.id;
-    for (const item of orderItems) {
-      await createOrderItem({
-        orderId: orderId,
-        productId: item.productId,
-        quantity: item.quantity,
-        price: item.price,
-      });
-    }
-    console.log('method 2 :' + method)
-    console.log("post order items")
-    await createPayment({
-      orderId: orderId,
-      paymentMethod: method,
-      amount: total,
-      status:'ChoXacNhanThanhToan'
-    })
-    console.log("post payment")
-    toast({
-      title: "Đặt hàng thành công",
-      description: "Cảm ơn bạn đã đặt hàng. Đơn đang chờ duyệt.",
-    });
-
-    setCart([]);
-    setShowDetailsOrder(false);
-
-  } catch (error) {
-    console.error("Checkout error:", error);
-    toast({
-      title: "Lỗi",
-      description: "Đặt hàng thất bại. Vui lòng thử lại.",
-      variant: "destructive"
-    });
-  }
-};
-const getFullImageUrl = (path: string) => {
+  };
+  const getFullImageUrl = (path: string) => {
     if (!path) return '';
     if (/^https?:\/\//.test(path)) return path;
     // Lấy base url từ biến môi trường, loại bỏ /api nếu có
     const apiUrl = import.meta.env.VITE_API_URL as string;
     const baseUrl = apiUrl.replace(/\/api\/?$/, '');
     return `${baseUrl}${path}`;
-};
-
+  };
+  const handleClickDetail = (item: ProductWithId) => {
+    setSelectedItem(item);
+    setShowItemDetail(true)
+    console.log('detailitem')
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 font-sans">
@@ -258,7 +262,7 @@ const getFullImageUrl = (path: string) => {
                 : item
             ));
           }}
-          //  onConfirmOrder={handleCheckout}
+        //  onConfirmOrder={handleCheckout}
         />
       ) : (
         <>
@@ -275,9 +279,10 @@ const getFullImageUrl = (path: string) => {
                     {currentItems.map((item) => (
                       <MenuItem
                         key={item.id}
-                        item={{ ...item, image: getFullImageUrl(item.image)}}
-                        onAddToCart={addToCart}
-                      /> 
+                        item={{ ...item, image: getFullImageUrl(item.image) }}
+                        onAddToCart={handleClickDetail}
+
+                      />
                     ))}
                   </div>
                 )}
@@ -304,7 +309,10 @@ const getFullImageUrl = (path: string) => {
 
             {showItemDetail && selectedItem && (
               <ItemDetailPanel
-                item={selectedItem}
+                item={{
+                  ...selectedItem,
+                  image: getFullImageUrl(selectedItem.image),
+                }}
                 onClose={() => setShowItemDetail(false)}
                 onAddToCart={(item, quantity, selectedSize) => {
                   const existingIndex = cart.findIndex(
@@ -331,6 +339,7 @@ const getFullImageUrl = (path: string) => {
                   setIsCartOpen(true);
                 }}
               />
+
             )}
           </div>
         </>
