@@ -1,23 +1,31 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { Pencil, Trash2, Loader2, Eye } from 'lucide-react';
 import { ProductType } from '@/lib/apis/types.';
 import { Badge } from '@/components/ui/badge';
 import DialogConfirmDelete from './Dialog/DialogConfirmDelete';
 import DialogViewProduct from './Dialog/DialogviewProduct';
 import { toast } from 'sonner';
+import DialogViewProduct from '@/redux/home/components/ProductTable/components/Dialog/DialogviewProduct';
 
 interface ProductWithId extends ProductType {
-    id: number;
+  id: number;
 }
 
 interface ProductTableProps {
-    products: ProductWithId[];
-    onStatusToggle: (id: number) => void;
-    onDelete: (id: number) => void;
-    onEdit: (product: ProductWithId) => void;
-    isLoading?: boolean;
+  products: ProductWithId[];
+  onStatusToggle: (id: number) => void;
+  onDelete: (id: number) => void;
+  onEdit: (product: ProductWithId) => void;
+  isLoading?: boolean;
 }
 
 const getFullImageUrl = (path: string) => {
@@ -36,73 +44,73 @@ export default function ProductTable({ products, onStatusToggle, onDelete, onEdi
     const [productToView, setProductToView] = useState<ProductWithId | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
 
-    const handleDeleteClick = (product: ProductWithId) => {
-        setProductToDelete(product);
-        setDeleteDialogOpen(true);
-    };
+  const handleDeleteClick = (product: ProductWithId) => {
+    setProductToDelete(product);
+    setDeleteDialogOpen(true);
+  };
 
-    const handleConfirmDelete = async () => {
-        if (!productToDelete) return;
+  const handleConfirmDelete = async () => {
+    if (!productToDelete) return;
 
-        setIsDeleting(true);
-        try {
-            await onDelete(productToDelete.id);
-            toast.success('Xóa sản phẩm thành công ✅', {
-                description: `Sản phẩm "${productToDelete.name}" đã được xóa khỏi danh sách`,
-                duration: 3000,
-                position: 'top-center',
-                style: { background: '#4CAF50', color: 'white', border: 'none' },
-            });
-            setDeleteDialogOpen(false);
-            setProductToDelete(null);
-        } catch (error: any) {
-            toast.error('Lỗi khi xóa sản phẩm ❌', {
-                description: error?.response?.data?.message || 'Đã xảy ra lỗi. Vui lòng thử lại.',
-                duration: 3000,
-                position: 'top-center',
-                style: { background: '#F44336', color: 'white', border: 'none' },
-            });
-        } finally {
-            setIsDeleting(false);
-        }
-    };
+    setIsDeleting(true);
+    try {
+      await onDelete(productToDelete.id);
+      toast.success('Xóa sản phẩm thành công ✅', {
+        description: `Sản phẩm "${productToDelete.name}" đã được xóa khỏi danh sách`,
+        duration: 3000,
+        position: 'top-center',
+        style: { background: '#4CAF50', color: 'white', border: 'none' },
+      });
+      setDeleteDialogOpen(false);
+      setProductToDelete(null);
+    } catch (error: any) {
+      toast.error('Lỗi khi xóa sản phẩm ❌', {
+        description: error?.response?.data?.message || 'Đã xảy ra lỗi. Vui lòng thử lại.',
+        duration: 3000,
+        position: 'top-center',
+        style: { background: '#F44336', color: 'white', border: 'none' },
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
-    const handleViewClick = (product: ProductWithId) => {
-        setProductToView(product);
-        setViewDialogOpen(true);
-    };
+  const handleViewClick = (product: ProductWithId) => {
+    setProductToView(product);
+    setViewDialogOpen(true);
+  };
 
-    // Function to get category badge color
-    const getCategoryBadgeColor = (categoryId: number) => {
-        switch (categoryId) {
-            case 6:
-                return 'bg-amber-100 text-amber-700';
-            case 7:
-                return 'bg-green-100 text-green-700';
-            case 8:
-                return 'bg-orange-100 text-orange-700';
-            case 9:
-                return 'bg-pink-100 text-pink-700';
-            default:
-                return 'bg-gray-100 text-gray-700';
-        }
-    };
+  // Function to get category badge color
+  const getCategoryBadgeColor = (categoryId: number) => {
+    switch (categoryId) {
+      case 6:
+        return 'bg-amber-100 text-amber-700';
+      case 7:
+        return 'bg-green-100 text-green-700';
+      case 8:
+        return 'bg-orange-100 text-orange-700';
+      case 9:
+        return 'bg-pink-100 text-pink-700';
+      default:
+        return 'bg-gray-100 text-gray-700';
+    }
+  };
 
-    // Function to get category name
-    const getCategoryName = (categoryId: number) => {
-        switch (categoryId) {
-            case 6:
-                return 'Cà phê';
-            case 7:
-                return 'Trà';
-            case 8:
-                return 'Đồ ăn';
-            case 9:
-                return 'Tráng miệng';
-            default:
-                return 'Khác';
-        }
-    };
+  // Function to get category name
+  const getCategoryName = (categoryId: number) => {
+    switch (categoryId) {
+      case 6:
+        return 'Cà phê';
+      case 7:
+        return 'Trà';
+      case 8:
+        return 'Đồ ăn';
+      case 9:
+        return 'Tráng miệng';
+      default:
+        return 'Khác';
+    }
+  };
 
     return (
         <>
@@ -201,19 +209,19 @@ export default function ProductTable({ products, onStatusToggle, onDelete, onEdi
                 </TableBody>
             </Table>
 
-            <DialogConfirmDelete
-                isOpen={deleteDialogOpen}
-                onOpenChange={setDeleteDialogOpen}
-                onConfirm={handleConfirmDelete}
-                isLoading={isDeleting}
-                productName={productToDelete?.name}
-            />
+      <DialogConfirmDelete
+        isOpen={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={handleConfirmDelete}
+        isLoading={isDeleting}
+        productName={productToDelete?.name}
+      />
 
-            <DialogViewProduct
-                isOpen={viewDialogOpen}
-                onOpenChange={setViewDialogOpen}
-                product={productToView}
-            />
-        </>
-    );
+      <DialogViewProduct
+        isOpen={viewDialogOpen}
+        onOpenChange={setViewDialogOpen}
+        product={productToView}
+      />
+    </>
+  );
 }

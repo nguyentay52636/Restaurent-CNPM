@@ -17,17 +17,27 @@ export interface IUserDataType {
   points?: number;
 }
 
+export interface ILoginDataType {
+  user: IUserDataType;
+  accessToken: string;
+  refreshToken: string;
+}
+
+export interface IRefreshTokenDataType {
+  accessToken: string;
+  refreshToken: string;
+}
+
 export interface Role {
   id: number;
   name: string;
 }
 
-
 export interface IReservationDataType {
   customerName: string;
   reservationDate: string;
   tableNumber: number;
-  note: string
+  note: string;
 }
 export interface IReviewDataType {
   productId: number;

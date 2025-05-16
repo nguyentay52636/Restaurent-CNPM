@@ -2,13 +2,12 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Funnel } from 'lucide-react';
-import DialogAddProduct from '../components/Dialog/DialogAddProduct';
-import DialogEditProduct from '../components/Dialog/DialogEditProduct';
-import TabsCategoriesProduct from '../components/TabsCategoriesProduct';
 import { ProductType } from '@/lib/apis/types.';
 import { createProduct, updateProduct } from '@/lib/apis/productApi';
 import { toast } from 'sonner';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import DialogAddProduct from '@/redux/home/components/ProductTable/components/Dialog/DialogAddProduct';
+import TabsCategoriesProduct from '@/redux/home/components/ProductTable/components/TabsCategoriesProduct';
+import DialogEditProduct from '@/redux/home/components/ProductTable/components/Dialog/DialogEditProduct';
 
 interface ProductWithId extends ProductType {
   id: number;
@@ -27,7 +26,6 @@ export default function ProductManager() {
     image: 'https://placehold.co/200x200/A27B5C/FFF?text=Coffee',
     status: 'active',
   });
-  const [searchField, setSearchField] = useState('name');
 
   const handleAddProduct = async () => {
     try {
@@ -106,23 +104,11 @@ export default function ProductManager() {
           <div>
             <h1 className='text-3xl font-bold text-gray-800'>Sản phẩm</h1>
             <nav className='text-sm text-gray-500'>
-              <span>Sản phẩm</span> / <span>Danh sách sản phẩm</span>
+              <span>Trang chủ</span> / <span>Sản phẩm</span> / <span>Danh sách sản phẩm</span>
             </nav>
           </div>
         </div>
         <div className='flex items-center space-x-3'>
-          <Select value={searchField} onValueChange={setSearchField}>
-            <SelectTrigger className='w-[140px]'>
-              <SelectValue placeholder='Tìm theo' />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value='name'>Sản phẩm</SelectItem>
-              <SelectItem value='category'>Danh mục</SelectItem>
-              <SelectItem value='status'>Trạng thái</SelectItem>
-              <SelectItem value='id'>Mã sản phẩm</SelectItem>
-              <SelectItem value='price'>Giá</SelectItem>
-            </SelectContent>
-          </Select>
           <Input
             placeholder='Tìm kiếm'
             value={searchTerm}
@@ -154,8 +140,6 @@ export default function ProductManager() {
         onProductAdded={handleAddProduct}
         onProductUpdated={handleSaveEdit}
         isLoading={isLoading}
-        searchTerm={searchTerm}
-        searchField={searchField}
       />
 
       {/* Edit Dialog */}

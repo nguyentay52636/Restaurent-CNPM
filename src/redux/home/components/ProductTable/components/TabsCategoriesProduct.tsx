@@ -27,12 +27,16 @@ interface TabsCategoriesProductProps {
     onProductUpdated?: () => void;
     onProductDeleted?: () => void;
     isLoading?: boolean;
+    searchTerm?: string;
+    searchField?: string;
 }
 
 export default function TabsCategoriesProduct({
     onEditProduct,
     onProductUpdated,
-    onProductDeleted
+    onProductDeleted,
+    searchTerm = '',
+    searchField = 'name'
 }: TabsCategoriesProductProps) {
     const [categories, setCategories] = useState<Category[]>([]);
     const [products, setProducts] = useState<ProductWithId[]>([]);
@@ -69,11 +73,33 @@ export default function TabsCategoriesProduct({
         return categories.find(c => c.name === categoryName)?.id;
     };
 
-    // Filter products based on active tab
+    // Filter products based on active tab and search term/field
     const filteredProducts = products.filter((product) => {
-        if (activeTab === CATEGORIES.ALL) return true;
-        const categoryId = getCategoryIdByName(activeTab);
-        return categoryId === product.categoryId;
+        const matchesCategory = activeTab === CATEGORIES.ALL || getCategoryIdByName(activeTab) === product.categoryId;
+        let matchesSearch = true;
+        if (searchTerm !== '') {
+            switch (searchField) {
+                case 'name':
+                    matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+                    break;
+                case 'category':
+                    const categoryName = categories.find(c => c.id === product.categoryId)?.name || '';
+                    matchesSearch = categoryName.toLowerCase().includes(searchTerm.toLowerCase());
+                    break;
+                case 'status':
+                    matchesSearch = product.status.toLowerCase().includes(searchTerm.toLowerCase());
+                    break;
+                case 'id':
+                    matchesSearch = product.id.toString().includes(searchTerm);
+                    break;
+                case 'price':
+                    matchesSearch = product.price.toString().includes(searchTerm);
+                    break;
+                default:
+                    matchesSearch = true;
+            }
+        }
+        return matchesCategory && matchesSearch;
     });
 
     const totalPages = Math.ceil(filteredProducts.length / rowsPerPage);

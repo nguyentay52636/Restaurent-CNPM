@@ -249,6 +249,7 @@ const Product: React.FC = () => {
           onPaymentMethodSelect={handleReceivePaymentMethod}
           onReset={handleOrderComplete}
           setIsCartOpen={setIsCartOpen}
+          
           onRemoveItem={(itemId) => {
             removeFromCart(itemId);
             if (cart.length === 1) {

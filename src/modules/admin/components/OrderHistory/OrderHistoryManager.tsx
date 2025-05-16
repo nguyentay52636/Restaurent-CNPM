@@ -265,7 +265,7 @@ const OrderHistoryManager: React.FC = () => {
       ...editingOrder,
       customer: editedCustomerInfo.customer,
       tableNo: editedCustomerInfo.tableNo,
-      guestCount: editedCustomerInfo.guestCount,
+    guestCount: editedCustomerInfo.guestCount,
       paymentMethod: editedCustomerInfo.paymentMethod,
       items: editedItems
     };
