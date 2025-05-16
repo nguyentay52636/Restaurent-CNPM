@@ -62,6 +62,11 @@ export function NavMain({
       url: '/admin/settable',
     },
     {
+      title: 'Quản lý phân quyền',
+      icon: Calendar,
+      url: '/admin/role',
+    },
+    {
       title: 'Quản lý đánh giá',
       icon: Settings2,
       url: '/admin/feedback',
