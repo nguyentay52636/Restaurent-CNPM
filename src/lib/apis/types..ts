@@ -51,12 +51,22 @@ export interface Category {
   updatedAt: string;
 }
 
+<<<<<<< HEAD
 export interface ProductWithId extends ProductType {
   id: number;
   categoryId: number;
   status: string;
   createdAt: string;
   updatedAt: string;
+=======
+ export interface ProductWithId extends ProductType {
+    id: number;
+    categoryId: number;
+    status: string;
+    createdAt: string;
+    updatedAt: string;
+    availableSizes?: { name: string; price: number }[];
+>>>>>>> 6925611 (tay:update ItemMenu)
 }
 <<<<<<< HEAD
 export interface OrderType {
@@ -108,4 +118,8 @@ export interface OrderType {
   amount : number; 
   status : string ; 
  }
+<<<<<<< HEAD
 >>>>>>> 1f02be1 (new update)
+=======
+ 
+>>>>>>> 6925611 (tay:update ItemMenu)
