@@ -3,8 +3,12 @@ import { Search, Menu, ShoppingCart } from 'lucide-react';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-
-const navLinks = ['Trang Chủ', 'Thực Đơn', 'Đặt bàn', 'Về Chúng Tôi'];
+const navLinks = [
+  { name: 'Trang Chủ', path: '/' },
+  { name: 'Thực Đơn', path: '/products' },
+  { name: 'Đặt bàn', path: '/' },
+  { name: 'Về Chúng Tôi', path: '/about' },
+];
 
 // Giả lập số lượng sản phẩm trong giỏ
 const cartItemCount = 3;
@@ -39,14 +43,14 @@ const Header = () => {
           } md:flex flex-col md:flex-row absolute  md:static top-16 left-0 w-full md:w-auto bg-[#FFF2E1] md:bg-transparent p-4 md:p-0 space-y-4 md:space-y-0 md:space-x-8 transition-all duration-300`}
         >
           {navLinks.map((link) => (
-            <Button
-              key={link}
-              variant='link'
-              className='text-black hover:text-orange-500 cursor-pointer text-lg font-medium p-0 transition-transform duration-200 hover:scale-105'
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              {link}
-            </Button>
+            <Link key={link.name} to={link.path} onClick={() => setIsMobileMenuOpen(false)}>
+              <Button
+                variant='link'
+                className='text-black hover:text-orange-500 cursor-pointer text-lg font-medium p-0 transition-transform duration-200 hover:scale-105'
+              >
+                {link.name}
+              </Button>
+            </Link>
           ))}
         </nav>
 
@@ -60,11 +64,11 @@ const Header = () => {
             <Search className='w-6 h-6 text-white' />
           </Button>
 
-          <Link
-            to='/auth/login'
-            className='cursor-pointer bg-orange-500 text-white hover:bg-orange-600 font-medium shadow-md rounded-full px-4 py-2 transition-colors'
-          >
-            Đăng Nhập
+          {/* Login */}
+          <Link to='/auth/login'>
+            <Button className='cursor-pointer bg-orange-500 text-white hover:bg-orange-600 font-medium shadow-md rounded-full px-4 py-2 transition-colors'>
+              Đăng Nhập
+            </Button>
           </Link>
 
           {/* Cart */}
