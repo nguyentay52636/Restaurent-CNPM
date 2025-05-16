@@ -24,9 +24,7 @@ export default function DialogNewCustomer({ open, onClose, onSubmit }: DialogNew
         fullName: '',
         email: '',
         phone: '',
-        roleId: 2,
         address: '',
-        points: 0,
     });
     const [isLoading, setIsLoading] = useState(false);
 
@@ -80,8 +78,6 @@ export default function DialogNewCustomer({ open, onClose, onSubmit }: DialogNew
                     email: '',
                     phone: '',
                     address: '',
-                    roleId: 2,
-                    points: 0,
                 });
             }
         } catch (error: any) {

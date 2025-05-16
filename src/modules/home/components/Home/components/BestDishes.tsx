@@ -1,22 +1,35 @@
 import { Button } from "@/components/ui/button";
 import ex from '@/assets/img_herosection.jpg';
+import { getAllProducts } from "@/lib/apis/productApi";
+import { useEffect, useState } from "react";
+interface Product {
+  id: string;
+  name: string;
+  image: string;
+  quantity: number;
+}
+const BestDishes = () => {
+  const [dishes, setDishes] = useState<Product[]>([]);
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await getAllProducts();
+        const allProducts: Product[] = response.data;
 
-const dishes = [
-  {
-    name: "Bánh Mì Bò Lá Lốt",
-    image: ex,
-  },
-  {
-    name: "Hủ Tiếu Nam Vang",
-    image: ex,
-  },
-  {
-    name: "Bánh Mì Thịt Nướng",
-    image: ex,
-  },
-];
+        // Sắp xếp theo số lượng tăng dần và lấy 3 món đầu tiên
+        const lowStockDishes = allProducts
+          .sort((a, b) => a.quantity - b.quantity)
+          .slice(0, 3);
 
-const BestDishes = () => (
+        setDishes(lowStockDishes);
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+  return(
   <section className="py-12 px-6 bg-white h-[80vh]">
   <div className="max-w-5xl mx-auto">
     <div className="flex flex-col md:flex-row justify-between items-start mb-8">
@@ -53,6 +66,6 @@ const BestDishes = () => (
     </div>
   </div>
 </section>
-);
+)};
 
 export default BestDishes;

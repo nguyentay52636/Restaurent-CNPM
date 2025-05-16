@@ -11,7 +11,7 @@ import SelectPayment from '../components/SelectPayment';
 import { getAllUserAPI } from '@/lib/apis/userApi';
 import { toast } from '@/components/ui/use-toast';
 import { IUserDataType } from '@/lib/apis/types.';
-import { generatePDF } from '../utils/pdfGenerator';
+import { generatePDF } from '../../../../admin/components/Home/utils/pdfGenerator';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -56,6 +56,8 @@ interface DetailsOrderHomeProps {
     onRemoveItem?: (itemId: number) => void;
     onUpdateQuantity?: (itemId: number, newQuantity: number) => void;
     setIsCartOpen?: (isOpen: boolean) => void;
+    onConfirmOrder: () => void;
+    onPaymentMethodSelect: (method: string) => void;
 }
 
 export default function DetailsOrderHome({
@@ -67,7 +69,10 @@ export default function DetailsOrderHome({
     onRemoveItem,
     onUpdateQuantity,
     setIsCartOpen,
+    onConfirmOrder,
+    onPaymentMethodSelect
 }: DetailsOrderHomeProps) {
+    const [selectedMethod, setSelectedMethod] = useState<string>("");
     const [users, setUsers] = useState<IUserDataType[]>([]);
     const [selectedUser, setSelectedUser] = useState<IUserDataType | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
@@ -132,19 +137,15 @@ export default function DetailsOrderHome({
     };
 
     const handlePayment = () => {
-        if (!selectedUser) {
-            toast({
-                title: "Cảnh báo",
-                description: "Vui lòng chọn khách hàng trước khi thanh toán",
-                variant: "destructive"
-            });
-            return;
-        }
         setIsPaymentModalOpen(true);
     };
 
     const handlePaymentMethodSelect = (method: string) => {
         setIsPaymentModalOpen(false);
+        onPaymentMethodSelect(method);
+        setSelectedMethod(method);
+        
+        console.log("Processing payment with method:", method);
         // Here you would typically call an API to process the payment
         console.log(`Processing payment with ${method} for user ${selectedUser?.fullName}`);
 
@@ -167,7 +168,7 @@ export default function DetailsOrderHome({
             } : null,
             pointsToAdd
         };
-
+        if (onConfirmOrder) onConfirmOrder();
         // Show success message and ask about invoice
         toast({
             title: "Thanh toán thành công",
@@ -232,48 +233,9 @@ export default function DetailsOrderHome({
                 </CardHeader>
                 <CardContent className="p-6">
                     {/* Customer Selection */}
-                    <div className="mb-8">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-lg font-semibold">Chọn khách hàng</h3>
-                            <Button
-                                onClick={() => setIsDialogOpen(true)}
-                                className="bg-orange-500 hover:bg-orange-600 text-white"
-                            >
-                                Khách hàng mới
-                            </Button>
-                        </div>
-                        <div className="relative mb-4">
-                            <Input
-                                type="text"
-                                placeholder="Tìm kiếm khách hàng..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-10"
-                            />
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                        </div>
-                        <Select onValueChange={handleUserSelect}>
-                            <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Chọn khách hàng" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {filteredUsers.map((user) => (
-                                    <SelectItem key={user.id} value={user.id?.toString() || ''}>
-                                        {user.fullName} - {user.phone || 'Chưa có số điện thoại'} (Điểm: {user.points || 0})
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        {selectedUser && (
-                            <div className="mt-4 p-4 bg-orange-50 rounded-lg">
-                                <p className="font-medium">Khách hàng: {selectedUser.fullName}</p>
-                                <p className="text-sm text-gray-600">Điểm hiện tại: {selectedUser.points || 0}</p>
-                                <p className="text-sm text-orange-600">Điểm sẽ được cộng: +{pointsToAdd}</p>
-                            </div>
-                        )}
-                    </div>
 
-                    <Separator className="my-6" />
+
+
 
                     {/* Order Items */}
                     <div className="mb-8">
@@ -377,7 +339,10 @@ export default function DetailsOrderHome({
                         </Button>
                         <Button
                             className="bg-orange-500 hover:bg-orange-600 text-white px-8"
-                            onClick={handlePayment}
+                            onClick={() => {
+                                handlePayment();
+                                
+                            }}
                         >
                             Thanh toán
                         </Button>
@@ -394,11 +359,7 @@ export default function DetailsOrderHome({
                 total={total}
             />
 
-            <DialogNewCustomer
-                open={isDialogOpen}
-                onClose={() => setIsDialogOpen(false)}
-                onSubmit={handleNewCustomer}
-            />
+
 
             {/* Invoice Dialog */}
             <AlertDialog open={showInvoiceDialog} onOpenChange={setShowInvoiceDialog}>

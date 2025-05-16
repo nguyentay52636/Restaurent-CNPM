@@ -7,9 +7,9 @@ export default function MainLayout({ children }: PropsWithChildren) {
   return (
     <div>
       <Header />
-      <div className="flex-1">
+      <main className="min-w-full">
         {children || <Outlet />}
-      </div>
+      </main>
       <Footer />
     </div>
   );
