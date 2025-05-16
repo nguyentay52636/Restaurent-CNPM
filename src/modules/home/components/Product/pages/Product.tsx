@@ -196,7 +196,7 @@ const Product: React.FC = () => {
       orderId: orderId,
       paymentMethod: method,
       amount: total,
-      status:'ThanhToanThanhCong'
+      status:'ChoXacNhanThanhToan'
     })
     console.log("post payment")
     toast({
