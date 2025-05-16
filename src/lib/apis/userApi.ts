@@ -122,11 +122,11 @@ export const updateUserAPI = async ({
     throw new Error(error);
   }
 };
-export const getUserByIdAPI = async (id: number) => {  
-try {
-  const {data} = await baseApi.get<IAPIResponseWrapper<IUserDataType>>(`/users/${id}`);
-  return data;
-} catch (error: any) {
-  throw new Error(error);
-}
-}  
+export const getUserByIdAPI = async (id: number) => {
+  try {
+    const { data } = await baseApi.get<IAPIResponseWrapper<IUserDataType>>(`/users/${id}`);
+    return data;
+  } catch (error: any) {
+    throw new Error(error);
+  }
+};
