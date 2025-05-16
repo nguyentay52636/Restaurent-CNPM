@@ -13,6 +13,7 @@ import { createOrderItem } from '@/lib/apis/orderItemApi';
 import { getAllUserAPI } from '@/lib/apis/userApi';
 import baseApi from '@/lib/apis/baseApi';
 import { count } from 'console';
+import { createPayment } from '@/lib/apis/paymentsApi';
 
 interface CartItem extends ProductWithId {
   quantity: number;
@@ -20,6 +21,7 @@ interface CartItem extends ProductWithId {
 }
 
 const Product: React.FC = () => {
+  const [paymentMethod, setPaymentMethod] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -150,8 +152,12 @@ const Product: React.FC = () => {
       description: "Đã quay lại trang chọn món. Các món đã chọn vẫn được giữ nguyên.",
     });
   };
-  
- const handleCheckout = async () => {
+  const handleReceivePaymentMethod = (method: string) => {
+    setPaymentMethod(method); 
+    console.log("Received method from DetailsOrderHome:", method);
+    handleCheckout(method);
+};
+ const handleCheckout = async (method: string) => {
   try {
     if (cart.length === 0) {
       toast({
@@ -176,7 +182,6 @@ const Product: React.FC = () => {
     });
     console.log("post order")
     const orderId = orderResponse.data.id;
-    console.log(orderId)
     for (const item of orderItems) {
       await createOrderItem({
         orderId: orderId,
@@ -185,7 +190,15 @@ const Product: React.FC = () => {
         price: item.price,
       });
     }
+    console.log('method 2 :' + method)
     console.log("post order items")
+    await createPayment({
+      orderId: orderId,
+      paymentMethod: method,
+      amount: total,
+      status:'ThanhToanThanhCong'
+    })
+    console.log("post payment")
     toast({
       title: "Đặt hàng thành công",
       description: "Cảm ơn bạn đã đặt hàng. Đơn đang chờ duyệt.",
@@ -222,6 +235,7 @@ const Product: React.FC = () => {
           subtotal={subtotal}
           tax={tax}
           total={total}
+          onPaymentMethodSelect={handleReceivePaymentMethod}
           onReset={handleOrderComplete}
           setIsCartOpen={setIsCartOpen}
           onRemoveItem={(itemId) => {
@@ -237,7 +251,7 @@ const Product: React.FC = () => {
                 : item
             ));
           }}
-           onConfirmOrder={handleCheckout}
+          //  onConfirmOrder={handleCheckout}
         />
       ) : (
         <>

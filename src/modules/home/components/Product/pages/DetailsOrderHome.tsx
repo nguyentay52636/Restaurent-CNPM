@@ -57,6 +57,7 @@ interface DetailsOrderHomeProps {
     onUpdateQuantity?: (itemId: number, newQuantity: number) => void;
     setIsCartOpen?: (isOpen: boolean) => void;
     onConfirmOrder: () => void;
+    onPaymentMethodSelect: (method: string) => void;
 }
 
 export default function DetailsOrderHome({
@@ -69,7 +70,9 @@ export default function DetailsOrderHome({
     onUpdateQuantity,
     setIsCartOpen,
     onConfirmOrder,
+    onPaymentMethodSelect
 }: DetailsOrderHomeProps) {
+    const [selectedMethod, setSelectedMethod] = useState<string>("");
     const [users, setUsers] = useState<IUserDataType[]>([]);
     const [selectedUser, setSelectedUser] = useState<IUserDataType | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
@@ -139,6 +142,10 @@ export default function DetailsOrderHome({
 
     const handlePaymentMethodSelect = (method: string) => {
         setIsPaymentModalOpen(false);
+        onPaymentMethodSelect(method);
+        setSelectedMethod(method);
+        
+        console.log("Processing payment with method:", method);
         // Here you would typically call an API to process the payment
         console.log(`Processing payment with ${method} for user ${selectedUser?.fullName}`);
 

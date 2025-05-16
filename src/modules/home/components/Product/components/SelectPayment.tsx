@@ -24,11 +24,12 @@ interface SelectPaymentProps {
     total: number;
 }
 
-export default function SelectPayment({ onSelectPayment, onClose, open, cart, total }: SelectPaymentProps) {
+export default function SelectPayment({ onSelectPayment, onClose, open, cart, total}: SelectPaymentProps) {
     const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
 
     const handleSelect = (value: string) => {
         setSelectedMethod(value);
+
     };
 
     const handleConfirmPayment = () => {
