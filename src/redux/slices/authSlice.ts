@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { IUserDataType } from '../../lib/apis/types.';
 import { loginAPI, registerAPI } from '../../lib/apis/userApi';
+import { RootState } from '../store';
 
 // Define the auth state type
 interface AuthState {
@@ -12,11 +13,14 @@ interface AuthState {
   registrationSuccess: boolean;
 }
 
+const isAuthenticated = JSON.parse(localStorage.getItem('isAuthenticated') || 'false');
+const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+
 // Initial state
 const initialState: AuthState = {
-  user: null,
+  user: currentUser,
   token: localStorage.getItem('token'),
-  isAuthenticated: !!localStorage.getItem('token'),
+  isAuthenticated,
   isLoading: false,
   error: null,
   registrationSuccess: false,
@@ -29,15 +33,12 @@ export const login = createAsyncThunk(
     try {
       const response = await loginAPI({ email, password });
       // Assuming the API returns a token in the data
-      if (response.data && response.data.id) {
-        localStorage.setItem('token', response.data.id.toString());
-        return response.data;
-      }
-      return rejectWithValue(response.message || 'Login failed');
+
+      return response;
     } catch (error) {
       return rejectWithValue((error as Error).message || 'Login failed');
     }
-  }
+  },
 );
 
 export const register = createAsyncThunk(
@@ -54,7 +55,7 @@ export const register = createAsyncThunk(
     } catch (error) {
       return rejectWithValue((error as Error).message || 'Registration failed');
     }
-  }
+  },
 );
 
 // Create the auth slice
@@ -67,6 +68,9 @@ const authSlice = createSlice({
       state.token = null;
       state.isAuthenticated = false;
       localStorage.removeItem('token');
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('isAuthenticated');
+      window.location.reload();
     },
     setCredentials: (state, action: PayloadAction<{ user: IUserDataType; token: string }>) => {
       state.user = action.payload.user;
@@ -89,10 +93,13 @@ const authSlice = createSlice({
       })
       .addCase(login.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user = action.payload;
-        state.token = action.payload.id.toString();
+        state.user = action.payload.user;
+        state.token = action.payload.accessToken;
         state.isAuthenticated = true;
         state.error = null;
+        localStorage.setItem('currentUser', JSON.stringify(action.payload.user));
+        localStorage.setItem('isAuthenticated', JSON.stringify(true));
+        localStorage.setItem('token', action.payload.accessToken);
       })
       .addCase(login.rejected, (state, action) => {
         state.isLoading = false;
@@ -121,3 +128,4 @@ const authSlice = createSlice({
 
 export const { logout, setCredentials, clearError, resetRegistrationSuccess } = authSlice.actions;
 export default authSlice.reducer;
+export const selectAuth = (state: RootState) => state.auth;

@@ -9,22 +9,26 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { toast } from 'sonner';
 import { registerAPI } from '@/lib/apis/userApi';
+import { useAppDispatch } from '@/redux/hooks/hooks';
+import { login } from '@/redux/slices/authSlice';
 
-const registerSchema = z.object({
-  fullName: z.string().min(2, {
-    message: 'Họ và tên phải có ít nhất 2 ký tự',
-  }),
-  email: z.string().email({
-    message: 'Vui lòng nhập email hợp lệ',
-  }),
-  password: z.string().min(6, {
-    message: 'Mật khẩu phải có ít nhất 6 ký tự',
-  }),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: 'Mật khẩu không khớp',
-  path: ['confirmPassword'],
-});
+const registerSchema = z
+  .object({
+    fullName: z.string().min(2, {
+      message: 'Họ và tên phải có ít nhất 2 ký tự',
+    }),
+    email: z.string().email({
+      message: 'Vui lòng nhập email hợp lệ',
+    }),
+    password: z.string().min(6, {
+      message: 'Mật khẩu phải có ít nhất 6 ký tự',
+    }),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Mật khẩu không khớp',
+    path: ['confirmPassword'],
+  });
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
@@ -32,7 +36,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'form
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-
+  const dispatch = useAppDispatch();
   const {
     register,
     handleSubmit,
@@ -58,11 +62,15 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'form
           position: 'top-center',
           style: { background: '#4CAF50', color: 'white', border: 'none' },
         });
+        await dispatch(login({ email: data.email, password: data.password })).unwrap();
+
         navigate('/auth/login');
       }
     } catch (error: any) {
       toast.error('Đăng ký thất bại ❌', {
-        description: error?.response?.data?.message || 'Email đã tồn tại hoặc hệ thống đang gặp sự cố, vui lòng thử lại sau.',
+        description:
+          error?.response?.data?.message ||
+          'Email đã tồn tại hoặc hệ thống đang gặp sự cố, vui lòng thử lại sau.',
         duration: 5000,
         position: 'top-center',
         style: { background: '#F44336', color: 'white', border: 'none' },
@@ -79,7 +87,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'form
       {...props}
     >
       <Button
-        type="button"
+        type='button'
         className='bg-transparent text-white border-2 rounded-none border-[#A27B5C] hover:bg-transparent absolute top-12 cursor-pointer right-20'
         onClick={() => navigate('/')}
       >
@@ -141,9 +149,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'form
               placeholder='Nhập họ và tên'
               required
             />
-            {errors.fullName && (
-              <p className='text-sm text-red-500'>{errors.fullName.message}</p>
-            )}
+            {errors.fullName && <p className='text-sm text-red-500'>{errors.fullName.message}</p>}
           </div>
 
           <div className='grid gap-2'>
@@ -155,9 +161,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'form
               placeholder='Nhập email'
               required
             />
-            {errors.email && (
-              <p className='text-sm text-red-500'>{errors.email.message}</p>
-            )}
+            {errors.email && <p className='text-sm text-red-500'>{errors.email.message}</p>}
           </div>
 
           <div className='grid gap-2'>
@@ -184,9 +188,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<'form
                 )}
               </Button>
             </div>
-            {errors.password && (
-              <p className='text-sm text-red-500'>{errors.password.message}</p>
-            )}
+            {errors.password && <p className='text-sm text-red-500'>{errors.password.message}</p>}
           </div>
 
           <div className='grid gap-2'>
