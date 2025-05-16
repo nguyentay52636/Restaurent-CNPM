@@ -91,16 +91,26 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(login.fulfilled, (state, action) => {
-        console.log(action.payload);
+        console.log('Login Response:', action.payload);
+        console.log('User Data:', action.payload.data.user);
+        console.log('User ID:', action.payload.data.user.id);
 
         state.isLoading = false;
         state.user = action.payload.data.user;
         state.token = action.payload.data.accessToken;
         state.isAuthenticated = true;
         state.error = null;
-        localStorage.setItem('currentUser', JSON.stringify(action.payload.data.user));
-        localStorage.setItem('isAuthenticated', JSON.stringify(true));
+
+        // Lưu thông tin user vào localStorage với ID
+        const userData = {
+          ...action.payload.data.user,
+          id: action.payload.data.user.id // Đảm bảo ID được lưu
+        };
+        console.log('Saving user data:', userData);
+        
+        localStorage.setItem('currentUser', JSON.stringify(userData));
         localStorage.setItem('token', action.payload.data.accessToken);
+        localStorage.setItem('isAuthenticated', 'true');
       })
       .addCase(login.rejected, (state, action) => {
         state.isLoading = false;

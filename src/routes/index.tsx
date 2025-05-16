@@ -1,3 +1,4 @@
+import ProfileUser from '@/components/auth/ProfileUser';
 import { MainLayout } from '@/components/layouts';
 import AccountManager from '@/modules/admin/components/AccountManager/AccountManager';
 import ChatManager from '@/modules/admin/components/Chat/ChatManager';
@@ -31,6 +32,7 @@ const routes: RouteObject[] = [
         element: <HomePages />,
       },
       { path: 'products', element: <Product /> },
+      { path: 'profile', element: <ProfileUser /> },
     ],
   },
   {
@@ -42,6 +44,7 @@ const routes: RouteObject[] = [
       { path: 'forget-password', element: <ForgetPasswordForm /> },
       { path: 'confirm-password', element: <ComfirmPassword /> },
       { path: 'new-password', element: <SetNewPasswordForm /> },
+
     ],
   },
   {
@@ -60,7 +63,7 @@ const routes: RouteObject[] = [
       { path: 'dashboard', element: <ManagerDashBoard /> },
       { path: 'role', element: <RoleManager /> },
     ],
-  },
+  }
 ];
 
 const router = createBrowserRouter(routes);
