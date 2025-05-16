@@ -22,6 +22,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import DiglogListProduct from '../components/Dialog/DiglogListProduct';
 
 interface OrderItem {
     id: number;
@@ -76,6 +77,8 @@ export default function DetailsOrderHome({
     const [showInvoiceDialog, setShowInvoiceDialog] = useState(false);
     const [invoiceData, setInvoiceData] = useState<InvoiceData | null>(null);
     const [showBackConfirmDialog, setShowBackConfirmDialog] = useState(false);
+    const [isProductListOpen, setIsProductListOpen] = useState(false);
+    const [availableProducts, setAvailableProducts] = useState<OrderItem[]>([]);
 
     // Fetch users with role_id = 2 (customers)
     useEffect(() => {
@@ -224,11 +227,50 @@ export default function DetailsOrderHome({
         }
     };
 
+    // Add this useEffect to fetch products (you'll need to implement the actual API call)
+    useEffect(() => {
+        // This is a placeholder - replace with your actual API call
+        const fetchProducts = async () => {
+            try {
+                // Replace this with your actual API call
+                const response = await fetch('/api/products');
+                const data = await response.json();
+                setAvailableProducts(data);
+            } catch (error) {
+                console.error('Error fetching products:', error);
+                toast({
+                    title: "Lỗi",
+                    description: "Không thể tải danh sách sản phẩm",
+                    variant: "destructive"
+                });
+            }
+        };
+
+        fetchProducts();
+    }, []);
+
+    const handleAddProduct = (product: OrderItem) => {
+        const existingItem = cartItems.find(item => item.id === product.id);
+        if (existingItem) {
+            onUpdateQuantity?.(product.id, existingItem.quantity + 1);
+        } else {
+            onUpdateQuantity?.(product.id, 1);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-gray-100 p-6">
             <Card className="w-full max-w-[1400px] mx-auto">
                 <CardHeader className="border-b pb-4">
-                    <CardTitle className="text-2xl font-bold">Chi tiết đơn hàng</CardTitle>
+                    <div className="flex justify-between items-center">
+                        <CardTitle className="text-2xl font-bold">Chi tiết đơn hàng</CardTitle>
+                        <Button
+                            onClick={() => setIsProductListOpen(true)}
+                            className="bg-orange-500 hover:bg-orange-600 text-white"
+                        >
+                            Thêm sản phẩm
+                        </Button>
+                    </div>
                 </CardHeader>
                 <CardContent className="p-6">
                     {/* Customer Selection */}
@@ -431,6 +473,14 @@ export default function DetailsOrderHome({
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
+
+            {/* Add the DiglogListProduct component */}
+            <DiglogListProduct
+                open={isProductListOpen}
+                onClose={() => setIsProductListOpen(false)}
+                onAddProduct={handleAddProduct}
+                products={availableProducts}
+            />
         </div>
     );
 }
