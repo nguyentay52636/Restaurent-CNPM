@@ -16,6 +16,7 @@ import { SetNewPasswordForm } from '@/modules/auth/components/ForgetPassword/Set
 import LoginForm from '@/modules/auth/components/Login/LoginForm';
 import { RegisterForm } from '@/modules/auth/components/Register/RegisterForm';
 import AuthPages from '@/modules/auth/pages/AuthPages';
+import AboutUsPage from '@/modules/home/components/Contact/AboutUsPage';
 import BookingPage from '@/modules/home/components/OrderTable/BookingPage';
 import Product from '@/modules/home/components/Product/pages/Product';
 import ProductManager from '@/redux/home/components/ProductTable/ProductManager';
@@ -35,6 +36,8 @@ const routes: RouteObject[] = [
       { path: 'products', element: <Product /> },
       { path: 'profile', element: <ProfileUser /> },
       { path: 'booking-table', element: <BookingPage /> },
+      { path: 'about', element: <AboutUsPage /> },
+
     ],
   },
   {
