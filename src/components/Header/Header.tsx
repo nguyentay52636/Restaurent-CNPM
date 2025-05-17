@@ -16,8 +16,8 @@ import {
 const navLinks = [
   { name: 'Trang Chủ', path: '/' },
   { name: 'Thực Đơn', path: '/products' },
-  { name: 'Đặt bàn', path: '/' },
-  { name: 'Về Chúng Tôi', path: '/about' },
+  { name: 'Đặt bàn', path: '/booking-table' },
+  { name: 'Về Chúng Tôi', path: '/about' }
 ];
 
 // Giả lập số lượng sản phẩm trong giỏ
