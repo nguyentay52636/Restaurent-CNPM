@@ -16,11 +16,9 @@ export default function TableItem({ tableData }: { tableData: any }) {
   const isReserved: boolean =
     latestReservation && reservedStatuses.includes(latestReservation.status);
 
-  // Lấy trạng thái khóa bàn từ localStorage
   const lockedInfo = JSON.parse(localStorage.getItem(`lockedTable-${tableData.id}`) || 'null');
   const isLocked = lockedInfo?.status === 'locked';
 
-  // Cập nhật trạng thái và màu sắc hiển thị
   const statusText: string = isLocked ? 'Đang khóa' : isReserved ? 'Đã đặt' : 'Trống';
   const statusColor: string = isLocked
     ? 'bg-yellow-100 text-yellow-800'
@@ -29,7 +27,6 @@ export default function TableItem({ tableData }: { tableData: any }) {
       : 'bg-green-100 text-green-800';
   const statusDot: string = isLocked ? 'bg-yellow-500' : isReserved ? 'bg-red-500' : 'bg-green-500';
 
-  // Tính tổng tiền (nếu có)
   let totalPrice = 0;
   if (latestReservation?.orders?.length) {
     totalPrice = latestReservation.orders.reduce((orderAcc: number, order: any) => {
@@ -50,7 +47,6 @@ export default function TableItem({ tableData }: { tableData: any }) {
     }
   };
 
-  // Hàm khóa bàn
   const lockTable = () => {
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
     const lockedTable = {
@@ -62,10 +58,19 @@ export default function TableItem({ tableData }: { tableData: any }) {
     window.location.reload();
   };
 
-  // Hàm mở khóa bàn
   const unlockTable = () => {
-    localStorage.removeItem(`lockedTable-${tableData.id}`);
-    window.location.reload();
+    const lockedTableStr = localStorage.getItem(`lockedTable-${tableData.id}`);
+    if (!lockedTableStr) return;
+
+    const lockedTable = JSON.parse(lockedTableStr);
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+
+    if (lockedTable.userId === currentUser.id) {
+      localStorage.removeItem(`lockedTable-${tableData.id}`);
+      window.location.reload();
+    } else {
+      alert('Bạn không có quyền mở khóa bàn này.');
+    }
   };
 
   return (
@@ -74,7 +79,6 @@ export default function TableItem({ tableData }: { tableData: any }) {
         isReserved ? 'bg-orange-200' : 'bg-orange-100'
       }`}
     >
-      {/* Header */}
       <div className='flex items-center justify-between mb-4'>
         <h3 className='text-xl font-bold text-gray-800'>Bàn số {tableData.id}</h3>
         <span
@@ -89,7 +93,6 @@ export default function TableItem({ tableData }: { tableData: any }) {
         <span className='font-medium'>Sức chứa: </span> {tableData.seats} người
       </div>
 
-      {/* Info Grid */}
       <div className='bg-white/60 rounded-xl p-4 space-y-3'>
         {latestReservation && (
           <div className='flex items-center gap-3 text-gray-700'>
@@ -116,7 +119,6 @@ export default function TableItem({ tableData }: { tableData: any }) {
         )}
       </div>
 
-      {/* Timestamps */}
       {latestReservation && (
         <div className='mt-4 p-3 bg-gray-50 rounded-lg space-y-1.5'>
           <div className='flex items-center gap-2 text-xs text-gray-500'>
@@ -130,7 +132,6 @@ export default function TableItem({ tableData }: { tableData: any }) {
         </div>
       )}
 
-      {/* Action Buttons */}
       <div className='mt-4 flex gap-2'>
         {isReserved && (
           <>
@@ -159,7 +160,6 @@ export default function TableItem({ tableData }: { tableData: any }) {
           </>
         )}
 
-        {/* Nút khóa/mở khóa bàn khi không có đặt */}
         {!isReserved && !isLocked && (
           <Button
             onClick={lockTable}
