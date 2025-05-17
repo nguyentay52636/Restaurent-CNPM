@@ -1,17 +1,20 @@
 import AdminPages from '@/modules/admin/pages/AdminPages';
+import { useAppSelector } from '@/redux/hooks/hooks';
+import { selectAuth } from '@/redux/slices/authSlice';
 import { Navigate, Outlet } from 'react-router-dom';
 
-export const ProtectedRoute = () => {
-  const storedUserInfo = localStorage.getItem('userInfo');
-  const userInfo = storedUserInfo ? JSON.parse(storedUserInfo) : null;
+export const ProtectedRoute = ({children}:{children?:React.ReactNode}) => {
+  const {  isAuthenticated } = useAppSelector(selectAuth);
 
-  if (!userInfo.accessToken) {
+ 
+
+  if (!isAuthenticated) {
     return <Navigate to='/auth/login' replace />;
   }
 
   return (
     <AdminPages>
-      <Outlet />
+      {children || <Outlet />}
     </AdminPages>
   );
 };

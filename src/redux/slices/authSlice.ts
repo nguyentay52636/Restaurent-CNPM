@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { IUserDataType } from '../../lib/apis/types.';
 import { loginAPI, registerAPI } from '../../lib/apis/userApi';
+import { RootState } from '../store';
 
 // Define the auth state type
 interface AuthState {
@@ -12,11 +13,14 @@ interface AuthState {
   registrationSuccess: boolean;
 }
 
+const isAuthenticated = JSON.parse(localStorage.getItem('isAuthenticated') || 'false');
+const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+
 // Initial state
 const initialState: AuthState = {
-  user: null,
+  user: currentUser,
   token: localStorage.getItem('token'),
-  isAuthenticated: !!localStorage.getItem('token'),
+  isAuthenticated,
   isLoading: false,
   error: null,
   registrationSuccess: false,
@@ -29,15 +33,11 @@ export const login = createAsyncThunk(
     try {
       const response = await loginAPI({ email, password });
       // Assuming the API returns a token in the data
-      if (response.data && response.data.id) {
-        localStorage.setItem('token', response.data.id.toString());
-        return response.data;
-      }
-      return rejectWithValue(response.message || 'Login failed');
+      return response;
     } catch (error) {
       return rejectWithValue((error as Error).message || 'Login failed');
     }
-  }
+  },
 );
 
 export const register = createAsyncThunk(
@@ -45,16 +45,16 @@ export const register = createAsyncThunk(
   async ({ email, password }: { email: string; password: string }, { rejectWithValue }) => {
     try {
       // Create a partial IUserDataType with required fields for registration
-      const userData: Partial<IUserDataType> = {
+      const userData = {
         email,
         password,
       };
-      const response = await registerAPI(userData as IUserDataType);
+      const response = await registerAPI(userData);
       return response.data;
     } catch (error) {
       return rejectWithValue((error as Error).message || 'Registration failed');
     }
-  }
+  },
 );
 
 // Create the auth slice
@@ -67,6 +67,9 @@ const authSlice = createSlice({
       state.token = null;
       state.isAuthenticated = false;
       localStorage.removeItem('token');
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('isAuthenticated');
+      window.location.reload();
     },
     setCredentials: (state, action: PayloadAction<{ user: IUserDataType; token: string }>) => {
       state.user = action.payload.user;
@@ -88,11 +91,26 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(login.fulfilled, (state, action) => {
+        console.log('Login Response:', action.payload);
+        console.log('User Data:', action.payload.data.user);
+        console.log('User ID:', action.payload.data.user.id);
+
         state.isLoading = false;
-        state.user = action.payload;
-        state.token = action.payload.id.toString();
+        state.user = action.payload.data.user;
+        state.token = action.payload.data.accessToken;
         state.isAuthenticated = true;
         state.error = null;
+
+        // Lưu thông tin user vào localStorage với ID
+        const userData = {
+          ...action.payload.data.user,
+          id: action.payload.data.user.id // Đảm bảo ID được lưu
+        };
+        console.log('Saving user data:', userData);
+        
+        localStorage.setItem('currentUser', JSON.stringify(userData));
+        localStorage.setItem('token', action.payload.data.accessToken);
+        localStorage.setItem('isAuthenticated', 'true');
       })
       .addCase(login.rejected, (state, action) => {
         state.isLoading = false;
@@ -121,3 +139,4 @@ const authSlice = createSlice({
 
 export const { logout, setCredentials, clearError, resetRegistrationSuccess } = authSlice.actions;
 export default authSlice.reducer;
+export const selectAuth = (state: RootState) => state.auth;
