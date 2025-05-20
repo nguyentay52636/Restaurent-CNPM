@@ -25,7 +25,7 @@ export default function AddPermissionModal({
   roleId,
   loadingAddPermissionModal = false,
 }: AddPermissionModalProps) {
-  const [selectedIds, setSelectedIds] = useState<number[]>([]); // lưu id
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
 
   const {
@@ -36,21 +36,22 @@ export default function AddPermissionModal({
     error,
   } = useFetchAllPermissions(currentPage, 7);
 
-  // reset selected khi đóng modal
   useEffect(() => {
     if (!open) {
       setSelectedIds([]);
     }
   }, [open]);
 
-  // khi mở modal, chọn các permission hiện có của role
   useEffect(() => {
     if (open && paginatedData && roleId !== null) {
       const matchedPermissionIds = paginatedData
         .filter((permission) => permission.roles.some((role: any) => role.id === roleId))
         .map((p) => p.id);
 
-      setSelectedIds(matchedPermissionIds);
+      setSelectedIds((prev) => {
+        const newSet = new Set([...prev, ...matchedPermissionIds]);
+        return Array.from(newSet);
+      });
     }
   }, [open, paginatedData, roleId]);
 

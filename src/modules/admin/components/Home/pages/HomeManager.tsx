@@ -6,14 +6,14 @@ import DetailsOrderHome from './DetailsOrderHome';
 import MenuItem from '../components/MenuItem';
 import ActionsHome from '../components/ActionsHome';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ShoppingCart } from 'lucide-react';
 import { getAllProducts } from '@/lib/apis/productApi';
 import { ProductWithId } from '@/lib/apis/types.';
 
 
 interface CartItem extends ProductWithId {
   quantity: number;
-  selectedSize?: { name: string, price: number };
+  selectedSize?: { name: string; price: number };
 }
 
 const HomeManager: React.FC = () => {
@@ -45,7 +45,7 @@ const HomeManager: React.FC = () => {
   // Filter products based on selected category
   const filteredProducts = useMemo(() => {
     if (selectedCategory === 'All') return products;
-    return products.filter(product => product.categoryId === parseInt(selectedCategory));
+    return products.filter((product) => product.categoryId === parseInt(selectedCategory));
   }, [products, selectedCategory]);
 
   // Calculate pagination data
@@ -55,11 +55,11 @@ const HomeManager: React.FC = () => {
     return filteredProducts.slice(startIndex, startIndex + itemsPerPage);
   }, [currentPage, filteredProducts]);
 
-  const addToCart = (item: ProductWithId, selectedSize?: { name: string, price: number }) => {
+  const addToCart = (item: ProductWithId, selectedSize?: { name: string; price: number }) => {
     const cartItemKey = selectedSize ? `${item.id}-${selectedSize.name}` : `${item.id}`;
     const itemPrice = selectedSize ? selectedSize.price : item.price;
 
-    const existingItemIndex = cart.findIndex(cartItem => {
+    const existingItemIndex = cart.findIndex((cartItem) => {
       if (selectedSize) {
         return cartItem.id === item.id && cartItem.selectedSize?.name === selectedSize.name;
       }
@@ -77,8 +77,8 @@ const HomeManager: React.FC = () => {
           ...item,
           quantity: 1,
           selectedSize,
-          price: itemPrice
-        }
+          price: itemPrice,
+        },
       ]);
     }
     setIsCartOpen(true);
@@ -91,18 +91,16 @@ const HomeManager: React.FC = () => {
   const removeFromCart = (id: number, sizeName?: string) => {
     if (sizeName) {
       // For drinks, remove specific size variation
-      setCart(cart.filter(
-        item => !(item.id === id && item.selectedSize?.name === sizeName)
-      ));
+      setCart(cart.filter((item) => !(item.id === id && item.selectedSize?.name === sizeName)));
     } else {
       // For other items
-      setCart(cart.filter(item => item.id !== id));
+      setCart(cart.filter((item) => item.id !== id));
     }
   };
 
   const incrementQuantity = (id: number, sizeName?: string) => {
     setCart(
-      cart.map(item => {
+      cart.map((item) => {
         if (sizeName) {
           // For drinks with size
           if (item.id === id && item.selectedSize?.name === sizeName) {
@@ -116,13 +114,13 @@ const HomeManager: React.FC = () => {
           }
           return item;
         }
-      })
+      }),
     );
   };
 
   const decrementQuantity = (id: number, sizeName?: string) => {
     setCart(
-      cart.map(item => {
+      cart.map((item) => {
         if (sizeName) {
           // For drinks with size
           if (item.id === id && item.selectedSize?.name === sizeName) {
@@ -136,15 +134,12 @@ const HomeManager: React.FC = () => {
           }
           return item;
         }
-      })
+      }),
     );
   };
 
   // Calculate subtotal, tax, and total
-  const subtotal = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
+  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const taxRate = 0.1;
   const tax = subtotal * taxRate;
   const total = subtotal + tax;
@@ -158,8 +153,8 @@ const HomeManager: React.FC = () => {
   const handleOrderComplete = () => {
     setShowDetailsOrder(false);
     toast({
-      title: "Thành công",
-      description: "Đã quay lại trang chọn món. Các món đã chọn vẫn được giữ nguyên.",
+      title: 'Thành công',
+      description: 'Đã quay lại trang chọn món. Các món đã chọn vẫn được giữ nguyên.',
     });
   };
 
@@ -174,17 +169,15 @@ const HomeManager: React.FC = () => {
   const goToNextPage = () => goToPage(currentPage + 1);
 
   return (
-    <div className="min-h-screen bg-gray-100 font-sans">
+    <div className='min-h-screen bg-gray-100 font-sans'>
       {showDetailsOrder ? (
         <DetailsOrderHome
-          cartItems={cart.map(item => ({
+          cartItems={cart.map((item) => ({
             id: item.id,
-            name: item.selectedSize
-              ? `${item.name} (Size ${item.selectedSize.name})`
-              : item.name,
+            name: item.selectedSize ? `${item.name} (Size ${item.selectedSize.name})` : item.name,
             price: item.price,
             quantity: item.quantity,
-            image: item.image
+            image: item.image,
           }))}
           subtotal={subtotal}
           tax={tax}
@@ -198,56 +191,60 @@ const HomeManager: React.FC = () => {
             }
           }}
           onUpdateQuantity={(itemId, newQuantity) => {
-            setCart(cart.map(item =>
-              item.id === itemId
-                ? { ...item, quantity: newQuantity }
-                : item
-            ));
+            setCart(
+              cart.map((item) => (item.id === itemId ? { ...item, quantity: newQuantity } : item)),
+            );
           }}
         />
       ) : (
-        <div className="flex">
+        <div className='flex'>
           <div className={`flex-1 transition-all duration-300 ${isCartOpen ? 'mr-80' : ''}`}>
             <ActionsHome onCategorySelect={setSelectedCategory} />
 
-            <main className="max-w-7xl mx-auto p-6">
-              <h2 className="text-xl font-semibold mb-6">Thực đơn đặc biệt dành cho bạn</h2>
+            <main className='max-w-7xl mx-auto p-6'>
+              <div className='px-2 flex items-center justify-between'>
+                <h2 className='text-xl font-semibold mb-6'>Thực đơn đặc biệt dành cho bạn</h2>
+                <Button
+                  onClick={() => setIsCartOpen(!isCartOpen)}
+                  variant='outline'
+                  size='icon'
+                  className='bg-orange-500 text-white hover:bg-orange-600 cursor-pointer hover:text-white'
+                >
+                  <ShoppingCart className='w-6 h-6' />
+                </Button>
+              </div>
               {loading ? (
-                <div className="text-center">Loading...</div>
+                <div className='text-center'>Loading...</div>
               ) : (
                 <>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
                     {paginatedItems.map((item) => (
-                      <MenuItem
-                        key={item.id}
-                        item={item}
-                        onAddToCart={addToCart}
-                      />
+                      <MenuItem key={item.id} item={item} onAddToCart={addToCart} />
                     ))}
                   </div>
 
                   {filteredProducts.length > itemsPerPage && (
-                    <div className="flex items-center justify-center space-x-2 mt-8">
+                    <div className='flex items-center justify-center space-x-2 mt-8'>
                       <Button
-                        variant="outline"
-                        size="icon"
+                        variant='outline'
+                        size='icon'
                         onClick={goToFirstPage}
                         disabled={currentPage === 1}
-                        className="h-8 w-8 p-0"
+                        className='h-8 w-8 p-0'
                       >
-                        <ChevronsLeft className="h-4 w-4" />
+                        <ChevronsLeft className='h-4 w-4' />
                       </Button>
                       <Button
-                        variant="outline"
-                        size="icon"
+                        variant='outline'
+                        size='icon'
                         onClick={goToPrevPage}
                         disabled={currentPage === 1}
-                        className="h-8 w-8 p-0"
+                        className='h-8 w-8 p-0'
                       >
-                        <ChevronLeft className="h-4 w-4" />
+                        <ChevronLeft className='h-4 w-4' />
                       </Button>
 
-                      <div className="flex items-center space-x-1">
+                      <div className='flex items-center space-x-1'>
                         {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                           let pageNum = currentPage - 2 + i;
                           if (currentPage < 3) {
@@ -260,8 +257,8 @@ const HomeManager: React.FC = () => {
                           return (
                             <Button
                               key={pageNum}
-                              variant={currentPage === pageNum ? "default" : "outline"}
-                              size="icon"
+                              variant={currentPage === pageNum ? 'default' : 'outline'}
+                              size='icon'
                               onClick={() => goToPage(pageNum)}
                               className={`h-8 w-8 p-0 ${currentPage === pageNum ? 'bg-orange-500 hover:bg-orange-600' : ''}`}
                             >
@@ -272,22 +269,22 @@ const HomeManager: React.FC = () => {
                       </div>
 
                       <Button
-                        variant="outline"
-                        size="icon"
+                        variant='outline'
+                        size='icon'
                         onClick={goToNextPage}
                         disabled={currentPage === totalPages}
-                        className="h-8 w-8 p-0"
+                        className='h-8 w-8 p-0'
                       >
-                        <ChevronRight className="h-4 w-4" />
+                        <ChevronRight className='h-4 w-4' />
                       </Button>
                       <Button
-                        variant="outline"
-                        size="icon"
+                        variant='outline'
+                        size='icon'
                         onClick={goToLastPage}
                         disabled={currentPage === totalPages}
-                        className="h-8 w-8 p-0"
+                        className='h-8 w-8 p-0'
                       >
-                        <ChevronsRight className="h-4 w-4" />
+                        <ChevronsRight className='h-4 w-4' />
                       </Button>
                     </div>
                   )}

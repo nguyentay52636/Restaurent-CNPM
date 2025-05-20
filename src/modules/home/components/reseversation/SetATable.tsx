@@ -31,12 +31,11 @@ export default function SetATable() {
     sortBy,
     order,
   });
-  const dataUsers = useUsers();
   const dataOrders = useOrders();
   const createReseversation = useCreateReservation();
-  const usersNotRole2 = dataUsers.users.filter((user) => user.roleId !== 2);
-  const userIdsNotRole2 = usersNotRole2.map((user) => user.id);
-  const orders = dataOrders.orders.filter((order) => userIdsNotRole2.includes(order.userId));
+  const storedUser = localStorage.getItem('currentUser');
+  const usersNotRole2 = storedUser ? JSON.parse(storedUser) : null;
+  const orders = dataOrders.orders.filter((order) => order.userId === usersNotRole2?.id);
   console.log(orders);
 
   const filteredTables = dataTables?.tables?.filter((table) => {

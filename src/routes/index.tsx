@@ -9,7 +9,6 @@ import OrderManager from '@/modules/admin/components/Order/OrderManager';
 import NotificationsHistoryOrder from '@/modules/admin/components/OrderHistory/components/NotificationsHistoryOrder';
 import OrderHistoryManager from '@/modules/admin/components/OrderHistory/OrderHistoryManager';
 import RoleManager from '@/modules/admin/components/Role/RoleManager';
-import SetATable from '@/modules/admin/components/SetATable';
 import ComfirmPassword from '@/modules/auth/components/ForgetPassword/ComfirmPassword';
 import { ForgetPasswordForm } from '@/modules/auth/components/ForgetPassword/ForgetPasswordForm';
 import { SetNewPasswordForm } from '@/modules/auth/components/ForgetPassword/SetNewPasswordForm';
@@ -20,6 +19,7 @@ import AboutUsPage from '@/modules/home/components/Contact/AboutUsPage';
 import OrderHistory from '@/modules/home/components/Order/OrderHistory';
 import BookingPage from '@/modules/home/components/OrderTable/BookingPage';
 import Product from '@/modules/home/components/Product/pages/Product';
+import SetATable from '@/modules/home/components/reseversation/SetATable';
 import ProductManager from '@/redux/home/components/ProductTable/ProductManager';
 import HomePages from '@/redux/home/pages/HomePages';
 import { ProtectedRoute } from '@/routes/ProtectedRoute';
@@ -36,10 +36,7 @@ const routes: RouteObject[] = [
       },
       { path: 'products', element: <Product /> },
       { path: 'profile', element: <ProfileUser /> },
-      { path: 'order-history', element: <OrderHistory /> },
-      { path: 'booking-table', element: <BookingPage /> },
-      { path: 'about', element: <AboutUsPage /> },
-
+      { path: 'reservation', element: <SetATable /> },
     ],
   },
   {
@@ -51,7 +48,6 @@ const routes: RouteObject[] = [
       { path: 'forget-password', element: <ForgetPasswordForm /> },
       { path: 'confirm-password', element: <ComfirmPassword /> },
       { path: 'new-password', element: <SetNewPasswordForm /> },
-
     ],
   },
   {
@@ -70,7 +66,7 @@ const routes: RouteObject[] = [
       { path: 'dashboard', element: <ManagerDashBoard /> },
       { path: 'role', element: <RoleManager /> },
     ],
-  }
+  },
 ];
 
 const router = createBrowserRouter(routes);
