@@ -36,6 +36,7 @@ const routes: RouteObject[] = [
       },
       { path: 'products', element: <Product /> },
       { path: 'profile', element: <ProfileUser /> },
+      { path: 'order-history', element: <OrderHistory /> },
       { path: 'reservation', element: <SetATable /> },
     ],
   },

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getOrdersByUserId } from "@/lib/apis/orderApi";
 import { selectAuth } from "@/redux/slices/authSlice";
 import { useAppSelector } from "@/redux/hooks/hooks";
-import { mockOrders } from "./Order";
+
 interface Order {
   id: number;
   status: string;
@@ -22,12 +22,7 @@ interface OrderItem {
   updatedAt: string;
 }
 
-const productMap: Record<number, { name: string; image: string }> = {
-  101: { name: "Bánh mì bò nướng", image: "https://source.unsplash.com/80x80/?banhmi" },
-  102: { name: "Trà sữa trân châu", image: "https://source.unsplash.com/80x80/?trasua" },
-  103: { name: "Cơm gà xối mỡ", image: "https://source.unsplash.com/80x80/?comga" },
-  104: { name: "Nước cam ép", image: "https://source.unsplash.com/80x80/?orangejuice" },
-};
+
 
 export default function OrderHistory() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -35,37 +30,32 @@ export default function OrderHistory() {
   const [error, setError] = useState<string | null>(null);
   const { user } = useAppSelector(selectAuth);
   useEffect(() => {
-    // Giả lập fetch data
-    setTimeout(() => {
-      setOrders(mockOrders);
-      setLoading(false);
-    }, 500); // Giả delay 0.5 giây
-  }, []);
-  // useEffect(() => {
-  //   const fetchOrders = async () => {
-  //     try {
-  //       setLoading(true);
-  //       const response = await getOrdersByUserId(user?.id); // Gọi API
-  //       setOrders(response.data);
-  //     } catch (error) {
-  //       console.error("Error fetching orders:", error);
-  //       setError("Không thể tải đơn hàng. Vui lòng thử lại sau.");
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
+    const fetchOrders = async () => {
+      try {
+        setLoading(true);
+        const response = await getOrdersByUserId(user?.id); // Gọi API
+        setOrders(response.data);
+        console.log("body: " + response.data);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+        setError("Không thể tải đơn hàng. Vui lòng thử lại sau.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  //   if (user?.id) {
-  //     fetchOrders();
-  //   } else {
-  //     setLoading(false); // không có user => không cần fetch
-  //   }
-  // }, [user?.id]);
+    if (user?.id) {
+      fetchOrders();
+    } else {
+      setLoading(false); // không có user => không cần fetch
+    }
+  }, [user?.id]);
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Lịch sử đơn hàng</h1>
-
+      <div className="justify-between">
+        <h1 className="text-2xl font-bold mb-6">Lịch sử đơn hàng</h1>
+      </div>
       {loading ? (
         <p>Đang tải đơn hàng...</p>
       ) : error ? (
@@ -87,10 +77,31 @@ export default function OrderHistory() {
                   {new Date(order.createdAt).toLocaleString("vi-VN")}
                 </span>
               </div>
-              <p className="text-sm text-gray-600 mb-2">Trạng thái: {order.status}</p>
+              <p className="text-sm mb-2">
+                Trạng thái:{" "}
+                <span
+                  className={
+                    order.status === "ChoDuyet"
+                      ? "text-yellow-500 font-semibold"
+                      : order.status === "DaHuy"
+                        ? "text-red-500 font-semibold"
+                        : order.status === "DaXacNhan"
+                          ? "text-green-600 font-semibold"
+                          : "text-gray-600"
+                  }
+                >
+                  {order.status === "ChoDuyet"
+                    ? "Chờ Duyệt"
+                    : order.status === "DaHuy"
+                      ? "Đã Hủy"
+                      : order.status === "DaXacNhan"
+                        ? "Đã Xác Nhận"
+                        : order.status}
+                </span>
+              </p>
               <div className="space-y-2 mb-4">
                 {order.orderItems.map((item) => {
-                  const product = productMap[item.productId] || {
+                  const product = (item as any).product || {
                     name: "Sản phẩm không xác định",
                     image: "",
                   };
@@ -105,7 +116,7 @@ export default function OrderHistory() {
                       <div>
                         <p className="font-medium">{product.name}</p>
                         <p className="text-sm text-gray-600">
-                          SL: {item.quantity} × {item.price.toLocaleString("vi-VN")} đ
+                          SL: {item.quantity} × {Number(item.price).toLocaleString("vi-VN")} đ
                         </p>
                       </div>
                     </div>
