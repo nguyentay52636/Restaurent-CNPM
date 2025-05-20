@@ -43,7 +43,7 @@ export interface IReviewDataType {
   productId: number;
   userId: string;
   rating: number;
-  comment: string
+  comment: string;
 }
 export interface ProductType {
   name: string;
@@ -80,7 +80,6 @@ export interface OrderItemType {
   productId: number;
   quantity: number;
   price: number;
-
 }
 export interface PaymentType {
   orderId: number;

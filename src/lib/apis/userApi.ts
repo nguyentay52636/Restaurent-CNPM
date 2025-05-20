@@ -1,4 +1,4 @@
-import baseApi from './baseApi';
+import axiosInstance from '@/lib/apis/axiosInstance';
 import {
   IAPIResponseWrapper,
   ILoginDataType,
@@ -12,7 +12,7 @@ export const registerAPI = async ({ email, password }: { email: string; password
       email,
       password,
     };
-    const { data } = await baseApi.post<IAPIResponseWrapper<IUserDataType>>(
+    const { data } = await axiosInstance.post<IAPIResponseWrapper<IUserDataType>>(
       '/auth/register',
       newUser,
     );
@@ -24,7 +24,7 @@ export const registerAPI = async ({ email, password }: { email: string; password
 };
 export const loginAPI = async ({ email, password }: { email: string; password: string }) => {
   try {
-    const { data } = await baseApi.post<IAPIResponseWrapper<ILoginDataType>>('/auth/login', {
+    const { data } = await axiosInstance.post<IAPIResponseWrapper<ILoginDataType>>('/auth/login', {
       email,
       password,
     });
@@ -36,7 +36,7 @@ export const loginAPI = async ({ email, password }: { email: string; password: s
 
 export const refreshTokenAPI = async (refreshToken: string) => {
   try {
-    const { data } = await baseApi.post<IAPIResponseWrapper<IRefreshTokenDataType>>(
+    const { data } = await axiosInstance.post<IAPIResponseWrapper<IRefreshTokenDataType>>(
       '/auth/refresh-token',
       { refreshToken },
     );
@@ -49,7 +49,7 @@ export const refreshTokenAPI = async (refreshToken: string) => {
 
 export const getAllUserAPI = async () => {
   try {
-    const { data } = await baseApi.get<IAPIResponseWrapper<IUserDataType[]>>('/users');
+    const { data } = await axiosInstance.get<IAPIResponseWrapper<IUserDataType[]>>('/users');
     return data;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
@@ -59,7 +59,7 @@ export const getAllUserAPI = async () => {
 
 export const deleteUserAPI = async (id: number) => {
   try {
-    const { data } = await baseApi.delete<IAPIResponseWrapper<IUserDataType>>('/users/' + id);
+    const { data } = await axiosInstance.delete<IAPIResponseWrapper<IUserDataType>>('/users/' + id);
     return data;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
@@ -87,7 +87,10 @@ export const addUserAPI = async ({
       points,
     };
 
-    const { data } = await baseApi.post<IAPIResponseWrapper<IUserDataType>>('/users', userData);
+    const { data } = await axiosInstance.post<IAPIResponseWrapper<IUserDataType>>(
+      '/users',
+      userData,
+    );
     return data;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
@@ -113,7 +116,7 @@ export const updateUserAPI = async ({
       points,
       roleId,
     };
-    const { data } = await baseApi.patch<IAPIResponseWrapper<IUserDataType>>(
+    const { data } = await axiosInstance.patch<IAPIResponseWrapper<IUserDataType>>(
       `/users/${id}`,
       userData,
     );
@@ -124,7 +127,7 @@ export const updateUserAPI = async ({
 };
 export const getUserByIdAPI = async (id: number) => {
   try {
-    const { data } = await baseApi.get<IAPIResponseWrapper<IUserDataType>>(`/users/${id}`);
+    const { data } = await axiosInstance.get<IAPIResponseWrapper<IUserDataType>>(`/users/${id}`);
     return data;
   } catch (error: any) {
     throw new Error(error);
