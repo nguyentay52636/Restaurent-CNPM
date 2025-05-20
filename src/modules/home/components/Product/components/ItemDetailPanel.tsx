@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { X } from 'lucide-react';
 import { ProductWithId } from '@/lib/apis/types';
+import { useAppSelector } from '@/redux/hooks/hooks';
+import { selectAuth } from '@/redux/slices/authSlice';
 
 interface Props {
   item: ProductWithId;
@@ -12,14 +14,14 @@ interface Props {
 const ItemDetailPanel: React.FC<Props> = ({ item, onClose, onAddToCart }) => {
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState<{ name: string, price: number } | undefined>(undefined);
-
+  
   const handleQuantityChange = (delta: number) => {
     setQuantity((prev) => Math.max(1, prev + delta));
   };
 
   return (
     <div className="fixed inset-0 bg-opacity-50 backdrop-blur-xs flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg w-[420px] shadow-xl relative">
+      <div className="bg-white rounded-lg w-[700px] h-[300px] shadow-xl relative">
         {/* Header */}
         <div className="flex items-center justify-between border-b px-4 py-2">
           <span className="font-semibold text-lg">Chi tiết món ăn</span>
@@ -60,7 +62,7 @@ const ItemDetailPanel: React.FC<Props> = ({ item, onClose, onAddToCart }) => {
           )}
 
           {/* Quantity */}
-          <div className="flex items-center space-x-3 mb-4">
+          <div className="flex justify-end items-center space-x-3 mb-4">
             <span className="text-sm font-medium">Số lượng</span>
             <div className="flex items-center border rounded overflow-hidden">
               <button onClick={() => handleQuantityChange(-1)} className="px-3 py-1 bg-gray-200 hover:bg-gray-300">−</button>
@@ -78,7 +80,7 @@ const ItemDetailPanel: React.FC<Props> = ({ item, onClose, onAddToCart }) => {
                 onClose();
               }}
             >
-              🛒 Thêm {quantity} món – {(selectedSize ? selectedSize.price : item.price) * quantity}.000đ
+              🛒 Thêm {quantity} món – {(selectedSize ? selectedSize.price : item.price) * quantity}đ
             </Button>
           </div>
         </div>

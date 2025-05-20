@@ -1,87 +1,36 @@
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardTitle } from '@/components/ui/card';
-import { ProductWithId } from '@/lib/apis/types.';
-import { Pencil } from 'lucide-react';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
+import React from 'react';
+import { ProductWithId } from '@/lib/apis/types';
+import { ProductType } from '@/lib/apis/types.';
 
 interface MenuItemProps {
-    item: ProductWithId;
-    onAddToCart: (item: ProductWithId, selectedSize?: { name: string, price: number }) => void;
-    onEdit?: () => void;
+  item: ProductWithId;
+  onAddToCart: (item: ProductWithId, quantity: number) => void;
+  onClickDetail: (item: ProductType) => void; 
 }
 
-const MenuItem: React.FC<MenuItemProps> = ({ item, onAddToCart, onEdit }) => {
-    const [selectedSize, setSelectedSize] = useState<{ name: string, price: number } | undefined>(
-        item.availableSizes ? item.availableSizes[1] : undefined
-    );
-
-    const handleAddToCart = () => {
-        onAddToCart(item, selectedSize);
-    };
-
-    return (
-        <Card className="overflow-hidden hover:shadow-lg transition-shadow">
-            <img
-                src={item.image}
-                alt={item.name}
-                className="w-full h-48 object-cover"
-            />
-            <CardContent className="p-4">
-                <div className="flex justify-between items-center mb-2">
-                    <CardTitle className="text-lg">{item.name}</CardTitle>
-                    <span className="text-orange-500 font-bold">
-                        {selectedSize
-                            ? selectedSize.price.toLocaleString('vi-VN')
-                            : item.price.toLocaleString('vi-VN')} đ
-                    </span>
-                </div>
-                <p className="text-gray-600 text-sm mb-2">{item.description}</p>
-
-                {item.availableSizes && (
-                    <div className="mb-3">
-                        <p className="text-sm font-medium mb-1">Kích cỡ:</p>
-                        <RadioGroup
-                            value={selectedSize?.name}
-                            onValueChange={(value) => {
-                                const size = item.availableSizes?.find(s => s.name === value);
-                                if (size) setSelectedSize(size);
-                            }}
-                            className="flex space-x-4"
-                        >
-                            {item.availableSizes.map((size) => (
-                                <div className="flex items-center space-x-1" key={size.name}>
-                                    <RadioGroupItem value={size.name} id={`size-${item.id}-${size.name}`} />
-                                    <Label htmlFor={`size-${item.id}-${size.name}`} className="text-sm">
-                                        {size.name}
-                                    </Label>
-                                </div>
-                            ))}
-                        </RadioGroup>
-                    </div>
-                )}
-
-                <div className="flex gap-2">
-                    <Button
-                        onClick={handleAddToCart}
-                        className="flex-1 bg-orange-500 hover:bg-orange-600 cursor-pointer"
-                    >
-                        + Thêm vào giỏ hàng
-                    </Button>
-                    {/* {onEdit && (
-                        <Button
-                            onClick={onEdit}
-                            variant="outline"
-                            className="border-orange-500 text-orange-500 hover:bg-orange-50"
-                        >
-                            <Pencil className="w-4 h-4" />
-                        </Button>
-                    )} */}
-                </div>
-            </CardContent>
-        </Card>
-    );
+const MenuItem: React.FC<MenuItemProps> = ({ item, onAddToCart, onClickDetail }) => {
+  return (
+    <div className="border p-4 rounded-lg shadow-md">
+      <img src={item.image} alt={item.name} className="w-full h-48 object-cover rounded" />
+      <h3 className="text-xl font-semibold mt-2">{item.name}</h3>
+      <p className="text-gray-500 text-sm mt-1">{item.description}</p>
+      <p className="text-red-600 font-semibold mt-2">{item.price.toLocaleString('vi-VN')}đ</p>
+      <div className="mt-4 flex justify-between">
+        <button
+          onClick={() => onAddToCart(item, 1)} 
+          className="px-4 py-2 bg-orange-500 text-white rounded"
+        >
+          Thêm vào giỏ
+        </button>
+        <button
+          onClick={() => onClickDetail(item)} 
+          className="px-4 py-2 bg-blue-500 text-white rounded"
+        >
+          Xem chi tiết
+        </button>
+      </div>
+    </div>
+  );
 };
 
-export default MenuItem; 
+export default MenuItem;

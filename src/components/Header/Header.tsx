@@ -27,7 +27,13 @@ const Header = () => {
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
-
+  const navLinks = [
+    { name: 'Trang Chủ', path: '/' },
+    { name: 'Thực Đơn', path: '/products' },
+    ...(user?.id ? [{ name: 'Lịch Sử Đơn Hàng', path: '/order-history' }] : []),
+    { name: 'Đặt bàn', path: '/booking-table' },
+    { name: 'Về Chúng Tôi', path: '/about' },
+  ];
   return (
     <motion.header
       initial={{ y: -100, opacity: 0 }}

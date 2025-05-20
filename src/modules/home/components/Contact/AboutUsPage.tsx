@@ -73,17 +73,18 @@ const AboutUsPage = () => {
           <li>🌐 Website: www.sgu-restaurant.vn</li>
         </ul>
 
-        <div className="w-full h-64 sm:h-96">
-          <iframe
+        {/* <div className="w-full h-64 sm:h-96">
+           <iframe
             title="Google Map - SGU Restaurant"
-            src="https://www.google.com/maps/place/Saigon+University/@10.7599171,106.6796834,16z/data=!3m1!4b1!4m6!3m5!1s0x31752f1b7c3ed289:0xa06651894598e488!8m2!3d10.7599171!4d106.6822583!16s%2Fm%2F02qvnkv?hl=en&entry=ttu&g_ep=EgoyMDI1MDUwNy4wIKXMDSoJLDEwMjExNDU1SAFQAw%3D%3D"
+            src="https://www.google.com/maps/place/Tr%C6%B0%E1%BB%9Dng+%C4%90%E1%BA%A1i+h%E1%BB%8Dc+S%C3%A0i+G%C3%B2n/@10.7599171,106.6796834,17z/data=!3m1!4b1!4m6!3m5!1s0x31752f1b7c3ed289:0xa06651894598e488!8m2!3d10.7599171!4d106.6822583!16s%2Fm%2F02qvnkv?entry=ttu&g_ep=EgoyMDI1MDUxMy4xIKXMDSoASAFQAw%3D%3D"
             className="w-full h-full rounded-xl border"
             allowFullScreen
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
           ></iframe>
-        </div>
-      </section>
+        </div> */}
+        </section>
+
 
       <section className="mb-8">
         <h2 className="text-xl sm:text-2xl font-semibold mb-2">Giờ Mở Cửa</h2>

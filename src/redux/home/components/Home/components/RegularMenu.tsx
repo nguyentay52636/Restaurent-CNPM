@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardTitle } from "@/components/ui/card";
 import { getAllProducts } from "@/lib/apis/productApi";
-
+import { Link } from 'react-router-dom';
 interface Product {
   id: string;
   name: string;
@@ -14,7 +14,14 @@ interface Product {
 
 const RegularMenu = () => {
   const [menuItems, setMenuItems] = useState<Product[]>([]);
-
+  const getFullImageUrl = (path: string) => {
+    if (!path) return '';
+    if (/^https?:\/\//.test(path)) return path;
+    // Lấy base url từ biến môi trường, loại bỏ /api nếu có
+    const apiUrl = import.meta.env.VITE_API_URL as string;
+    const baseUrl = apiUrl.replace(/\/api\/?$/, '');
+    return `${baseUrl}${path}`;
+  };
   useEffect(() => {
     const fetchMenu = async () => {
       try {
@@ -44,8 +51,10 @@ const RegularMenu = () => {
         <div className="flex flex-col sm:flex-row justify-between items-center mb-8">
           <h2 className="text-3xl md:text-4xl font-bold text-black">Khám Phá <span className="font-bold text-orange-600">Món Mới</span> </h2>
           <div className="flex items-center gap-4 mt-4 sm:mt-0">
-            <Button variant="outline" className="border-orange-500 text-orange-500 hover:bg-orange-100">
-              Xem Tất Cả
+            <Button variant="outline" className="border-orange-500 text-orange-500 hover:bg-orange-100" asChild>
+              <Link to="/products">
+                Xem Tất Cả
+              </Link>
             </Button>
           </div>
         </div>
@@ -55,7 +64,7 @@ const RegularMenu = () => {
             <Card key={index} className="flex flex-col items-center text-center bg-orange-100 p-4 rounded-xl border-none shadow-none">
               <div className="relative">
                 <img
-                  src={item.image}
+                  src={getFullImageUrl(item.image)}
                   alt={item.name}
                   className="w-48 h-48 rounded-full object-cover"
                 />

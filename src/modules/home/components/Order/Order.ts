@@ -1,0 +1,56 @@
+export const mockOrders: Order[] = [
+  {
+    id: 1,
+    status: "cho duyet",
+    userId: 101,
+    createdAt: "2025-05-18T08:30:00Z",
+    updatedAt: "2025-05-18T08:30:00Z",
+    orderItems: [
+      {
+        id: 1,
+        orderId: 1,
+        productId: 101,
+        quantity: 2,
+        price: 35000,
+        createdAt: "2025-05-18T08:30:00Z",
+        updatedAt: "2025-05-18T08:30:00Z",
+      },
+      {
+        id: 2,
+        orderId: 1,
+        productId: 102,
+        quantity: 1,
+        price: 105000,
+        createdAt: "2025-05-18T08:30:00Z",
+        updatedAt: "2025-05-18T08:30:00Z",
+      },
+    ],
+  },
+  {
+    id: 2,
+    status: "cho duyet",
+    userId: 101,
+    createdAt: "2025-05-18T10:15:00Z",
+    updatedAt: "2025-05-18T10:15:00Z",
+    orderItems: [
+      {
+        id: 3,
+        orderId: 2,
+        productId: 103,
+        quantity: 1,
+        price: 60000,
+        createdAt: "2025-05-18T10:15:00Z",
+        updatedAt: "2025-05-18T10:15:00Z",
+      },
+      {
+        id: 4,
+        orderId: 2,
+        productId: 104,
+        quantity: 2,
+        price: 30000,
+        createdAt: "2025-05-18T10:15:00Z",
+        updatedAt: "2025-05-18T10:15:00Z",
+      },
+    ],
+  },
+];
