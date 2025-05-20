@@ -15,7 +15,7 @@ interface DialogViewDetailsProps {
 }
 
 export default function DialogViewDetails({ order, onClose }: DialogViewDetailsProps) {
-  const calculateTotalAmount = (orderItems: Order['order_items']) => {
+  const calculateTotalAmount = (orderItems: Order['orderItems']) => {
     return orderItems.reduce((total, item) => total + item.quantity * item.price, 0);
   };
 
@@ -49,7 +49,7 @@ export default function DialogViewDetails({ order, onClose }: DialogViewDetailsP
                 </div>
                 <div>
                   <p className="text-sm text-gray-500 font-semibold">Ngày giao dịch</p>
-                  <p className="mt-1 text-sm text-gray-900">{formatDate(order.created_at)}</p>
+                  <p className="mt-1 text-sm text-gray-900">{formatDate(order.createdAt)}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500 font-semibold">Phương thức thanh toán</p>
@@ -66,7 +66,7 @@ export default function DialogViewDetails({ order, onClose }: DialogViewDetailsP
             <section>
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Đơn hàng của bạn</h3>
               <div className="space-y-4">
-                {order.order_items.map((item) => (
+                {order.orderItems.map((item) => (
                   <div
                     key={`${item.order_id}-${item.product_id}`}
                     className="flex justify-between items-start border-b border-gray-200 py-4"
@@ -97,7 +97,7 @@ export default function DialogViewDetails({ order, onClose }: DialogViewDetailsP
             <div>
               <p className="text-sm text-gray-500 font-semibold">Tài khoản</p>
               <p className="mt-1 text-sm text-gray-900">
-                {order.user.full_name.toLowerCase().replace(/\s+/g, '.') + '@mail.com'}
+                {order?.user?.fullName?.toLowerCase().replace(/\s+/g, '.') + '@mail.com'}
               </p>
             </div>
             <div>
@@ -107,17 +107,13 @@ export default function DialogViewDetails({ order, onClose }: DialogViewDetailsP
             <div className="border-t border-gray-200 pt-4">
               <p className="text-sm text-gray-500 font-semibold">Tổng cộng</p>
               <p className="text-lg font-semibold text-gray-900">
-                {calculateTotalAmount(order.order_items).toLocaleString('vi-VN', {
+                {calculateTotalAmount(order?.orderItems).toLocaleString('vi-VN', {
                   style: 'currency',
                   currency: 'VND',
                 })}
               </p>
             </div>
-            <div className="flex justify-end mt-4">
-              <Button variant="default" className="bg-orange-500 hover:bg-orange-600 text-white cursor-pointer">
-                Xử lý đơn hàng
-              </Button>
-            </div>
+
           </section>
         </div>
       </DialogContent>

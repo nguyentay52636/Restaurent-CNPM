@@ -80,6 +80,7 @@ const user = {
   name: 'shadcn',
   email: 'm@example.com',
   avatar: '/avatars/shadcn.jpg',
+  roleId: 1
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
