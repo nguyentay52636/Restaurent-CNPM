@@ -13,7 +13,13 @@ import { createOrderItem } from '@/lib/apis/orderItemApi';
 import { getAllUserAPI } from '@/lib/apis/userApi';
 import baseApi from '@/lib/apis/baseApi';
 import { count } from 'console';
+import { selectAuth } from "@/redux/slices/authSlice";
+import { useAppSelector } from "@/redux/hooks/hooks";
 import { createPayment } from '@/lib/apis/paymentsApi';
+import { Toaster } from "@/components/ui/toaster";
+import { IUserDataType } from '@/lib/apis/types.';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store';
 
 interface CartItem extends ProductWithId {
   quantity: number;
@@ -32,7 +38,9 @@ const Product: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [selectedItem, setSelectedItem] = useState<ProductWithId | null>(null);
   const [showItemDetail, setShowItemDetail] = useState(false);
-
+  const { isAuthenticated, user } = useAppSelector(selectAuth);
+  const [users, setUsers] = useState<IUserDataType[]>([]);
+  const accessToken = useSelector((state: RootState) => state.auth.token);
   const itemsPerPage = 12;
 
   const filteredProducts = useMemo(() => {
@@ -159,6 +167,7 @@ const Product: React.FC = () => {
   };
   const handleCheckout = async (method: string) => {
     try {
+      console.log(user.a)
       if (cart.length === 0) {
         toast({
           title: "Lỗi",
@@ -173,10 +182,10 @@ const Product: React.FC = () => {
         quantity: item.quantity,
         price: item.price
       }));
-
+      console.log("user logged: "+user?.id);
       // Gửi đơn hàng
       const orderResponse = await createOrder({
-        userId: 18,
+        userId: user?.id,
         status: "ChoDuyet",
         orderItems: [],
       });
@@ -316,6 +325,14 @@ const Product: React.FC = () => {
                 }}
                 onClose={() => setShowItemDetail(false)}
                 onAddToCart={(item, quantity, selectedSize) => {
+                  if (!isAuthenticated) {
+                      toast({
+                        title: "Vui lòng đăng nhập",
+                        description: "Bạn cần đăng nhập để đặt hàng.",
+                        variant: "destructive"
+                      });
+                      return;
+                    }
                   const existingIndex = cart.findIndex(
                     (cartItem) =>
                       cartItem.id === item.id &&
@@ -340,8 +357,9 @@ const Product: React.FC = () => {
                   setIsCartOpen(true);
                 }}
               />
-
+                
             )}
+            <Toaster />
           </div>
         </>
       )}

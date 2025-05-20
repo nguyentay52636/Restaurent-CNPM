@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { X } from 'lucide-react';
 import { ProductWithId } from '@/lib/apis/types';
+import { useAppSelector } from '@/redux/hooks/hooks';
+import { selectAuth } from '@/redux/slices/authSlice';
 
 interface Props {
   item: ProductWithId;
@@ -12,7 +14,7 @@ interface Props {
 const ItemDetailPanel: React.FC<Props> = ({ item, onClose, onAddToCart }) => {
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState<{ name: string, price: number } | undefined>(undefined);
-
+  
   const handleQuantityChange = (delta: number) => {
     setQuantity((prev) => Math.max(1, prev + delta));
   };

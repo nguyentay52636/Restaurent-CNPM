@@ -24,6 +24,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import DiglogListProduct from '../components/DiglogListProduct';
 import ItemDetailPanel from '../components/ItemDetailPanel';
+import { useAppSelector } from '@/redux/hooks/hooks';
+import { selectAuth } from '@/redux/slices/authSlice';
 
 interface OrderItem {
     id: number;
@@ -90,6 +92,7 @@ export default function DetailsOrderHome({
     const [availableProducts, setAvailableProducts] = useState<OrderItem[]>([]);
     const [showItemDetail, setShowItemDetail] = useState(false);
     const [selectedItem, setSelectedItem] = useState<OrderItem | null>(null);
+    const { isAuthenticated } = useAppSelector(selectAuth);
     // Fetch users with role_id = 2 (customers)
     useEffect(() => {
         const fetchUsers = async () => {
@@ -413,18 +416,25 @@ return (
     }}
     onClose={() => setShowItemDetail(false)}
     onAddToCart={(item, quantity, selectedSize) => {
-      const newItem = {
-        ...item,
-        quantity,
-        price: selectedSize?.price || item.price,
-        image: getFullImageUrl(item.image),
-      };
+  if (!isAuthenticated) {
+    toast({
+      title: "Vui lòng đăng nhập",
+      description: "Bạn cần đăng nhập để đặt hàng.",
+      variant: "destructive",
+    });
+    return;
+  }
 
-      // Gọi hàm từ props để thêm item vào giỏ
-      onAddItemToCart?.(newItem);
-
-      setShowItemDetail(false);
-    }}
+  const newItem = {
+    ...item,
+    quantity,
+    price: selectedSize?.price || item.price,
+    image: getFullImageUrl(item.image),
+  };
+  console.log("kiểm tra login order")
+  onAddItemToCart?.(newItem);
+  setShowItemDetail(false);
+}}
   />
 )}
                    

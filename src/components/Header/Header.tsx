@@ -13,12 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const navLinks = [
-  { name: 'Trang Chủ', path: '/' },
-  { name: 'Thực Đơn', path: '/products' },
-  { name: 'Đặt bàn', path: '/booking-table' },
-  { name: 'Về Chúng Tôi', path: '/about' }
-];
+ 
 
 // Giả lập số lượng sản phẩm trong giỏ
 const cartItemCount = 3;
@@ -30,7 +25,13 @@ const Header = () => {
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
-
+  const navLinks = [
+    { name: 'Trang Chủ', path: '/' },
+    { name: 'Thực Đơn', path: '/products' },
+    ...(user?.id ? [{ name: 'Lịch Sử Đơn Hàng', path: '/order-history' }] : []),
+    { name: 'Đặt bàn', path: '/booking-table' },
+    { name: 'Về Chúng Tôi', path: '/about' },
+  ];
   return (
     <motion.header
       initial={{ y: -100, opacity: 0 }}
