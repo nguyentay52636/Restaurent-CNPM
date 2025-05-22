@@ -3,24 +3,40 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from '@/components/ui/button';
 import { Star } from 'lucide-react';
 
-interface Feedback {
-    id: number;
-    user_id: number;
-    product_id: number;
-    rating: number;
-    content: string;
-    created_at: string;
-    updated_at: string;
-}
-
 interface Product {
     id: number;
     name: string;
-    category: string;
-    price: number;
-    stock: number;
-    status: boolean;
+    description: string;
+    price: string;
     image: string;
+    quantity: number;
+    status: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+interface User {
+    id: number;
+    fullName: string;
+    // ...other fields if needed
+}
+
+interface Order {
+    id: number;
+    status: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+interface Review {
+    id: number;
+    rating: number;
+    comment: string;
+    createdAt: string;
+    updatedAt: string;
+    user: User;
+    order: Order | null;
+    product: Product | null;
 }
 
 interface Users {
@@ -28,13 +44,14 @@ interface Users {
 }
 
 interface DialogFeedbackProps {
-    feedback: Feedback;
+    feedback: Review;
     users: Users;
     products: Product[];
 }
 
 export default function DialogFeedback({ feedback, users, products }: DialogFeedbackProps) {
-    const product = products.find(p => p.id === feedback.product_id);
+    // Lấy product trực tiếp từ feedback.product
+    const product = feedback.product;
 
     return (
         <Dialog>
@@ -67,27 +84,26 @@ export default function DialogFeedback({ feedback, users, products }: DialogFeed
                     {/* Thông tin phản hồi */}
                     <div className="space-y-2">
                         <p className="text-gray-700">
-                            <span className="font-semibold">Khách hàng:</span> {users[feedback.user_id]}
+                            <span className="font-semibold">Khách hàng:</span> {feedback.user?.fullName || 'Không xác định'}
                         </p>
                         <p className="text-gray-700">
                             <span className="font-semibold">Sản phẩm:</span> {product?.name || 'Không xác định'}
                         </p>
                         <p className="text-gray-700">
-                            <span className="font-semibold">Nội dung:</span> {feedback.content}
+                            <span className="font-semibold">Nội dung:</span> {feedback.comment}
                         </p>
                         <div className="flex items-center">
                             <span className="font-semibold text-gray-700 mr-2">Đánh giá:</span>
                             {[...Array(5)].map((_, index) => (
                                 <Star
                                     key={index}
-                                    className={`w-5 h-5 ${index < feedback.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'
-                                        }`}
+                                    className={`w-5 h-5 ${index < feedback.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
                                 />
                             ))}
                         </div>
                         <p className="text-gray-700">
                             <span className="font-semibold">Ngày tạo:</span>{' '}
-                            {new Date(feedback.created_at).toLocaleString('vi-VN', {
+                            {new Date(feedback.createdAt).toLocaleString('vi-VN', {
                                 day: '2-digit',
                                 month: '2-digit',
                                 year: 'numeric',
@@ -97,7 +113,7 @@ export default function DialogFeedback({ feedback, users, products }: DialogFeed
                         </p>
                         <p className="text-gray-700">
                             <span className="font-semibold">Ngày cập nhật:</span>{' '}
-                            {new Date(feedback.updated_at).toLocaleString('vi-VN', {
+                            {new Date(feedback.updatedAt).toLocaleString('vi-VN', {
                                 day: '2-digit',
                                 month: '2-digit',
                                 year: 'numeric',

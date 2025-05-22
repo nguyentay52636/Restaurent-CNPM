@@ -9,6 +9,9 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ShoppingCart } from 'lucide-react';
 import { getAllProducts } from '@/lib/apis/productApi';
 import { ProductWithId } from '@/lib/apis/types.';
+import { createOrderItem } from '@/lib/apis/orderItemApi';
+import { createOrder } from '@/lib/apis/orderApi';
+import { createPayment } from '@/lib/apis/paymentsApi';
 
 
 interface CartItem extends ProductWithId {
@@ -24,6 +27,8 @@ const HomeManager: React.FC = () => {
   const [products, setProducts] = useState<ProductWithId[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState<string | null>(null);
   const itemsPerPage = 12;
 
   useEffect(() => {
@@ -44,9 +49,20 @@ const HomeManager: React.FC = () => {
 
   // Filter products based on selected category
   const filteredProducts = useMemo(() => {
-    if (selectedCategory === 'All') return products;
-    return products.filter((product) => product.categoryId === parseInt(selectedCategory));
-  }, [products, selectedCategory]);
+      let filtered = products;
+  
+      if (selectedCategory !== 'All') {
+        filtered = filtered.filter(product => product.categoryId === parseInt(selectedCategory));
+      }
+  
+      if (searchTerm.trim() !== '') {
+        filtered = filtered.filter(product =>
+          product.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      }
+  
+      return filtered;
+    }, [products, selectedCategory, searchTerm]);
 
   // Calculate pagination data
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
@@ -167,7 +183,69 @@ const HomeManager: React.FC = () => {
   const goToLastPage = () => goToPage(totalPages);
   const goToPrevPage = () => goToPage(currentPage - 1);
   const goToNextPage = () => goToPage(currentPage + 1);
-
+  const handleReceivePaymentMethod = (method: string,id: number) => {
+    setPaymentMethod(method);
+    console.log("Received method from DetailsOrderHome:", method,", User id: "+ id);
+    handleCheckout(method,id);
+  };
+  const handleCheckout = async (method: string,id: number) => {
+      try {
+        if (cart.length === 0) {
+          toast({
+            title: "Lỗi",
+            description: "Giỏ hàng đang trống.",
+            variant: "destructive"
+          });
+          return;
+        }
+  
+        const orderItems = cart.map(item => ({
+          productId: item.id,
+          quantity: item.quantity,
+          price: item.price
+        }));
+        // Gửi đơn hàng
+        const orderResponse = await createOrder({
+          userId: id,
+          status: "ChoDuyet",
+          orderItems: [],
+        });
+        console.log("post order admin")
+        const orderId = orderResponse.data.id;
+        for (const item of orderItems) {
+          await createOrderItem({
+            orderId: orderId,
+            productId: item.productId,
+            quantity: item.quantity,
+            price: item.price,
+          });
+        }
+        console.log('method :' + method)
+        console.log("post order items")
+        await createPayment({
+          orderId: orderId,
+          paymentMethod: method,
+          amount: total,
+          status: 'ChoXacNhanThanhToan'
+        })
+        console.log("post payment")
+        toast({
+          title: "Đặt hàng thành công",
+          description: "Cảm ơn bạn đã đặt hàng. Đơn đang chờ duyệt.",
+        });
+  
+        setCart([]);
+        setShowDetailsOrder(false);
+  
+      } catch (error) {
+        console.error("Checkout error:", error);
+        toast({
+          title: "Lỗi",
+          description: "Đặt hàng thất bại. Vui lòng thử lại.",
+          variant: "destructive"
+        });
+      }
+    };
   return (
     <div className='min-h-screen bg-gray-100 font-sans'>
       {showDetailsOrder ? (
@@ -183,6 +261,7 @@ const HomeManager: React.FC = () => {
           tax={tax}
           total={total}
           onReset={handleOrderComplete}
+          onPaymentMethodSelect={handleReceivePaymentMethod}
           setIsCartOpen={setIsCartOpen}
           onRemoveItem={(itemId) => {
             removeFromCart(itemId);
@@ -199,7 +278,7 @@ const HomeManager: React.FC = () => {
       ) : (
         <div className='flex'>
           <div className={`flex-1 transition-all duration-300 ${isCartOpen ? 'mr-80' : ''}`}>
-            <ActionsHome onCategorySelect={setSelectedCategory} />
+            <ActionsHome onCategorySelect={setSelectedCategory} onSearchChange={setSearchTerm}/>
 
             <main className='max-w-7xl mx-auto p-6'>
               <div className='px-2 flex items-center justify-between'>

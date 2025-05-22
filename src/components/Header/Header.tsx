@@ -13,13 +13,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-const navLinks = [
-  { name: 'Trang Chủ', path: '/' },
-  { name: 'Thực Đơn', path: '/products' },
-  { name: 'Đặt bàn', path: '/reservation' },
-  { name: 'Về Chúng Tôi', path: '/' },
-];
-
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { isAuthenticated, user } = useAppSelector(selectAuth);
@@ -31,8 +24,7 @@ const Header = () => {
     { name: 'Trang Chủ', path: '/' },
     { name: 'Thực Đơn', path: '/products' },
     ...(user?.id ? [{ name: 'Lịch Sử Đơn Hàng', path: '/order-history' }] : []),
-    { name: 'Đặt bàn', path: '/booking-table' },
-    { name: 'Về Chúng Tôi', path: '/about' },
+    { name: 'Đặt bàn', path: '/reservation' },
   ];
   return (
     <motion.header
