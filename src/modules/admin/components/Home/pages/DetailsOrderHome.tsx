@@ -57,6 +57,7 @@ interface DetailsOrderHomeProps {
     onRemoveItem?: (itemId: number) => void;
     onUpdateQuantity?: (itemId: number, newQuantity: number) => void;
     setIsCartOpen?: (isOpen: boolean) => void;
+    onPaymentMethodSelect: (method: string,id: number) => void;
 }
 
 export default function DetailsOrderHome({
@@ -67,8 +68,10 @@ export default function DetailsOrderHome({
     onReset,
     onRemoveItem,
     onUpdateQuantity,
+    onPaymentMethodSelect,
     setIsCartOpen,
 }: DetailsOrderHomeProps) {
+    const [selectedMethod, setSelectedMethod] = useState<string>("");
     const [users, setUsers] = useState<IUserDataType[]>([]);
     const [selectedUser, setSelectedUser] = useState<IUserDataType | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
@@ -79,7 +82,7 @@ export default function DetailsOrderHome({
     const [showBackConfirmDialog, setShowBackConfirmDialog] = useState(false);
     const [isProductListOpen, setIsProductListOpen] = useState(false);
     const [availableProducts, setAvailableProducts] = useState<OrderItem[]>([]);
-
+    
     // Fetch users with role_id = 2 (customers)
     useEffect(() => {
         const fetchUsers = async () => {
@@ -148,6 +151,8 @@ export default function DetailsOrderHome({
 
     const handlePaymentMethodSelect = (method: string) => {
         setIsPaymentModalOpen(false);
+        onPaymentMethodSelect(method,selectedUser?.id);
+        setSelectedMethod(method);
         // Here you would typically call an API to process the payment
         console.log(`Processing payment with ${method} for user ${selectedUser?.fullName}`);
 

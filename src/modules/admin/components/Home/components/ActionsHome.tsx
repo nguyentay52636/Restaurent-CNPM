@@ -3,17 +3,20 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Search, Bell } from 'lucide-react'
 import { getCategories } from '@/lib/apis/categoriesApi'
+import { getAllProducts } from '@/lib/apis/productApi'
 
 interface ActionsHomeProps {
     onCategorySelect: (categoryId: string) => void;
+    onSearchChange: (searchTerm: string) => void;
 }
 
-export default function ActionsHome({ onCategorySelect }: ActionsHomeProps) {
+export default function ActionsHome({ onCategorySelect, onSearchChange }: ActionsHomeProps) {
     const [selectedCategory, setSelectedCategory] = useState('All');
+    const [searchTerm, setSearchTerm] = useState('');
     const [categories, setCategories] = useState([
         { id: 'All', name: 'All', icon: '🌐', itemCount: 0 }
     ]);
-
+    const [products, setProducts] = useState<any[]>([]);
     const getIconForCategory = (categoryName: string): string => {
         const name = categoryName.toLowerCase();
         if (name.includes('cà phê') || name.includes('coffee')) return '☕';
@@ -42,40 +45,66 @@ export default function ActionsHome({ onCategorySelect }: ActionsHomeProps) {
 
         fetchCategories();
     }, []);
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const response = await getAllProducts();
+                setProducts(response.data);
+            } catch (error) {
+                console.error('Error fetching products:', error);
+            }
+        };
+        fetchProducts();
+    }, []);
+    useEffect(() => {
+        const updateItemCounts = () => {
+            const updatedCategories = categories.map((category) => {
+                if (category.id === 'All') {
+                    const itemCount = products.length;
+                    return { ...category, itemCount };
+                } else {
+                    const itemCount = products.filter(
+                        (product) => product.categoryId === category.id
+                    ).length;
+                    return { ...category, itemCount };
+                }
+            });
+            setCategories(updatedCategories);
+        };
 
+        updateItemCounts();
+    }, [products]);
     const handleCategorySelect = (categoryId: string) => {
         setSelectedCategory(categoryId);
         onCategorySelect(categoryId);
     };
-
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const searchValue = event.target.value;
+  setSearchTerm(searchValue);
+  onSearchChange(searchValue);
+  console.log(searchValue);
+};
     return (
         <>
-            <div className="">
-                <header className="bg-white shadow-sm p-4 flex justify-between items-center">
-                    {/* Logo */}
-                    <div className="flex items-center space-x-1">
-                        <h1 className="text-2xl font-bold text-black">Point</h1>
-                        <h1 className="text-2xl font-bold text-orange-500">sell</h1>
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4 px-6 mt-6">
+                <h1 className="text-2xl font-bold text-black m-6">Chọn danh mục</h1>
+                <div className="flex items-center space-x-4">
+                    <div className="relative w-64">
+                        <Input
+                            type="text"
+                            value={searchTerm}
+                            onChange={handleSearchChange}
+                            placeholder="Tìm kiếm món ăn..."
+                            className="pl-10 w-full"
+                        />
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 cursor-pointer" />
                     </div>
 
-                    {/* Search and Notification */}
-                    <div className="flex items-center space-x-4">
-                        <div className="relative w-64">
-                            <Input
-                                type="text"
-                                placeholder="Tìm kiếm món ăn..."
-                                className="pl-10 w-full"
-                            />
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 cursor-pointer" />
-                        </div>
-
-                        <Button variant="outline" size="icon" className="bg-orange-500 text-white hover:bg-orange-600 cursor-pointer hover:text-white">
-                            <Bell className="w-6 h-6" />
-                        </Button>
-                    </div>
-                </header>
+                    <Button variant="outline" size="icon" className="bg-orange-500 text-white hover:bg-orange-600 cursor-pointer hover:text-white">
+                        <Bell className="w-6 h-6" />
+                    </Button>
+                </div>
             </div>
-            <h1 className="text-2xl font-bold text-black m-6">Chọn danh mục</h1>
             <div className="flex justify-center">
                 <section className="my-8 flex justify-center items-center">
                     <div className="flex flex-wrap gap-5">
