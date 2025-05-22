@@ -15,6 +15,7 @@ interface OrderActionsProps {
     setSearchTerm: (value: string) => void;
     statusFilter: string;
     setStatusFilter: (value: string) => void;
+    exportBill: () => void;
 }
 
 export default function OrderActions({
@@ -22,6 +23,7 @@ export default function OrderActions({
     setSearchTerm,
     statusFilter,
     setStatusFilter,
+    exportBill,
 }: OrderActionsProps) {
     return (
         <>
@@ -58,7 +60,7 @@ export default function OrderActions({
                         className="w-[180px]"
                         disabled
                     />
-                    <Button className="bg-[#3F4E4F] hover:bg-gray-600 text-white flex items-center">
+                    <Button className="bg-[#3F4E4F] hover:bg-gray-600 text-white flex items-center" onClick={exportBill}>
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
