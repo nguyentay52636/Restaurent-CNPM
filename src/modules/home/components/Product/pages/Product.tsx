@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import MenuItem from "@/modules/admin/components/Home/components/MenuItem";
-import ActionsHome from "../components/ActionsHome";
+import MenuItem from '@/modules/admin/components/Home/components/MenuItem';
+import ActionsHome from '../components/ActionsHome';
 import Pagination from '../components/PaginationMenu';
 import { getAllProducts } from '@/lib/apis/productApi';
-import { ProductWithId } from '@/lib/apis/types.'
+import { ProductWithId } from '@/lib/apis/types.';
 import DetailsOrderHome from './DetailsOrderHome';
 import CartPanel from '../components/CartPanel';
 import ItemDetailPanel from '../components/ItemDetailPanel';
@@ -13,17 +13,17 @@ import { createOrderItem } from '@/lib/apis/orderItemApi';
 import { getAllUserAPI } from '@/lib/apis/userApi';
 import baseApi from '@/lib/apis/baseApi';
 import { count } from 'console';
-import { selectAuth } from "@/redux/slices/authSlice";
-import { useAppSelector } from "@/redux/hooks/hooks";
+import { selectAuth } from '@/redux/slices/authSlice';
+import { useAppSelector } from '@/redux/hooks/hooks';
 import { createPayment } from '@/lib/apis/paymentsApi';
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from '@/components/ui/toaster';
 import { IUserDataType } from '@/lib/apis/types.';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 
 interface CartItem extends ProductWithId {
   quantity: number;
-  selectedSize?: { name: string, price: number };
+  selectedSize?: { name: string; price: number };
 }
 
 const Product: React.FC = () => {
@@ -42,29 +42,27 @@ const Product: React.FC = () => {
   const [users, setUsers] = useState<IUserDataType[]>([]);
   const accessToken = useSelector((state: RootState) => state.auth.token);
   const itemsPerPage = 12;
-
   const filteredProducts = useMemo(() => {
     let filtered = products;
 
     if (selectedCategory !== 'All') {
-      filtered = filtered.filter(product => product.categoryId === parseInt(selectedCategory));
+      filtered = filtered.filter((product) => product.categoryId === parseInt(selectedCategory));
     }
 
     if (searchTerm.trim() !== '') {
-      filtered = filtered.filter(product =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter((product) =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()),
       );
     }
 
     return filtered;
   }, [products, selectedCategory, searchTerm]);
 
-
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
 
   const currentItems = filteredProducts.slice(
     (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+    currentPage * itemsPerPage,
   );
 
   const handlePageChange = (page: number) => {
@@ -87,11 +85,11 @@ const Product: React.FC = () => {
     fetchProducts();
   }, []);
 
-  const addToCart = (item: ProductWithId, selectedSize?: { name: string, price: number }) => {
+  const addToCart = (item: ProductWithId, selectedSize?: { name: string; price: number }) => {
     const itemPrice = selectedSize ? selectedSize.price : item.price;
 
-    const existingItemIndex = cart.findIndex(cartItem =>
-      cartItem.id === item.id && cartItem.selectedSize?.name === selectedSize?.name
+    const existingItemIndex = cart.findIndex(
+      (cartItem) => cartItem.id === item.id && cartItem.selectedSize?.name === selectedSize?.name,
     );
 
     if (existingItemIndex >= 0) {
@@ -105,8 +103,8 @@ const Product: React.FC = () => {
           ...item,
           quantity: 1,
           selectedSize,
-          price: itemPrice
-        }
+          price: itemPrice,
+        },
       ]);
     }
 
@@ -116,33 +114,32 @@ const Product: React.FC = () => {
   const closeCart = () => setIsCartOpen(false);
 
   const removeFromCart = (id: number, sizeName?: string) => {
-    setCart(cart.filter(item =>
-      !(item.id === id && item.selectedSize?.name === sizeName)
-    ));
+    setCart(cart.filter((item) => !(item.id === id && item.selectedSize?.name === sizeName)));
   };
 
   const incrementQuantity = (id: number, sizeName?: string) => {
-    setCart(cart.map(item => {
-      if (item.id === id && item.selectedSize?.name === sizeName) {
-        return { ...item, quantity: item.quantity + 1 };
-      }
-      return item;
-    }));
+    setCart(
+      cart.map((item) => {
+        if (item.id === id && item.selectedSize?.name === sizeName) {
+          return { ...item, quantity: item.quantity + 1 };
+        }
+        return item;
+      }),
+    );
   };
 
   const decrementQuantity = (id: number, sizeName?: string) => {
-    setCart(cart.map(item => {
-      if (item.id === id && item.selectedSize?.name === sizeName) {
-        return { ...item, quantity: Math.max(1, item.quantity - 1) };
-      }
-      return item;
-    }));
+    setCart(
+      cart.map((item) => {
+        if (item.id === id && item.selectedSize?.name === sizeName) {
+          return { ...item, quantity: Math.max(1, item.quantity - 1) };
+        }
+        return item;
+      }),
+    );
   };
 
-  const subtotal = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
+  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const taxRate = 0.1;
   const tax = subtotal * taxRate;
   const total = subtotal + tax;
@@ -156,40 +153,39 @@ const Product: React.FC = () => {
   const handleOrderComplete = () => {
     setShowDetailsOrder(false);
     toast({
-      title: "Thành công",
-      description: "Đã quay lại trang chọn món. Các món đã chọn vẫn được giữ nguyên.",
+      title: 'Thành công',
+      description: 'Đã quay lại trang chọn món. Các món đã chọn vẫn được giữ nguyên.',
     });
   };
   const handleReceivePaymentMethod = (method: string) => {
     setPaymentMethod(method);
-    console.log("Received method from DetailsOrderHome:", method);
+    console.log('Received method from DetailsOrderHome:', method);
     handleCheckout(method);
   };
   const handleCheckout = async (method: string) => {
     try {
-      console.log(user.a)
       if (cart.length === 0) {
         toast({
-          title: "Lỗi",
-          description: "Giỏ hàng đang trống.",
-          variant: "destructive"
+          title: 'Lỗi',
+          description: 'Giỏ hàng đang trống.',
+          variant: 'destructive',
         });
         return;
       }
 
-      const orderItems = cart.map(item => ({
+      const orderItems = cart.map((item) => ({
         productId: item.id,
         quantity: item.quantity,
-        price: item.price
+        price: item.price,
       }));
-      console.log("user logged: "+user?.id);
+      console.log('user logged: ' + user?.id);
       // Gửi đơn hàng
       const orderResponse = await createOrder({
         userId: user?.id,
-        status: "ChoDuyet",
+        status: 'ChoDuyet',
         orderItems: [],
       });
-      console.log("post order")
+      console.log('post order');
       const orderId = orderResponse.data.id;
       for (const item of orderItems) {
         await createOrderItem({
@@ -199,29 +195,28 @@ const Product: React.FC = () => {
           price: item.price,
         });
       }
-      console.log('method 2 :' + method)
-      console.log("post order items")
+      console.log('method 2 :' + method);
+      console.log('post order items');
       await createPayment({
         orderId: orderId,
         paymentMethod: method,
         amount: total,
-        status: 'ChoXacNhanThanhToan'
-      })
-      console.log("post payment")
+        status: 'ChoXacNhanThanhToan',
+      });
+      console.log('post payment');
       toast({
-        title: "Đặt hàng thành công",
-        description: "Cảm ơn bạn đã đặt hàng. Đơn đang chờ duyệt.",
+        title: 'Đặt hàng thành công',
+        description: 'Cảm ơn bạn đã đặt hàng. Đơn đang chờ duyệt.',
       });
 
       setCart([]);
       setShowDetailsOrder(false);
-
     } catch (error) {
-      console.error("Checkout error:", error);
+      console.error('Checkout error:', error);
       toast({
-        title: "Lỗi",
-        description: "Đặt hàng thất bại. Vui lòng thử lại.",
-        variant: "destructive"
+        title: 'Lỗi',
+        description: 'Đặt hàng thất bại. Vui lòng thử lại.',
+        variant: 'destructive',
       });
     }
   };
@@ -235,22 +230,20 @@ const Product: React.FC = () => {
   };
   const handleClickDetail = (item: ProductWithId) => {
     setSelectedItem(item);
-    setShowItemDetail(true)
-    console.log('detailitem')
+    setShowItemDetail(true);
+    console.log('detailitem');
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 font-sans">
+    <div className='min-h-screen bg-gray-100 font-sans'>
       {showDetailsOrder ? (
         <DetailsOrderHome
-          cartItems={cart.map(item => ({
+          cartItems={cart.map((item) => ({
             id: item.id,
-            name: item.selectedSize
-              ? `${item.name} (Size ${item.selectedSize.name})`
-              : item.name,
+            name: item.selectedSize ? `${item.name} (Size ${item.selectedSize.name})` : item.name,
             price: item.price,
             quantity: item.quantity,
-            image: item.image
+            image: item.image,
           }))}
           subtotal={subtotal}
           tax={tax}
@@ -258,7 +251,6 @@ const Product: React.FC = () => {
           onPaymentMethodSelect={handleReceivePaymentMethod}
           onReset={handleOrderComplete}
           setIsCartOpen={setIsCartOpen}
-          
           onRemoveItem={(itemId) => {
             removeFromCart(itemId);
             if (cart.length === 1) {
@@ -266,32 +258,28 @@ const Product: React.FC = () => {
             }
           }}
           onUpdateQuantity={(itemId, newQuantity) => {
-            setCart(cart.map(item =>
-              item.id === itemId
-                ? { ...item, quantity: newQuantity }
-                : item
-            ));
+            setCart(
+              cart.map((item) => (item.id === itemId ? { ...item, quantity: newQuantity } : item)),
+            );
           }}
-        //  onConfirmOrder={handleCheckout}
+          //  onConfirmOrder={handleCheckout}
         />
       ) : (
         <>
-          <div className="flex">
+          <div className='flex'>
             <div className={`flex-1 transition-all duration-300 ${isCartOpen ? 'mr-80' : ''}`}>
-              <ActionsHome onCategorySelect={setSelectedCategory}
-                onSearchChange={setSearchTerm} />
-              <main className="max-w-7xl mx-auto p-6">
-                <h2 className="text-xl font-semibold mb-6">Thực đơn đặc biệt dành cho bạn</h2>
+              <ActionsHome onCategorySelect={setSelectedCategory} onSearchChange={setSearchTerm} />
+              <main className='max-w-7xl mx-auto p-6'>
+                <h2 className='text-xl font-semibold mb-6'>Thực đơn đặc biệt dành cho bạn</h2>
                 {loading ? (
-                  <div className="text-center">Loading...</div>
+                  <div className='text-center'>Loading...</div>
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                  <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
                     {currentItems.map((item) => (
                       <MenuItem
                         key={item.id}
                         item={{ ...item, image: getFullImageUrl(item.image) }}
                         onAddToCart={handleClickDetail}
-
                       />
                     ))}
                   </div>
@@ -326,17 +314,17 @@ const Product: React.FC = () => {
                 onClose={() => setShowItemDetail(false)}
                 onAddToCart={(item, quantity, selectedSize) => {
                   if (!isAuthenticated) {
-                      toast({
-                        title: "Vui lòng đăng nhập",
-                        description: "Bạn cần đăng nhập để đặt hàng.",
-                        variant: "destructive"
-                      });
-                      return;
-                    }
+                    toast({
+                      title: 'Vui lòng đăng nhập',
+                      description: 'Bạn cần đăng nhập để đặt hàng.',
+                      variant: 'destructive',
+                    });
+                    return;
+                  }
                   const existingIndex = cart.findIndex(
                     (cartItem) =>
                       cartItem.id === item.id &&
-                      (!selectedSize || cartItem.selectedSize?.name === selectedSize.name)
+                      (!selectedSize || cartItem.selectedSize?.name === selectedSize.name),
                   );
                   if (existingIndex >= 0) {
                     const updatedCart = [...cart];
@@ -357,7 +345,6 @@ const Product: React.FC = () => {
                   setIsCartOpen(true);
                 }}
               />
-                
             )}
             <Toaster />
           </div>
