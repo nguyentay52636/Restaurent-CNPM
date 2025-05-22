@@ -16,6 +16,7 @@ export interface Product {
   
   export interface User {
     id: number;
+    email: string;
     full_name: string;
     fullName?:string;
     address: string;
@@ -24,10 +25,12 @@ export interface Product {
   export interface Order {
     id: number;
     userId: number;
-    status: "New Order" | "Processed" | "Canceled";
+    status: string;
     createdAt: string;
-    user: User;
-    orderItems: OrderItem[];
+    order:{
+      user: User;
+      orderItems: OrderItem[];
+    }
   }
 
 //     // Sample data

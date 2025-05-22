@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Order } from "../../DataOrder";
+import { Order, OrderItem } from "../../DataOrder";
 
 interface DialogViewDetailsProps {
   order: Order | null;
@@ -15,7 +15,8 @@ interface DialogViewDetailsProps {
 }
 
 export default function DialogViewDetails({ order, onClose }: DialogViewDetailsProps) {
-  const calculateTotalAmount = (orderItems: Order['orderItems']) => {
+    console.log('orderáđ :>> ', order);
+  const calculateTotalAmount = (orderItems: OrderItem[]) => {
     return orderItems.reduce((total, item) => total + item.quantity * item.price, 0);
   };
 
@@ -66,7 +67,7 @@ export default function DialogViewDetails({ order, onClose }: DialogViewDetailsP
             <section>
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Đơn hàng của bạn</h3>
               <div className="space-y-4">
-                {order.orderItems.map((item) => (
+                {order?.order?.orderItems.map((item) => (
                   <div
                     key={`${item.order_id}-${item.product_id}`}
                     className="flex justify-between items-start border-b border-gray-200 py-4"
@@ -92,22 +93,22 @@ export default function DialogViewDetails({ order, onClose }: DialogViewDetailsP
             <h3 className="text-lg font-semibold text-gray-900">Thông tin khách hàng</h3>
             <div>
               <p className="text-sm text-gray-500 font-semibold">Họ tên</p>
-              <p className="mt-1 text-sm text-gray-900">{order.user.full_name}</p>
+              <p className="mt-1 text-sm text-gray-900">{order?.order?.user.fullName}</p>
             </div>
             <div>
               <p className="text-sm text-gray-500 font-semibold">Tài khoản</p>
               <p className="mt-1 text-sm text-gray-900">
-                {order?.user?.fullName?.toLowerCase().replace(/\s+/g, '.') + '@mail.com'}
+                {order?.order?.user?.email}
               </p>
             </div>
             <div>
               <p className="text-sm text-gray-500 font-semibold">Địa chỉ</p>
-              <p className="mt-1 text-sm text-gray-900">{order.user.address}</p>
+              <p className="mt-1 text-sm text-gray-900">{order?.order?.user.address}</p>
             </div>
             <div className="border-t border-gray-200 pt-4">
               <p className="text-sm text-gray-500 font-semibold">Tổng cộng</p>
               <p className="text-lg font-semibold text-gray-900">
-                {calculateTotalAmount(order?.orderItems).toLocaleString('vi-VN', {
+                {calculateTotalAmount(order?.order?.orderItems).toLocaleString('vi-VN', {
                   style: 'currency',
                   currency: 'VND',
                 })}

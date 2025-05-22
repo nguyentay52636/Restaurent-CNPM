@@ -20,15 +20,15 @@ import { MoreVertical } from "lucide-react";
 import { Order } from "../DataOrder";
 
 interface OrderTableProps {
-    paginatedOrders: Order[];
+    paginatedpayments: Order[];
     calculateTotalAmount: (orderItems: any[]) => number;
     handleViewDetails: (order: Order) => void;
     handleDelete: (id: number) => void;
 }
 
-export default function OrderTable({ paginatedOrders, calculateTotalAmount, handleViewDetails, handleDelete }: OrderTableProps) {
+export default function OrderTable({ paginatedpayments, calculateTotalAmount, handleViewDetails, handleDelete }: OrderTableProps) {
 
-    console.log('paginatedOrders :>> ', paginatedOrders);
+    console.log('paginatedpayments :>> ', paginatedpayments);
     return (
 
         <div className="border rounded-lg overflow-hidden">
@@ -47,7 +47,7 @@ export default function OrderTable({ paginatedOrders, calculateTotalAmount, hand
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {paginatedOrders.map((order) => (
+                    {paginatedpayments.map((order) => (
                         <TableRow key={order.id}>
                             <TableCell>
                                 <Checkbox />
@@ -63,11 +63,11 @@ export default function OrderTable({ paginatedOrders, calculateTotalAmount, hand
                                 </div>
                             </TableCell>
                             <TableCell>
-                                <div>{order?.user?.fullName } </div>
-                                <div className="text-sm text-muted-foreground">{order?.user?.address}</div>
+                                <div>{order?.order?.user?.fullName } </div>
+                                <div className="text-sm text-muted-foreground">{order?.order?.user?.address}</div>
                             </TableCell>
-                            <TableCell>{order.orderItems.length}</TableCell>
-                            <TableCell>${calculateTotalAmount(order.orderItems)}</TableCell>
+                            <TableCell>{order?.order?.orderItems?.length}</TableCell>
+                            <TableCell>${calculateTotalAmount(order?.order?.orderItems)}</TableCell>
                             <TableCell>
                                 <Badge
                                     variant={
