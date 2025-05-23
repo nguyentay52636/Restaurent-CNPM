@@ -1,10 +1,10 @@
 import axiosInstance from '@/lib/apis/axiosInstance';
-import { OrderType } from './types.';
+import { OrderType, IAPIResponseWrapper } from './types.';
 
 export const getAllOrders = async () => {
   try {
-    const { data } = await axiosInstance.get('/orders');
-    return data;
+    const { data } = await axiosInstance.get<IAPIResponseWrapper<OrderType[]>>('/orders');
+    return data.data;
   } catch (error: unknown) {
     throw new Error(error instanceof Error ? error.message : String(error));
   }
@@ -24,12 +24,11 @@ export const createOrder = async ({ userId, status, orderItems }: OrderType) => 
   }
 };
 
-export const updateOrder = async (id: number, { userId, status, orderItems }: OrderType) => {
+export const updateOrder = async (id: number, { status,  }: OrderType) => {
   try {
     const updatedOrder: OrderType = {
-      userId,
       status,
-      orderItems,
+  
     };
     const { data } = await axiosInstance.patch(`/orders/${id}`, updatedOrder);
     return data;

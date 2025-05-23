@@ -7,6 +7,7 @@ import {
   ChevronsRight,
   Home,
   MessageSquare,
+  PieChart,
   Settings2,
   type LucideIcon,
 } from 'lucide-react';
@@ -75,6 +76,12 @@ export function NavMain({
       title: 'Chat',
       icon: MessageSquare,
       url: '/admin/chats',
+    },
+
+    {
+      title: 'Thống kê',
+      url: '/admin/dashboard',
+      icon: PieChart,
     },
   ];
   useEffect(() => {

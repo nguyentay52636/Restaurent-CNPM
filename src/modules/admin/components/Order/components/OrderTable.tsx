@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
     Table,
     TableBody,
@@ -16,21 +16,89 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreVertical } from "lucide-react";
-import { Order } from "../DataOrder";
+
+import { MoreVertical, Info, Image as ImageIcon, Eye, ChevronDown } from "lucide-react";
+import { Order, OrderItem } from "../DataOrder";
+import DialogOrderProduct from './Dialog/DialogOrderProduct';
+import { updateOrder } from '@/lib/apis/orderApi';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface OrderTableProps {
     paginatedpayments: Order[];
     calculateTotalAmount: (orderItems: any[]) => number;
     handleViewDetails: (order: Order) => void;
     handleDelete: (id: number) => void;
+    onStatusChange?: (orderId: number, newStatus: string) => void;
 }
 
-export default function OrderTable({ paginatedpayments, calculateTotalAmount, handleViewDetails, handleDelete }: OrderTableProps) {
+export default function OrderTable({
+    paginatedpayments,
+    calculateTotalAmount,
+    handleViewDetails,
+    handleDelete,
+    onStatusChange
+}: OrderTableProps) {
+    const [selectedOrderItems, setSelectedOrderItems] = useState<OrderItem[] | null>(null);
+    const [isUpdating, setIsUpdating] = useState(false);
 
-    console.log('paginatedpayments :>> ', paginatedpayments);
+    const getFullImageUrl = (path: string, productName: string = '') => {
+        if (!path || path.trim() === '') {
+            const encodedName = encodeURIComponent(productName || 'Product');
+            return `https://placehold.co/200x200/A27B5C/FFF?text=${encodedName}`;
+        }
+        if (/^https?:\/\//.test(path)) return path;
+        const apiUrl = import.meta.env.VITE_API_URL as string;
+        const baseUrl = apiUrl.replace(/\/api\/?$/, '');
+        return `${baseUrl}${path}`;
+    };
+
+    const getStatusLabel = (status: string) => {
+        switch (status) {
+            case "ChoDuyet":
+                return "Chờ Duyệt";
+            case "DaDuyet":
+                return "Đã Duyệt";
+            case "DaHuy":
+                return "Đã Hủy";
+            default:
+                return status;
+        }
+    };
+
+    const handleStatusChange = async (orderId: number, newStatus: string) => {
+        try {
+            setIsUpdating(true);
+            await updateOrder(orderId, { status: newStatus });
+            toast.success('Cập nhật trạng thái đơn hàng thành công!', {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            if (onStatusChange) {
+                onStatusChange(orderId, newStatus);
+            }
+        } catch (error) {
+            toast.error('Cập nhật trạng thái đơn hàng thất bại!', {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            console.error('Error updating order status:', error);
+        } finally {
+            setIsUpdating(false);
+        }
+    };
+
     return (
-
         <div className="border rounded-lg overflow-hidden">
             <Table>
                 <TableHeader>
@@ -38,6 +106,7 @@ export default function OrderTable({ paginatedpayments, calculateTotalAmount, ha
                         <TableHead className="w-[50px]">
                             <Checkbox />
                         </TableHead>
+
                         <TableHead>Mã hoá đơn</TableHead>
                         <TableHead>Khách hàng</TableHead>
                         <TableHead>Sản phẩm</TableHead>
@@ -53,7 +122,7 @@ export default function OrderTable({ paginatedpayments, calculateTotalAmount, ha
                                 <Checkbox />
                             </TableCell>
                             <TableCell>
-                                <div>#00{order.id}</div>
+                                <div>{order.id}</div>
                                 <div className="text-sm text-muted-foreground">
                                     {new Date(order.createdAt).toLocaleDateString("en-US", {
                                         month: "long",
@@ -63,23 +132,72 @@ export default function OrderTable({ paginatedpayments, calculateTotalAmount, ha
                                 </div>
                             </TableCell>
                             <TableCell>
-                                <div>{order?.order?.user?.fullName } </div>
-                                <div className="text-sm text-muted-foreground">{order?.order?.user?.address}</div>
+                                <div>{order.user?.fullName}</div>
+                                <div className="text-sm text-muted-foreground">{order.user?.address}</div>
                             </TableCell>
-                            <TableCell>{order?.order?.orderItems?.length}</TableCell>
-                            <TableCell>${calculateTotalAmount(order?.order?.orderItems)}</TableCell>
                             <TableCell>
-                                <Badge
-                                    variant={
-                                        order.status === "New Order"
-                                            ? "default"
-                                            : order.status === "Processed"
-                                                ? "secondary"
-                                                : "destructive"
-                                    }
-                                >
-                                    {order.status}
-                                </Badge>
+                                <div className="flex items-center gap-2">
+                                    <span>{order.orderItems?.length} sản phẩm</span>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => setSelectedOrderItems(order.orderItems)}
+                                    >
+                                        <Eye className="h-4 w-4" />
+                                    </Button>
+                                </div>
+                            </TableCell>
+                            <TableCell>${calculateTotalAmount(order.orderItems)}</TableCell>
+                            <TableCell>
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                                            <Badge
+                                                variant={
+                                                    order.status === "ChoDuyet"
+                                                        ? "default"
+                                                        : order.status === "DaDuyet"
+                                                            ? "secondary"
+                                                            : "destructive"
+                                                }
+                                            >
+                                                {getStatusLabel(order.status)}
+                                            </Badge>
+                                            <ChevronDown className="h-4 w-4" />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent>
+                                        <div className="flex flex-col gap-2 p-2">
+                                            <div className="flex items-center space-x-2">
+                                                <Checkbox
+                                                    id="choduyet"
+                                                    checked={order.status === "ChoDuyet"}
+                                                    onCheckedChange={() => handleStatusChange(order.id, "ChoDuyet")}
+                                                    disabled={isUpdating}
+                                                />
+                                                <label htmlFor="choduyet">Chờ Duyệt</label>
+                                            </div>
+                                            <div className="flex items-center space-x-2">
+                                                <Checkbox
+                                                    id="daduyet"
+                                                    checked={order.status === "DaDuyet"}
+                                                    onCheckedChange={() => handleStatusChange(order.id, "DaDuyet")}
+                                                    disabled={isUpdating}
+                                                />
+                                                <label htmlFor="daduyet">Đã Duyệt</label>
+                                            </div>
+                                            <div className="flex items-center space-x-2">
+                                                <Checkbox
+                                                    id="dahuy"
+                                                    checked={order.status === "DaHuy"}
+                                                    onCheckedChange={() => handleStatusChange(order.id, "DaHuy")}
+                                                    disabled={isUpdating}
+                                                />
+                                                <label htmlFor="dahuy">Đã Hủy</label>
+                                            </div>
+                                        </div>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
                             </TableCell>
                             <TableCell>
                                 <DropdownMenu>
@@ -102,8 +220,11 @@ export default function OrderTable({ paginatedpayments, calculateTotalAmount, ha
                     ))}
                 </TableBody>
             </Table>
-           
-        </div>
 
+            <DialogOrderProduct
+                selectedOrderItems={selectedOrderItems || []}
+                setSelectedOrderItems={setSelectedOrderItems}
+            />
+        </div>
     )
 }

@@ -58,23 +58,6 @@ const sideBarItem: SidebarItemType[] = [
   },
 ];
 
-const projects = [
-  {
-    name: 'Thiết kế kỹ thuật',
-    url: '#',
-    icon: Frame,
-  },
-  {
-    name: 'Thống kê',
-    url: '/admin/dashboard',
-    icon: PieChart,
-  },
-  {
-    name: 'Du lịch',
-    url: '#',
-    icon: Map,
-  },
-];
 
 const user = {
   name: 'shadcn',
@@ -92,7 +75,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={sideBarItem} />
-        <NavProjects projects={projects} />
+
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} />
