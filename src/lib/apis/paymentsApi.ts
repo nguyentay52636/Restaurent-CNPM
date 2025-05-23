@@ -1,5 +1,5 @@
 import axiosInstance from '@/lib/apis/axiosInstance';
-import { PaymentType } from './types.';
+import { IUserDataType, PaymentType } from './types.';
 
 export const getAllPayments = async () => {
   try {
@@ -57,3 +57,12 @@ export const updatePayment = async (
     throw new Error(error instanceof Error ? error.message : String(error));
   }
 };
+
+ export const updateUserPoints = async (id: number, {points} :IUserDataType) => {   
+  try {
+    const { data } = await axiosInstance.patch(`/users/${id}`, { points });
+    return data;
+  } catch (error: unknown) {
+    throw new Error(error instanceof Error ? error.message : String(error));
+  }
+} 

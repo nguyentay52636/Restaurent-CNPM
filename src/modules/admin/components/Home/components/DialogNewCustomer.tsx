@@ -54,7 +54,7 @@ export default function DialogNewCustomer({ open, onClose, onSubmit }: DialogNew
                 phone: formData.phone,
                 address: formData.address,
                 roleId: 2, // Default roleId for customers
-                points: 0 // Default points for new customers
+                points: 0 
             };
 
             // Call API to create new customer

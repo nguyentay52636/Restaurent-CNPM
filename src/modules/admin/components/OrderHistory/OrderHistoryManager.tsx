@@ -265,7 +265,7 @@ const OrderHistoryManager: React.FC = () => {
       ...editingOrder,
       customer: editedCustomerInfo.customer,
       tableNo: editedCustomerInfo.tableNo,
-    guestCount: editedCustomerInfo.guestCount,
+      guestCount: editedCustomerInfo.guestCount,
       paymentMethod: editedCustomerInfo.paymentMethod,
       items: editedItems
     };
@@ -335,65 +335,102 @@ const OrderHistoryManager: React.FC = () => {
     <div className="flex min-h-screen bg-gray-100 font-sans">
       {/* Left Panel: Order List */}
       <div className="w-1/3 p-4">
-        <h2 className="text-xl font-semibold mb-4">Tất cả đơn hàng</h2>
-        <div className="space-y-2">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-gray-800">Danh sách đơn hàng</h2>
+          <div className="flex space-x-2">
+            <Button variant="outline" size="sm" className="bg-green-50 text-green-600 hover:bg-green-100">
+              Đã thanh toán
+            </Button>
+            <Button variant="outline" size="sm" className="bg-gray-50 text-gray-600 hover:bg-gray-100">
+              Chưa thanh toán
+            </Button>
+          </div>
+        </div>
+        <div className="space-y-3">
           {orderList.map((order) => (
             <Card
               key={order.id}
-              className={`cursor-pointer ${selectedOrder?.id === order.id ? 'border-blue-500' : ''}`}
+              className={`cursor-pointer transition-all duration-200 hover:shadow-md ${selectedOrder?.id === order.id ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200'
+                }`}
               onClick={() => displayDetailsOrderHistory(order)}
             >
               <CardContent className="p-4">
-                <div className="flex justify-between items-center mb-2">
+                <div className="flex justify-between items-start mb-3">
                   <div>
-                    <p className="font-medium">Đơn hàng #{order.id}</p>
-                    <p className="text-sm text-gray-600">
-                      Bàn số {order.tableNo} • Khách {order.guestCount}
+                    <div className="flex items-center space-x-2">
+                      <p className="font-semibold text-lg">#{order.id}</p>
+                      <Badge
+                        variant={order.status === 'Đã thanh toán' ? 'default' : 'secondary'}
+                        className={`${order.status === 'Đã thanh toán'
+                          ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          }`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleStatusChange(order);
+                        }}
+                      >
+                        {order.status}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {new Date(order.created_at).toLocaleString('vi-VN')}
                     </p>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <span className="font-bold">
+                  <div className="text-right">
+                    <p className="text-lg font-bold text-blue-600">
                       ${calculateTotal(order.items).toFixed(2)}
-                    </span>
-                    <Badge
-                      variant={
-                        order.status === 'Đã thanh toán' ? 'default' : 'secondary'
-                      }
-                      className={`cursor-pointer ${order.status === 'Đã thanh toán'
-                        ? 'bg-green-500 hover:bg-green-600 text-white'
-                        : 'bg-gray-500 hover:bg-gray-600 text-white'
-                        }`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleStatusChange(order);
-                      }}
-                    >
-                      {order.status}
-                    </Badge>
+                    </p>
                   </div>
                 </div>
-                <div className="flex justify-between mt-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation(); // Prevent triggering Card's onClick
-                      displayDetailsOrderHistory(order);
-                    }}
-                  >
-                    Xem chi tiết
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="bg-blue-500 text-white hover:bg-blue-600"
-                    onClick={(e) => {
-                      e.stopPropagation(); // Prevent triggering Card's onClick
-                      handleEditOrder(order);
-                    }}
-                  >
-                    <Edit className="h-4 w-4 mr-1" /> Chỉnh sửa
-                  </Button>
+
+                <div className="border-t border-gray-100 pt-3">
+                  <div className="flex justify-between items-center text-sm text-gray-600 mb-2">
+                    <div className="flex items-center space-x-4">
+                      <span className="flex items-center">
+                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        {order.guestCount} khách
+                      </span>
+                      <span className="flex items-center">
+                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                        Bàn {order.tableNo}
+                      </span>
+                    </div>
+                    <span className="flex items-center">
+                      <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                      </svg>
+                      {order.paymentMethod}
+                    </span>
+                  </div>
+                  <div className="flex justify-between mt-3">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        displayDetailsOrderHistory(order);
+                      }}
+                    >
+                      Xem chi tiết
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEditOrder(order);
+                      }}
+                    >
+                      <Edit className="h-4 w-4 mr-1" /> Chỉnh sửa
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>

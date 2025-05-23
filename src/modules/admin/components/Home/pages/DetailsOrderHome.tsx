@@ -23,6 +23,7 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import DiglogListProduct from '../components/Dialog/DiglogListProduct';
+import { updateUserPoints } from '@/lib/apis/paymentsApi';
 
 interface OrderItem {
     id: number;
@@ -57,7 +58,7 @@ interface DetailsOrderHomeProps {
     onRemoveItem?: (itemId: number) => void;
     onUpdateQuantity?: (itemId: number, newQuantity: number) => void;
     setIsCartOpen?: (isOpen: boolean) => void;
-    onPaymentMethodSelect: (method: string,id: number) => void;
+    onPaymentMethodSelect: (method: string, id: number) => void;
 }
 
 export default function DetailsOrderHome({
@@ -82,7 +83,7 @@ export default function DetailsOrderHome({
     const [showBackConfirmDialog, setShowBackConfirmDialog] = useState(false);
     const [isProductListOpen, setIsProductListOpen] = useState(false);
     const [availableProducts, setAvailableProducts] = useState<OrderItem[]>([]);
-    
+
     // Fetch users with role_id = 2 (customers)
     useEffect(() => {
         const fetchUsers = async () => {
@@ -150,11 +151,38 @@ export default function DetailsOrderHome({
     };
 
     const handlePaymentMethodSelect = (method: string) => {
+        if (!selectedUser?.id) {
+            toast({
+                title: "Lỗi",
+                description: "Không tìm thấy thông tin khách hàng",
+                variant: "destructive"
+            });
+            return;
+        }
+
         setIsPaymentModalOpen(false);
-        onPaymentMethodSelect(method,selectedUser?.id);
+        onPaymentMethodSelect(method, selectedUser.id);
         setSelectedMethod(method);
-        // Here you would typically call an API to process the payment
-        console.log(`Processing payment with ${method} for user ${selectedUser?.fullName}`);
+
+        // Update user points
+        const currentPoints = selectedUser.points || 0;
+        updateUserPoints(selectedUser.id, {
+            points: currentPoints + pointsToAdd,
+            email: selectedUser.email,
+            roleId: selectedUser.roleId
+        })
+            .then(() => {
+                // Update local state to reflect new points
+                setSelectedUser(prev => prev ? { ...prev, points: currentPoints + pointsToAdd } : null);
+            })
+            .catch((error) => {
+                console.error('Error updating points:', error);
+                toast({
+                    title: "Lỗi",
+                    description: "Không thể cập nhật điểm tích lũy",
+                    variant: "destructive"
+                });
+            });
 
         // Generate invoice number (you might want to get this from your backend)
         const invoiceNumber = Math.floor(Math.random() * 1000000);
@@ -221,7 +249,7 @@ export default function DetailsOrderHome({
         setShowBackConfirmDialog(false);
         if (onReset) {
             onReset();
-            // Nếu có sản phẩm trong giỏ hàng, mở CartPanel
+
             if (cartItems.length > 0 && setIsCartOpen) {
                 setIsCartOpen(true);
             }
