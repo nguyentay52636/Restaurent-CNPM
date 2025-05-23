@@ -50,20 +50,15 @@ const sideBarItem: SidebarItemType[] = [
         title: 'Danh sách đơn hàng',
         url: '/admin/order',
       },
-      {
-        title: 'Lịch sử đơn hàng',
-        url: '/admin/order-history',
-      },
     ],
   },
 ];
-
 
 const user = {
   name: 'shadcn',
   email: 'm@example.com',
   avatar: '/avatars/shadcn.jpg',
-  roleId: 1
+  roleId: 1,
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -75,7 +70,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={sideBarItem} />
-
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} />

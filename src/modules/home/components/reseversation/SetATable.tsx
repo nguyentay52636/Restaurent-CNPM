@@ -63,7 +63,7 @@ export default function SetATable() {
       <h1 className='text-3xl bg-transparent font-bold mb-6'>Đặt bàn</h1>
 
       {/* Table Filter */}
-      <div className='mb-6 flex items-center justify-between'>
+      {/* <div className='mb-6 flex items-center justify-between'>
         <Select value={filterStatus} onValueChange={setFilterStatus}>
           <SelectTrigger className='w-[200px]'>
             <SelectValue placeholder='Lọc theo trạng thái' />
@@ -81,7 +81,7 @@ export default function SetATable() {
         >
           + Đặt bàn
         </Button>
-      </div>
+      </div> */}
 
       {/* tables */}
       {/* tables */}

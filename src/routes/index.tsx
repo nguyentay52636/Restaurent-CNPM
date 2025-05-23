@@ -19,7 +19,8 @@ import AboutUsPage from '@/modules/home/components/Contact/AboutUsPage';
 import OrderHistory from '@/modules/home/components/Order/OrderHistory';
 import BookingPage from '@/modules/home/components/OrderTable/BookingPage';
 import Product from '@/modules/home/components/Product/pages/Product';
-import SetATable from '@/modules/home/components/reseversation/SetATable';
+import SetATableUser from '@/modules/home/components/reseversation/SetATable';
+import SetATableAdmin from '@/modules/admin/components/SetATable/SetATable';
 import ProductManager from '@/redux/home/components/ProductTable/ProductManager';
 import HomePages from '@/redux/home/pages/HomePages';
 import { ProtectedRoute } from '@/routes/ProtectedRoute';
@@ -37,7 +38,7 @@ const routes: RouteObject[] = [
       { path: 'products', element: <Product /> },
       { path: 'profile', element: <ProfileUser /> },
       { path: 'order-history', element: <OrderHistory /> },
-      { path: 'reservation', element: <SetATable /> },
+      { path: 'reservation', element: <SetATableUser /> },
     ],
   },
   {
@@ -62,7 +63,15 @@ const routes: RouteObject[] = [
       { path: 'notifications', element: <NotificationsHistoryOrder /> },
       { path: 'accounts', element: <AccountManager /> },
       { path: 'chats', element: <ChatManager /> },
-      { path: 'settable', element: <SetATable /> },
+      {
+        path: 'settable',
+        element: <SetATableAdmin />,
+      },
+      {
+        path: 'settable/:orderId',
+        element: <SetATableAdmin />,
+      },
+
       { path: 'feedback', element: <FeedbackManager /> },
       { path: 'dashboard', element: <ManagerDashBoard /> },
       { path: 'role', element: <RoleManager /> },

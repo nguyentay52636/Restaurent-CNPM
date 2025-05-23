@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom'; // ✅ THÊM DÒNG NÀY
 import {
   Dialog,
   DialogContent,
@@ -8,7 +10,6 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { useState } from 'react';
 import { useTables } from '@/hooks/useTables';
 import { toast } from 'sonner';
 
@@ -17,22 +18,28 @@ export default function ModalBookTable({
   onOpenChange,
   onSubmit,
   users,
-  orders,
 }: {
   open: boolean;
   onOpenChange: (value: boolean) => void;
   users: { id: number; email: string }[];
-  orders: { id: number; code: string }[];
-  onSubmit: (tableIds: number[]) => void;
+  onSubmit: (data: { tableIds: number[]; userId: number; orderId: number }) => void;
 }) {
+  const { orderId } = useParams<{ orderId?: string }>();
+
   const [selectedTableIds, setSelectedTableIds] = useState<number[]>([]);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
+  const [lockedTableIds, setLockedTableIds] = useState<number[]>([]);
 
-  const { tables: allTables } = useTables({
-    page: 1,
-    pageSize: 1000,
-  });
+  useEffect(() => {
+    if (orderId) {
+      setSelectedOrderId(Number(orderId));
+    } else {
+      toast.warning('Không tìm thấy orderId trên URL, vui lòng chọn lại đơn hàng.');
+    }
+  }, [orderId]);
+
+  const { tables: allTables } = useTables({ page: 1, pageSize: 1000 });
 
   const reservedStatuses = ['pending', 'confirmed', 'checked_in'];
 
@@ -43,7 +50,32 @@ export default function ModalBookTable({
       return !isReserved;
     }) ?? [];
 
+  useEffect(() => {
+    const lockedIds: number[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('lockedTable-')) {
+        try {
+          const value = localStorage.getItem(key);
+          if (value) {
+            const obj = JSON.parse(value);
+            if (obj.status === 'locked' && typeof obj.tableId === 'number') {
+              lockedIds.push(obj.tableId);
+            }
+          }
+        } catch (error) {
+          console.error('Lỗi khi parse localStorage key', key, error);
+        }
+      }
+    }
+    setLockedTableIds(lockedIds);
+  }, []);
+
   const toggleSelect = (id: number) => {
+    if (lockedTableIds.includes(id)) {
+      toast.error(`Bàn ${id} đang bị khóa, không thể chọn.`);
+      return;
+    }
     setSelectedTableIds((prev) =>
       prev.includes(id) ? prev.filter((tid) => tid !== id) : [...prev, id],
     );
@@ -56,13 +88,12 @@ export default function ModalBookTable({
         userId: selectedUserId,
         orderId: selectedOrderId,
       });
+      onOpenChange(false);
+      setSelectedTableIds([]);
+      setSelectedUserId(null);
     } else {
-      toast.error('Chọn đủ các thông tin');
+      toast.error('Vui lòng chọn đủ thông tin!');
     }
-    setSelectedTableIds([]);
-    setSelectedUserId(null);
-    setSelectedOrderId(null);
-    onOpenChange(false);
   };
 
   return (
@@ -72,7 +103,6 @@ export default function ModalBookTable({
           <DialogTitle>Chọn bàn để đặt</DialogTitle>
         </DialogHeader>
 
-        {/* Select User */}
         {/* Select User */}
         <div className='space-y-2'>
           <label className='block font-medium'>Chọn người dùng</label>
@@ -84,26 +114,9 @@ export default function ModalBookTable({
             <option value='' disabled>
               Chọn người dùng
             </option>
-            <option key={users.id} value={users.id}>
-              {users.email}
-            </option>
-          </select>
-        </div>
-
-        {/* Select Order */}
-        <div className='space-y-2'>
-          <label className='block font-medium'>Chọn đơn hàng</label>
-          <select
-            className='w-full border border-gray-300 rounded-md p-2'
-            value={selectedOrderId ?? ''}
-            onChange={(e) => setSelectedOrderId(Number(e.target.value))}
-          >
-            <option value='' disabled>
-              Chọn đơn hàng
-            </option>
-            {orders.map((order) => (
-              <option key={order.id} value={order.id}>
-                Đơn #{order.code || order.id}
+            {users.map((user) => (
+              <option key={user.id} value={user.id}>
+                {user.email}
               </option>
             ))}
           </select>

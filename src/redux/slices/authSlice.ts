@@ -104,10 +104,10 @@ const authSlice = createSlice({
         // Lưu thông tin user vào localStorage với ID
         const userData = {
           ...action.payload.data.user,
-          id: action.payload.data.user.id // Đảm bảo ID được lưu
+          id: action.payload.data.user.id, // Đảm bảo ID được lưu
         };
         console.log('Saving user data:', userData);
-        
+
         localStorage.setItem('currentUser', JSON.stringify(userData));
         localStorage.setItem('token', action.payload.data.accessToken);
         localStorage.setItem('isAuthenticated', 'true');

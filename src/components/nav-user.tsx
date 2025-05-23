@@ -20,6 +20,8 @@ import {
 } from '@/components/ui/sidebar';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import { useAppDispatch } from '@/redux/hooks/hooks';
+import { logout } from '@/redux/slices/authSlice';
 
 export function NavUser({
   user,
@@ -33,12 +35,13 @@ export function NavUser({
 }) {
   const navigate = useNavigate();
   const { isMobile } = useSidebar();
-  console.log('user.roleId  :>> ', user.roleId );
+  const dispatch = useAppDispatch();
+  console.log('user.roleId  :>> ', user.roleId);
   useEffect(() => {
     if (user.roleId === 3) {
       navigate('/');
     }
-  },[user.roleId])
+  }, [user.roleId]);
 
   return (
     <SidebarMenu>
@@ -84,7 +87,7 @@ export function NavUser({
               <User className='mr-2 size-6' />
               <span> Thông tin tài khoản</span>
             </DropdownMenuItem>
-            <DropdownMenuItem className='cursor-pointer'>
+            <DropdownMenuItem onClick={() => dispatch(logout())} className='cursor-pointer'>
               <LogOut className='mr-2 size-6 text-red-500' />
               <span className='text-red-500'> Log out</span>
             </DropdownMenuItem>

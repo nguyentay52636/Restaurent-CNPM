@@ -22,44 +22,50 @@ export default function OrderManager() {
     try {
       const data = await getAllOrders();
       // Transform the API response to match our Order interface
-      const transformedOrders = Array.isArray(data) ? data.map((order: Order) => {
-        const defaultUser: User = {
-          id: 0,
-          email: '',
-          fullName: '',
-          address: ''
-        };
-
-        return {
-          id: order.id || 0,
-          userId: order.user?.id || 0,
-          status: order.status || 'ChoDuyet',
-          createdAt: order.createdAt || new Date().toISOString(),
-          user: order.user ? {
-            id: order.user.id,
-            email: order.user.email || '',
-            fullName: order.user.fullName || '',
-            address: order.user.address || ''
-          } : defaultUser,
-          orderItems: (order.orderItems || []).map(item => ({
-            orderId: item.id || 0,
-            productId: item.productId || 0,
-            quantity: item.quantity || 0,
-            price: Number(item.price) || 0,
-            product: item.product ? {
-              id: item.product.id,
-              name: item.product.name || '',
-              description: item.product.description || '',
-              price: Number(item.product.price) || 0
-            } : {
+      const transformedOrders = Array.isArray(data)
+        ? data.map((order: Order) => {
+            const defaultUser: User = {
               id: 0,
-              name: '',
-              description: '',
-              price: 0
-            }
-          }))
-        };
-      }) : [];
+              email: '',
+              fullName: '',
+              address: '',
+            };
+
+            return {
+              id: order.id || 0,
+              userId: order.user?.id || 0,
+              status: order.status || 'ChoDuyet',
+              createdAt: order.createdAt || new Date().toISOString(),
+              user: order.user
+                ? {
+                    id: order.user.id,
+                    email: order.user.email || '',
+                    fullName: order.user.fullName || '',
+                    address: order.user.address || '',
+                  }
+                : defaultUser,
+              orderItems: (order.orderItems || []).map((item) => ({
+                orderId: item.id || 0,
+                productId: item.productId || 0,
+                quantity: item.quantity || 0,
+                price: Number(item.price) || 0,
+                product: item.product
+                  ? {
+                      id: item.product.id,
+                      name: item.product.name || '',
+                      description: item.product.description || '',
+                      price: Number(item.product.price) || 0,
+                    }
+                  : {
+                      id: 0,
+                      name: '',
+                      description: '',
+                      price: 0,
+                    },
+              })),
+            };
+          })
+        : [];
       setOrders(transformedOrders);
     } catch (error) {
       toast.error('Failed to fetch orders');
@@ -77,8 +83,9 @@ export default function OrderManager() {
   };
 
   const filteredOrders = useMemo(() => {
-    return orders.filter(order => {
-      const matchesSearch = order.id.toString().includes(searchTerm) ||
+    return orders.filter((order) => {
+      const matchesSearch =
+        order.id.toString().includes(searchTerm) ||
         order.user?.fullName?.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus = statusFilter === 'ALL' || order.status === statusFilter;
       return matchesSearch && matchesStatus;
@@ -95,7 +102,7 @@ export default function OrderManager() {
   const handleDelete = async (id: number) => {
     try {
       await deleteOrder(id);
-      setOrders(orders.filter(order => order.id !== id));
+      setOrders(orders.filter((order) => order.id !== id));
       toast.success('Order deleted successfully');
     } catch (error) {
       toast.error('Failed to delete order');
@@ -110,11 +117,9 @@ export default function OrderManager() {
   const handleStatusChange = async (orderId: number, newStatus: string) => {
     try {
       // Update the order status in the local state
-      setOrders(orders.map(order =>
-        order.id === orderId
-          ? { ...order, status: newStatus }
-          : order
-      ));
+      setOrders(
+        orders.map((order) => (order.id === orderId ? { ...order, status: newStatus } : order)),
+      );
       // Refresh the orders data from the server
       await fetchOrders();
     } catch (error) {
@@ -187,7 +192,7 @@ export default function OrderManager() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className='space-y-4'>
       <OrderActions
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
@@ -211,10 +216,7 @@ export default function OrderManager() {
         totalItems={filteredOrders.length}
       />
       {selectedOrder && (
-        <DialogViewDetails
-          order={selectedOrder}
-          onClose={() => setSelectedOrder(null)}
-        />
+        <DialogViewDetails order={selectedOrder} onClose={() => setSelectedOrder(null)} />
       )}
     </div>
   );

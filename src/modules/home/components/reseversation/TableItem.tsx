@@ -4,6 +4,7 @@ import { useState } from 'react';
 import TableDetailDialog from './TableDetailDialog';
 import DeleteReservationConfirmModal from '@/modules/admin/components/SetATable/DeleteReservationConfirmModal';
 import { useDeleteReservation } from '@/hooks/useDeleteReservation';
+import LockedUserInfoModal from '@/modules/home/components/reseversation/LockedUserInfoModal';
 
 export default function TableItem({ tableData }: { tableData: any }) {
   const [open, setOpen] = useState(false);
@@ -13,6 +14,7 @@ export default function TableItem({ tableData }: { tableData: any }) {
 
   const latestReservation: any = tableData.reservations?.[0];
   const reservedStatuses: any[] = ['pending', 'confirmed', 'checked_in'];
+  const [openLockedInfo, setOpenLockedInfo] = useState(false);
   const isReserved: boolean =
     latestReservation && reservedStatuses.includes(latestReservation.status);
 
@@ -170,12 +172,20 @@ export default function TableItem({ tableData }: { tableData: any }) {
         )}
 
         {!isReserved && isLocked && (
-          <Button
-            onClick={unlockTable}
-            className='w-full px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2'
-          >
-            🔓 Mở khóa
-          </Button>
+          <div className='flex gap-2'>
+            <Button
+              onClick={unlockTable}
+              className='w-full px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2'
+            >
+              🔓 Mở khóa
+            </Button>
+            <Button
+              onClick={() => setOpenLockedInfo(true)}
+              className='w-full px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2'
+            >
+              🔍 Xem người khóa
+            </Button>
+          </div>
         )}
       </div>
 
@@ -185,6 +195,12 @@ export default function TableItem({ tableData }: { tableData: any }) {
         onConfirm={handleConfirmDelete}
         reservationId={selectedReservationId || undefined}
         loading={isPending}
+      />
+
+      <LockedUserInfoModal
+        open={openLockedInfo}
+        onClose={() => setOpenLockedInfo(false)}
+        lockedInfo={lockedInfo}
       />
     </div>
   );

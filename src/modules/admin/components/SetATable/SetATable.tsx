@@ -15,15 +15,18 @@ import { useUsers } from '@/hooks/useUsers';
 import { useOrders } from '@/hooks/useOrders';
 import { useCreateReservation } from '@/hooks/useCreateReservation';
 import { toast } from 'sonner';
+import { useNavigate, useParams } from 'react-router-dom';
 
 export default function SetATable() {
   const [page, setPage] = useState(1);
   const [pageSize] = useState(6);
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState<'id' | 'name'>('id');
   const [order, setOrder] = useState<'ASC' | 'DESC'>('ASC');
   const [filterStatus, setFilterStatus] = useState<'all' | 'available' | 'booked'>('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { orderId } = useParams<{ orderId?: string }>();
   const dataTables = useTables({
     page,
     pageSize,
@@ -32,12 +35,8 @@ export default function SetATable() {
     order,
   });
   const dataUsers = useUsers();
-  const dataOrders = useOrders();
   const createReseversation = useCreateReservation();
-  const usersNotRole2 = dataUsers.users.filter((user) => user.roleId !== 2);
-  const userIdsNotRole2 = usersNotRole2.map((user) => user.id);
-  const orders = dataOrders.orders.filter((order) => userIdsNotRole2.includes(order.userId));
-  console.log(orders);
+  const usersNotRole2 = dataUsers.users.filter((user) => user.roleId === 2);
 
   const filteredTables = dataTables?.tables?.filter((table) => {
     if (filterStatus === 'all') return true;
@@ -58,6 +57,14 @@ export default function SetATable() {
       },
     });
   };
+  const checkOrderId = () => {
+    if (orderId) {
+      setIsModalOpen(true);
+    } else {
+      navigate('/admin/orders');
+      toast.error('Không tìm thấy orderId trên URL, vui lòng chọn lại đơn hàng.');
+    }
+  };
 
   return (
     <div className='w-full p-2'>
@@ -77,14 +84,13 @@ export default function SetATable() {
         </Select>
 
         <Button
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => checkOrderId()}
           className='bg-orange-500 hover:bg-orange-600 text-white'
         >
           + Đặt bàn
         </Button>
       </div>
 
-      {/* tables */}
       {/* tables */}
       <div className='grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-4'>
         {dataTables.isLoading ? (
@@ -94,17 +100,10 @@ export default function SetATable() {
         )}
       </div>
 
-      {/* <ModalBookTable
-        open={isModalOpen}
-        onOpenChange={setIsModalOpen}
-        tables={filteredTables ?? []}
-        onSubmit={handleBookTable}
-      /> */}
       <ModalBookTable
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
         users={usersNotRole2}
-        orders={orders}
         onSubmit={handleSubmit}
       />
 

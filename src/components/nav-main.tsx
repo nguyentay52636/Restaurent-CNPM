@@ -48,6 +48,11 @@ export function NavMain({
       url: '/admin/home',
     },
     {
+      title: 'Trang chủ bán hàng',
+      url: '/',
+      icon: Home,
+    },
+    {
       title: 'Quản lý sản phẩm',
       icon: Bot,
       url: '/admin/products',
@@ -72,12 +77,6 @@ export function NavMain({
       icon: Settings2,
       url: '/admin/feedback',
     },
-    {
-      title: 'Chat',
-      icon: MessageSquare,
-      url: '/admin/chats',
-    },
-
     {
       title: 'Thống kê',
       url: '/admin/dashboard',
