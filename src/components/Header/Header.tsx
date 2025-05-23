@@ -23,8 +23,8 @@ const Header = () => {
   const navLinks = [
     { name: 'Trang Chủ', path: '/' },
     { name: 'Thực Đơn', path: '/products' },
-    ...(user?.id ? [{ name: 'Lịch Sử Đơn Hàng', path: '/order-history' }] : []),
-    { name: 'Đặt bàn', path: '/reservation' },
+    ...(user?.id ? [{ name: 'Lịch Sử Đơn Hàng', path: '/order-history' }, { name: 'Đặt bàn', path: '/reservation' }] : []),
+    ,
   ];
   return (
     <motion.header
@@ -44,9 +44,8 @@ const Header = () => {
 
         {/* Navigation */}
         <nav
-          className={`${
-            isMobileMenuOpen ? 'flex' : 'hidden'
-          } md:flex flex-col md:flex-row absolute  md:static top-16 left-0 w-full md:w-auto bg-[#FFF2E1] md:bg-transparent p-4 md:p-0 space-y-4 md:space-y-0 md:space-x-8 transition-all duration-300`}
+          className={`${isMobileMenuOpen ? 'flex' : 'hidden'
+            } md:flex flex-col md:flex-row absolute  md:static top-16 left-0 w-full md:w-auto bg-[#FFF2E1] md:bg-transparent p-4 md:p-0 space-y-4 md:space-y-0 md:space-x-8 transition-all duration-300`}
         >
           {navLinks.map((link) => (
             <Link key={link.name} to={link.path} onClick={() => setIsMobileMenuOpen(false)}>
