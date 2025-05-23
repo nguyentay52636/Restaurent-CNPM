@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import MenuItem from '@/modules/admin/components/Home/components/MenuItem';
+import MenuItem from '@/modules/home/components/Product/components/MenuItem';
 import ActionsHome from '../components/ActionsHome';
 import Pagination from '../components/PaginationMenu';
 import { getAllProducts } from '@/lib/apis/productApi';
@@ -8,7 +8,7 @@ import DetailsOrderHome from './DetailsOrderHome';
 import CartPanel from '../components/CartPanel';
 import ItemDetailPanel from '../components/ItemDetailPanel';
 import { toast } from '@/components/ui/use-toast';
-import { createOrder, getAllOrders } from '@/lib/apis/orderApi';
+import { createOrder, getAllOrders, getOrdersByUserId } from '@/lib/apis/orderApi';
 import { createOrderItem } from '@/lib/apis/orderItemApi';
 import { getAllUserAPI } from '@/lib/apis/userApi';
 import baseApi from '@/lib/apis/baseApi';
@@ -39,9 +39,34 @@ const Product: React.FC = () => {
   const [selectedItem, setSelectedItem] = useState<ProductWithId | null>(null);
   const [showItemDetail, setShowItemDetail] = useState(false);
   const { isAuthenticated, user } = useAppSelector(selectAuth);
-  const [users, setUsers] = useState<IUserDataType[]>([]);
-  const accessToken = useSelector((state: RootState) => state.auth.token);
+   const [orders, setOrders] = useState<Order[]>([]);
   const itemsPerPage = 12;
+  interface Order {
+  id: number;
+  status: string;
+  userId: number;
+  orderItems: OrderItem[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface OrderItem {
+  id: number;
+  orderId: number;
+  productId: number;
+  quantity: number;
+  price: number;
+  createdAt: string;
+  updatedAt: string;
+}
+useEffect(() => {
+    const fetchOrders = async () => {
+      if (!user?.id) return;
+      const response = await getOrdersByUserId(user.id);
+      setOrders(response.data);
+    };
+    fetchOrders();
+  }, [user?.id]);
   const filteredProducts = useMemo(() => {
     let filtered = products;
 
@@ -280,6 +305,8 @@ const Product: React.FC = () => {
                         key={item.id}
                         item={{ ...item, image: getFullImageUrl(item.image) }}
                         onAddToCart={handleClickDetail}
+                        orders={orders}
+                        currentPage={currentPage} 
                       />
                     ))}
                   </div>
