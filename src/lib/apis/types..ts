@@ -70,9 +70,9 @@ export interface ProductWithId extends ProductType {
   updatedAt: string;
 }
 export interface OrderType {
-  userId: number;
-  status: string;
-  orderItems: OrderItemType[];
+  userId?: number;
+  status?: string;
+  orderItems?: OrderItemType[];
 }
 
 export interface OrderItemType {

@@ -24,7 +24,7 @@ export const createOrder = async ({ userId, status, orderItems }: OrderType) => 
   }
 };
 
-export const updateOrder = async (id: number, { status,  }: OrderType) => {
+export const updateOrder = async (id: number, { status }: OrderType) => {
   try {
     const updatedOrder: OrderType = {
       status,

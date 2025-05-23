@@ -33,7 +33,7 @@ export default function OrderHistory() {
     const fetchOrders = async () => {
       try {
         setLoading(true);
-        const response = await getOrdersByUserId(user?.id); // Gọi API
+        const response = await getOrdersByUserId(user?.id);
         setOrders(response.data);
         console.log("body: " + response.data);
       } catch (error) {
@@ -47,7 +47,7 @@ export default function OrderHistory() {
     if (user?.id) {
       fetchOrders();
     } else {
-      setLoading(false); // không có user => không cần fetch
+      setLoading(false);
     }
   }, [user?.id]);
 
